@@ -1,12 +1,51 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
     <id>com.sky.consolelog</id>
-    <name>ConsoleLog</name>
-    <vendor>Saas</vendor>
 
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Console Log</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="2378459785@qq.com">Saas</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+    Quick to print Console Log automatically instead of manual
+    ]]>
+    </description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
     <depends>JavaScript</depends>
 
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.sky.consolelog.setting.storage.ConsoleLogSettingState"/>
+        <applicationConfigurable instance="com.sky.consolelog.config.ConsoleLogConfigurable" displayName="Console Log Plugin"/>
     </extensions>
+    <actions>
+        <action id="Insert Console Log Message" class="com.sky.consolelog.action.InsertConsoleLogAction"
+                text="InsertConsoleLogAction" description="Quick Insert console.log() in code">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt 1"/>
+        </action>
+        <action id="Delete All Console Log Message" class="com.sky.consolelog.action.DeleteAllConsoleLogAction"
+                text="DeleteAllConsoleLogAction" description="Delete all console.log() in code">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt 2"/>
+        </action>
+        <action id="comment All Log Messages" class="com.sky.consolelog.action.CommentAllConsoleLogAction"
+                text="CommentAllConsoleLogAction" description="Comment all log messages">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt 1"/>
+        </action>
+        <action id="uncomment All Log Message"
+                class="com.sky.consolelog.action.UnCommentAllConsoleLogAction"
+                text="UnCommentAllConsoleLogAction" description="Uncomment all log messages">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt 2"/>
+        </action>
+    </actions>
 </idea-plugin>
