@@ -56,7 +56,7 @@ public class InsertConsoleLogAction extends AnAction {
 
         ConsoleLogSettingVo consoleLogSettingVo = new ConsoleLogSettingVo();
         // 检查是否有选中的文本
-        boolean hasSelectedText = getVariableName(editor, caret, elementAtCaret, consoleLogSettingVo);
+        boolean hasSelectedText = getVariableName(editor, caret, elementAtCaretIndex, psiFile, consoleLogSettingVo);
         if (!hasSelectedText) return;
         getMethodName(caret, psiFile, consoleLogSettingVo);
 
@@ -68,15 +68,29 @@ public class InsertConsoleLogAction extends AnAction {
         insertConsoleLogMsg(project, editor, caret, insertOffset, consoleLogMsg);
     }
 
-    private static boolean getVariableName(Editor editor, Caret caret, PsiElement elementAtCaret, ConsoleLogSettingVo consoleLogSettingVo) {
+    private static boolean getVariableName(Editor editor, Caret caret, Integer elementAtCaretIndex, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
         String selectedText = editor.getSelectionModel().getSelectedText();
         if (selectedText != null && !selectedText.isEmpty()) {
             consoleLogSettingVo.setVariableName(selectedText);
         } else {
             // 如果没有选中的文本，则获取光标所在位置的单词
+            // Notice：当光标位置处于变量结尾时，PSI元素会选取变量的父级，故同时判断光标前移1一个字符的PSI元素类型
+            PsiElement elementAtCaret = psiFile.findElementAt(elementAtCaretIndex);
             PsiElement parent = elementAtCaret.getParent();
+            int elementAtCartNearly = elementAtCaretIndex - 1;
+            PsiElement elementAtCaretNearly = psiFile.findElementAt(elementAtCartNearly);
+            PsiElement nearlyElementParent = null;
+            if (elementAtCaretNearly != null) {
+                nearlyElementParent = elementAtCaretNearly.getParent();
+            }
             if (parent instanceof JSReferenceExpression) {
                 String word = parent.getText();
+                if (word == null) {
+                    return false;
+                }
+                consoleLogSettingVo.setVariableName(word);
+            } else if (nearlyElementParent instanceof JSReferenceExpression) {
+                String word = nearlyElementParent.getText();
                 if (word == null) {
                     return false;
                 }
@@ -163,7 +177,7 @@ public class InsertConsoleLogAction extends AnAction {
             }
             // 表达式范围
             if (parent instanceof JSExpressionStatement) {
-                return parent.getTextRange().getEndOffset();
+                break;
             }
             parent = parent.getParent();
         }
