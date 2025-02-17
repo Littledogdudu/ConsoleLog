@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author by: SkySource
- * @Description:
+ * @Description: 占位符常量
  * @Date: 2025/1/25 12:41
  */
 public interface SettingConstant {

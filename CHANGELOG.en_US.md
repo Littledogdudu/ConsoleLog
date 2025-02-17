@@ -5,6 +5,12 @@
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-2-18
+
+### Fix
+- can't select variable when the cursor after the last word in variable
+- optimize insert position
+
 ## [1.0.0] - 2025-2-8
 
 - control where console.log() is inserted when cursor in the chain call

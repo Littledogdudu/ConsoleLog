@@ -1,11 +1,8 @@
 package com.sky.consolelog.action;
 
-import com.intellij.lang.javascript.psi.JSExpressionStatement;
+import com.intellij.application.options.CodeStyle;
 import com.intellij.lang.javascript.psi.JSFunction;
 import com.intellij.lang.javascript.psi.JSReferenceExpression;
-import com.intellij.lang.javascript.psi.JSVarStatement;
-import com.intellij.lang.javascript.psi.ecma6.TypeScriptParameter;
-import com.intellij.lang.javascript.psi.ecma6.TypeScriptVariable;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -18,10 +15,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.sky.consolelog.constant.SettingConstant;
+import com.sky.consolelog.entities.ScopeOffset;
 import com.sky.consolelog.setting.ConsoleLogSettingVo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
+import com.sky.consolelog.utils.PsiPositionUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -64,8 +65,8 @@ public class InsertConsoleLogAction extends AnAction {
         String consoleLogMsg = getCustomHandleConsoleLogMsg(consoleLogSettingVo);
 
         // 找到最近的作用域块
-        int insertOffset = findScopeOffset(elementAtCaret);
-        insertConsoleLogMsg(project, editor, caret, insertOffset, consoleLogMsg);
+        ScopeOffset scopeOffset = findScopeOffset(elementAtCaret);
+        insertConsoleLogMsg(project, editor, psiFile, caret, scopeOffset, consoleLogMsg);
     }
 
     private static boolean getVariableName(Editor editor, Caret caret, Integer elementAtCaretIndex, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
@@ -133,8 +134,8 @@ public class InsertConsoleLogAction extends AnAction {
     private @NotNull String getCustomHandleConsoleLogMsg(ConsoleLogSettingVo consoleLogSettingVo) {
         return SettingConstant.CONSOLE_LOG_COMMAND +
                 settings.consoleLogMsg
-                        .replaceAll(SettingConstant.AliasRegex.VARIABLE_REGEX.getKey(), replaceDoubleQuoteToEscapeDoubleQuote(consoleLogSettingVo.getVariableName()))
-                        .replaceAll(SettingConstant.AliasRegex.METHOD_REGEX.getKey(), replaceDoubleQuoteToEscapeDoubleQuote(consoleLogSettingVo.getMethodName())) +
+                        .replaceAll(SettingConstant.AliasRegex.VARIABLE_REGEX.getKey(), replaceAll(consoleLogSettingVo.getVariableName(), "\"", "\\\\\\\\\""))
+                        .replaceAll(SettingConstant.AliasRegex.METHOD_REGEX.getKey(), replaceAll(consoleLogSettingVo.getMethodName(), "\"", "\\\\\\\\\"")) +
                 "\", " + consoleLogSettingVo.getVariableName() + ");";
     }
 
@@ -164,40 +165,50 @@ public class InsertConsoleLogAction extends AnAction {
      * @param element 当前光标所在PSI元素
      * @return 对应语句块末尾偏移量
      */
-    private static int findScopeOffset(PsiElement element) {
+    private static ScopeOffset findScopeOffset(PsiElement element) {
+        int count = 0;
+        ScopeOffset offset = PsiPositionUtil.getScopeOffsetByType(element);
         PsiElement parent = element.getParent();
-        while (parent != null) {
-            // 变量范围
-            if (parent instanceof JSVarStatement || parent instanceof TypeScriptVariable) {
-                return parent.getTextRange().getEndOffset();
-            }
-            // 参数
-            if (parent instanceof TypeScriptParameter) {
-                return element.getTextRange().getEndOffset();
-            }
-            // 表达式范围
-            if (parent instanceof JSExpressionStatement) {
-                break;
+        while (parent != null && offset == null && count++ < 5) {
+            offset = PsiPositionUtil.getScopeOffsetByType(parent);
+            if (offset != null) {
+                return offset;
             }
             parent = parent.getParent();
         }
-        // 单纯在光标下一行插入
-        return element.getTextRange().getEndOffset();
+        return PsiPositionUtil.getDefault(element);
     }
 
-    private static void insertConsoleLogMsg(Project project, Editor editor, Caret caret, Integer insertOffset, String consoleLogMsg) {
+    private static void insertConsoleLogMsg(Project project, Editor editor, PsiFile psiFile, Caret caret, ScopeOffset scopeOffset, String consoleLogMsg) {
         Document document = editor.getDocument();
         // 找到光标所在行的结束位置
-        int lineStartOffset = document.getLineStartOffset(document.getLineNumber(insertOffset));
-        int lineEndOffset = document.getLineEndOffset(document.getLineNumber(insertOffset));
+        int lineStartOffset = document.getLineStartOffset(document.getLineNumber(scopeOffset.getInsertEndOffset()));
+        int lineEndOffset = document.getLineEndOffset(document.getLineNumber(scopeOffset.getInsertEndOffset()));
         // 获取光标所在行的内容，并计算缩进
         String currentLine = document.getText().substring(lineStartOffset, lineEndOffset);
         String indentation = currentLine.replace(currentLine.trim(), "");
         // 插入代码前添加适当的缩进
-        String indentedCode = indentation + consoleLogMsg;
+        String indentedCode;
+        if (scopeOffset.getNeedTab()) {
+            CodeStyleSettings currentSettings = CodeStyle.getSettings(project);
+            CommonCodeStyleSettings languageSettings = currentSettings.getCommonSettings(psiFile.getLanguage());
+            CommonCodeStyleSettings.IndentOptions indentOptions = languageSettings.getIndentOptions();
+            int tabSize = 2;
+            if (indentOptions != null) {
+                tabSize = indentOptions.TAB_SIZE;
+            }
+            indentedCode = indentation + " ".repeat(tabSize) + consoleLogMsg;
+        } else {
+            indentedCode = indentation + consoleLogMsg;
+        }
         // 在光标所在行的结束位置插入 console.log 语句
-        WriteCommandAction.runWriteCommandAction(project, () ->
-                document.insertString(lineEndOffset + 1, indentedCode + "\n"));
+        if (scopeOffset.getDefault()) {
+            WriteCommandAction.runWriteCommandAction(project, () ->
+                    document.insertString(lineEndOffset + 1, indentedCode + "\n"));
+        } else {
+            WriteCommandAction.runWriteCommandAction(project, () ->
+                    document.insertString(scopeOffset.getInsertEndOffset(), "\n" + indentedCode));
+        }
         // 更新 PSI 树以反映文档变化
         PsiDocumentManager.getInstance(project).commitDocument(document);
         // 将光标移动到新插入的 console.log 语句后
@@ -209,20 +220,28 @@ public class InsertConsoleLogAction extends AnAction {
      * @param name 变量名/方法名
      * @return 双引号转移过的变量名/方法名
      */
-    private static String replaceDoubleQuoteToEscapeDoubleQuote(String name) {
-        // 因为replaceAll对$有特殊处理，故此处也做特殊处理
+    private static String replaceAll(String name, String regex, String replacement) {
+        // 因为replaceAll对被替换字符串的$有特殊处理，故此处也做特殊处理
         StringBuilder replaceStr = new StringBuilder();
         int length = name.length();
         int begIndex = 0;
         int dstIndex = name.indexOf("$");
         while (dstIndex != -1) {
-            replaceStr.append(name.substring(begIndex, dstIndex).replaceAll("\"", "\\\\\\\\\""));
+            replaceStr.append(name.substring(begIndex, dstIndex).replaceAll(regex, replacement));
             replaceStr.append("$");
             begIndex = dstIndex + 1;
-            dstIndex = replaceStr.substring(begIndex, length).indexOf("$");
+            if (begIndex >= length) {
+                break;
+            }
+            int subDstIndex = name.substring(begIndex, length).indexOf("$");
+            if (subDstIndex == -1) {
+                break;
+            }
+            // 因为取子字符串后，索引下标从0记，故累加到正确的位置需要再+1
+            dstIndex += subDstIndex + 1;
         }
         if (begIndex < length) {
-            replaceStr.append(name, begIndex, length);
+            replaceStr.append(name.substring(begIndex, length).replaceAll(regex, replacement));
         }
         return replaceStr.toString();
     }
