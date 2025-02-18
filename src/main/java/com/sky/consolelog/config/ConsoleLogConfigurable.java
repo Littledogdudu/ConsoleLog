@@ -31,7 +31,8 @@ public class ConsoleLogConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
-        return !component.getConsoleLogMsg().equals(this.settings.consoleLogMsg);
+        return !component.getConsoleLogMsg().equals(this.settings.consoleLogMsg)
+               || !component.getAutoFollowEndCheckBox().equals(this.settings.autoFollowEnd);
     }
 
     /**
@@ -40,6 +41,7 @@ public class ConsoleLogConfigurable implements Configurable {
     @Override
     public void apply() {
         this.settings.consoleLogMsg = component.getConsoleLogMsg();
+        this.settings.autoFollowEnd = component.getAutoFollowEndCheckBox();
     }
 
     /**
@@ -48,5 +50,6 @@ public class ConsoleLogConfigurable implements Configurable {
     @Override
     public void reset() {
         component.setConsoleLogMsg(this.settings.consoleLogMsg);
+        component.setAutoFollowEndCheckBox(this.settings.autoFollowEnd);
     }
 }

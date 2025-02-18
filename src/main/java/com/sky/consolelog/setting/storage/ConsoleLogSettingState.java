@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 public final class ConsoleLogSettingState implements PersistentStateComponent<ConsoleLogSettingState> {
     /** 默认打印语句 */
     public String consoleLogMsg = SettingConstant.DEFAULT_CONSOLE_LOG_MSG;
+    /** 插入后光标是否自动跟随到log表达式末尾 */
+    public Boolean autoFollowEnd = true;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -29,5 +31,6 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     @Override
     public void loadState(@NotNull ConsoleLogSettingState state) {
         this.consoleLogMsg = state.consoleLogMsg;
+        this.autoFollowEnd = state.autoFollowEnd;
     }
 }

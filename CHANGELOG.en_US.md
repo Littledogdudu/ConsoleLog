@@ -5,6 +5,12 @@
 
 ## [Unreleased]
 
+## [1.0.2] - 2025-2-18
+
+### Add
+- you can set the cursor whether automatically follow the end of console.log expression 
+after insert the expression in setting😊
+
 ## [1.0.1] - 2025-2-18
 
 ### Fix

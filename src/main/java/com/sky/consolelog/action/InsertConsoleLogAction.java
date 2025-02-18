@@ -179,7 +179,7 @@ public class InsertConsoleLogAction extends AnAction {
         return PsiPositionUtil.getDefault(element);
     }
 
-    private static void insertConsoleLogMsg(Project project, Editor editor, PsiFile psiFile, Caret caret, ScopeOffset scopeOffset, String consoleLogMsg) {
+    private void insertConsoleLogMsg(Project project, Editor editor, PsiFile psiFile, Caret caret, ScopeOffset scopeOffset, String consoleLogMsg) {
         Document document = editor.getDocument();
         // 找到光标所在行的结束位置
         int lineStartOffset = document.getLineStartOffset(document.getLineNumber(scopeOffset.getInsertEndOffset()));
@@ -212,7 +212,9 @@ public class InsertConsoleLogAction extends AnAction {
         // 更新 PSI 树以反映文档变化
         PsiDocumentManager.getInstance(project).commitDocument(document);
         // 将光标移动到新插入的 console.log 语句后
-        caret.moveToOffset(lineEndOffset + 1 + indentation.length() + consoleLogMsg.length());
+        if (settings.autoFollowEnd) {
+            caret.moveToOffset(lineEndOffset + 1 + indentation.length() + consoleLogMsg.length());
+        }
     }
 
     /**

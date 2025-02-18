@@ -1,5 +1,5 @@
 # Console Log README
-- zh_CN [简体中文](./README.md)
+- zh_CN [Chinese](./README.md)
 - en_US [English](./README.en_US.md)
 
 ![Build](https://github.com/Littledogdudu/ConsoleLog/workflows/Build/badge.svg)
@@ -16,7 +16,7 @@ Default keymap as following:
 - [x] you can go to settings to set what message you want to show
 
 if you want to run this project, please modify the local path.
-![modifyLocal](.github/readme/buildModifyLocal.png)
+![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)
 
 > The idea from vscode plugin [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)
 <!-- Plugin description end -->

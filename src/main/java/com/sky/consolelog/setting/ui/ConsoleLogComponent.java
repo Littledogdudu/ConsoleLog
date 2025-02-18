@@ -11,6 +11,7 @@ import javax.swing.*;
  */
 public class ConsoleLogComponent {
     private JPanel jPanel;
+    private JPanel buttonJPanel;
     private JTextField consoleLogMsgInput;
     private JButton resetButton;
     private JLabel signal;
@@ -19,6 +20,7 @@ public class ConsoleLogComponent {
     private JLabel variableLabel;
     private JLabel methodLabel;
     private JLabel variable;
+    private JCheckBox autoFollowEndCheckBox;
 
     public ConsoleLogComponent() {
         resetButton.addActionListener(e -> {
@@ -36,5 +38,13 @@ public class ConsoleLogComponent {
 
     public void setConsoleLogMsg(String msg) {
         consoleLogMsgInput.setText(msg);
+    }
+
+    public Boolean getAutoFollowEndCheckBox() {
+        return autoFollowEndCheckBox.isSelected();
+    }
+
+    public void setAutoFollowEndCheckBox(Boolean checked) {
+        autoFollowEndCheckBox.setSelected(checked);
     }
 }
