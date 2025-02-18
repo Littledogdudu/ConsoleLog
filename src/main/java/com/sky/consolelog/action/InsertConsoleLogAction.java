@@ -197,10 +197,9 @@ public class InsertConsoleLogAction extends AnAction {
             if (indentOptions != null) {
                 tabSize = indentOptions.TAB_SIZE;
             }
-            indentedCode = indentation + " ".repeat(tabSize) + consoleLogMsg;
-        } else {
-            indentedCode = indentation + consoleLogMsg;
+            indentation += " ".repeat(tabSize);
         }
+        indentedCode = indentation + consoleLogMsg;
         // 在光标所在行的结束位置插入 console.log 语句
         if (scopeOffset.getDefault()) {
             WriteCommandAction.runWriteCommandAction(project, () ->
