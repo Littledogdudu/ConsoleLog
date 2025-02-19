@@ -5,19 +5,25 @@
 
 ## [Unreleased]
 
-## [1.0.2] - 2025-2-18
+## [1.0.3] - 2025-02-19
+
+### Fix
+- For double quote escaping and ${xxx} replacement, see the replaceConsoleLog method of the InsertConsoleLogAction class.
+- Plug-in Version Compatibility Interval Extended Forward (Verified)
+
+## [1.0.2] - 2025-02-18
 
 ### Add
 - you can set the cursor whether automatically follow the end of console.log expression 
 after insert the expression in setting😊
 
-## [1.0.1] - 2025-2-18
+## [1.0.1] - 2025-02-18
 
 ### Fix
 - can't select variable when the cursor after the last word in variable
 - optimize insert position
 
-## [1.0.0] - 2025-2-8
+## [1.0.0] - 2025-02-8
 
 - control where console.log() is inserted when cursor in the chain call
 - automatically capture the prefix, such as "this."

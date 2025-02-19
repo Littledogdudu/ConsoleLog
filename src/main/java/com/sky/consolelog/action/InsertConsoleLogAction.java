@@ -2,7 +2,6 @@ package com.sky.consolelog.action;
 
 import com.intellij.application.options.CodeStyle;
 import com.intellij.lang.javascript.psi.JSFunction;
-import com.intellij.lang.javascript.psi.JSReferenceExpression;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -23,7 +22,10 @@ import com.sky.consolelog.entities.ScopeOffset;
 import com.sky.consolelog.setting.ConsoleLogSettingVo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.PsiPositionUtil;
+import com.sky.consolelog.utils.PsiVariableUtil;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.regex.Matcher;
 
 /**
  * @author by: SkySource
@@ -76,44 +78,11 @@ public class InsertConsoleLogAction extends AnAction {
         } else {
             // 如果没有选中的文本，则获取光标所在位置的单词
             // Notice：当光标位置处于变量结尾时，PSI元素会选取变量的父级，故同时判断光标前移1一个字符的PSI元素类型
-            PsiElement elementAtCaret = psiFile.findElementAt(elementAtCaretIndex);
-            PsiElement parent = elementAtCaret.getParent();
-            int elementAtCartNearly = elementAtCaretIndex - 1;
-            PsiElement elementAtCaretNearly = psiFile.findElementAt(elementAtCartNearly);
-            PsiElement nearlyElementParent = null;
-            if (elementAtCaretNearly != null) {
-                nearlyElementParent = elementAtCaretNearly.getParent();
+            String variableName = PsiVariableUtil.getVariableNameByOffsetIndex(editor, psiFile, caret, elementAtCaretIndex);
+            if (variableName == null) {
+                return false;
             }
-            if (parent instanceof JSReferenceExpression) {
-                String word = parent.getText();
-                if (word == null) {
-                    return false;
-                }
-                consoleLogSettingVo.setVariableName(word);
-            } else if (nearlyElementParent instanceof JSReferenceExpression) {
-                String word = nearlyElementParent.getText();
-                if (word == null) {
-                    return false;
-                }
-                consoleLogSettingVo.setVariableName(word);
-            } else {
-                // 首先获取光标的偏移量
-                int offset = caret.getOffset();
-                Document document = editor.getDocument();
-                // 获取光标之前的所有文本
-                String line = document.getText().substring(0, offset);
-
-                // 获取单词前后内容，直到遇到空格
-                int wordStart = findWordStart(line, offset);
-                int wordEnd = findWordEnd(document, offset);
-
-                if (wordStart >= 0 && wordEnd > wordStart) {
-                    String word = document.getText().substring(wordStart, wordEnd);
-                    consoleLogSettingVo.setVariableName(word);
-                } else {
-                    return false;
-                }
-            }
+            consoleLogSettingVo.setVariableName(variableName);
         }
         return true;
     }
@@ -132,32 +101,26 @@ public class InsertConsoleLogAction extends AnAction {
     }
 
     private @NotNull String getCustomHandleConsoleLogMsg(ConsoleLogSettingVo consoleLogSettingVo) {
+        String replaceConsoleLogStr = settings.consoleLogMsg;
+        replaceConsoleLogStr = replaceConsoleLog(replaceConsoleLogStr, SettingConstant.AliasRegex.VARIABLE_REGEX, consoleLogSettingVo.getVariableName());
+        replaceConsoleLogStr = replaceConsoleLog(replaceConsoleLogStr, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
         return SettingConstant.CONSOLE_LOG_COMMAND +
-                settings.consoleLogMsg
-                        .replaceAll(SettingConstant.AliasRegex.VARIABLE_REGEX.getKey(), replaceAll(consoleLogSettingVo.getVariableName(), "\"", "\\\\\\\\\""))
-                        .replaceAll(SettingConstant.AliasRegex.METHOD_REGEX.getKey(), replaceAll(consoleLogSettingVo.getMethodName(), "\"", "\\\\\\\\\"")) +
-                "\", " + consoleLogSettingVo.getVariableName() + ");";
+                replaceConsoleLogStr + "\", " + consoleLogSettingVo.getVariableName() + ");";
     }
 
-    private static int findWordStart(String text, int offset) {
-        for (int i = offset - 1; i >= 0; i--) {
-            char c = text.charAt(i);
-            if (!Character.isLetterOrDigit(c) && c != '_' && c != '-') {
-                return i + 1;
+    private String replaceConsoleLog(String replaceConsoleLogStr, SettingConstant.AliasRegex aliasRegex, String value) {
+        if (value.contains("$")) {
+            if (value.contains("\"")) {
+                // 新tips：因为replaceAll对替换项（replacement）的$有特殊处理，故此处使用Matcher.quoteReplacement对替换项做处理
+                // 哎光看源码了，今天看了注释才发现可以这么简单，焯！🤡
+                return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), Matcher.quoteReplacement(value.replaceAll("\"", "\\\\\"")));
             }
+            return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), Matcher.quoteReplacement(value));
         }
-        return 0;
-    }
-
-    private static int findWordEnd(Document document, int offset) {
-        int length = document.getTextLength();
-        for (int i = offset; i < length; i++) {
-            char c = document.getCharsSequence().charAt(i);
-            if (!Character.isLetterOrDigit(c) && c != '_' && c != '-') {
-                return i;
-            }
+        if (value.contains("\"")) {
+            return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), value.replaceAll("\"", "\\\\\""));
         }
-        return length;
+        return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), value);
     }
 
     /**
@@ -214,36 +177,5 @@ public class InsertConsoleLogAction extends AnAction {
         if (settings.autoFollowEnd) {
             caret.moveToOffset(lineEndOffset + 1 + indentation.length() + consoleLogMsg.length());
         }
-    }
-
-    /**
-     * 转义双引号避免遇到类似data["tableName"]的用法出现 用于结尾的双引号提前
-     * @param name 变量名/方法名
-     * @return 双引号转移过的变量名/方法名
-     */
-    private static String replaceAll(String name, String regex, String replacement) {
-        // 因为replaceAll对被替换字符串的$有特殊处理，故此处也做特殊处理
-        StringBuilder replaceStr = new StringBuilder();
-        int length = name.length();
-        int begIndex = 0;
-        int dstIndex = name.indexOf("$");
-        while (dstIndex != -1) {
-            replaceStr.append(name.substring(begIndex, dstIndex).replaceAll(regex, replacement));
-            replaceStr.append("$");
-            begIndex = dstIndex + 1;
-            if (begIndex >= length) {
-                break;
-            }
-            int subDstIndex = name.substring(begIndex, length).indexOf("$");
-            if (subDstIndex == -1) {
-                break;
-            }
-            // 因为取子字符串后，索引下标从0记，故累加到正确的位置需要再+1
-            dstIndex += subDstIndex + 1;
-        }
-        if (begIndex < length) {
-            replaceStr.append(name.substring(begIndex, length).replaceAll(regex, replacement));
-        }
-        return replaceStr.toString();
     }
 }
