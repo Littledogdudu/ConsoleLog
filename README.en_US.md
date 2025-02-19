@@ -8,10 +8,10 @@
 **ConsoleLog** can quickly print console.log() in your code and free-hand
 
 Default keymap as following:
-- Alt+1: insert console.log()
-- Alt+2: delete all console.log()
-- Alt+Shift+1: comment all console.log()
-- Alt+Shift+2: uncomment all console.log()
+- Alt+1: Console Log Plugin: Insert Console Log Message
+- Alt+2: Console Log Plugin: Delete All Console Log Message
+- Alt+Shift+1: Console Log Plugin: Comment All Console Log Message
+- Alt+Shift+2: Console Log Plugin: Uncomment Console Log Message
 
 - [x] you can go to settings to set what message you want to show
 

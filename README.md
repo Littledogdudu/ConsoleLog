@@ -13,6 +13,12 @@
 - Alt+Shift+1: 注释掉所有 console.log()
 - Alt+Shift+2: 解注释所有 console.log()
 
+键盘映射名称：
+- Alt+1: Console Log Plugin: Insert Console Log Message
+- Alt+2: Console Log Plugin: Delete All Console Log Message
+- Alt+Shift+1: Console Log Plugin: Comment All Console Log Message
+- Alt+Shift+2: Console Log Plugin: Uncomment Console Log Message
+
 - [x] 哈喽，你可以通过WebStorm的插件设置自定义你的打印模板哦，但是要注意尽量与众不同一点哦，不然可能会误删你不想删掉的console.log语句哦
 
 运行这个插件需要把这个local方法的参数修改为你的WebStorm文件路径哦

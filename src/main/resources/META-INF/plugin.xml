@@ -28,20 +28,20 @@
     </extensions>
     <actions>
         <action id="Insert Console Log Message" class="com.sky.consolelog.action.InsertConsoleLogAction"
-                text="InsertConsoleLogAction" description="Quick Insert console.log() in code">
+                text="Console Log Plugin: Insert Console Log Message" description="Quick Insert console.log() in code">
             <keyboard-shortcut keymap="$default" first-keystroke="alt 1"/>
         </action>
         <action id="Delete All Console Log Message" class="com.sky.consolelog.action.DeleteAllConsoleLogAction"
-                text="DeleteAllConsoleLogAction" description="Delete all console.log() in code">
+                text="Console Log Plugin: Delete All Console Log Message" description="Delete all console.log() in code">
             <keyboard-shortcut keymap="$default" first-keystroke="alt 2"/>
         </action>
         <action id="comment All Log Messages" class="com.sky.consolelog.action.CommentAllConsoleLogAction"
-                text="CommentAllConsoleLogAction" description="Comment all log messages">
+                text="Console Log Plugin: Comment All Console Log Message" description="Comment all log messages">
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt 1"/>
         </action>
         <action id="uncomment All Log Message"
                 class="com.sky.consolelog.action.UnCommentAllConsoleLogAction"
-                text="UnCommentAllConsoleLogAction" description="Uncomment all log messages">
+                text="Console Log Plugin: Uncomment Console Log Message" description="Uncomment all log messages">
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt 2"/>
         </action>
     </actions>
