@@ -1,5 +1,8 @@
 package com.sky.consolelog.constant;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author by: SkySource
  * @Description:
@@ -20,6 +23,7 @@ public interface PsiPosition {
     String TypeScriptParameterList = "TypeScriptParameterList";
     // 函数表达式
     //res => {}
+    String JSFunctionExpression = "JSFunctionExpression";
     String TypeScriptFunctionExpression = "TypeScriptFunctionExpression";
     // 表达式语句
     //ElMessage({
@@ -34,6 +38,10 @@ public interface PsiPosition {
     String JSIfStatement = "JSIfStatement";
     // while语句
     String JSWhileStatement = "JSWhileStatement";
+    // for(let x of a)语句
+    String JSForInStatement = "JSForInStatement";
+    String JSForStatement = "JSForStatement";
+    List<String> JSForStatementList = Arrays.asList(JSForInStatement, JSForStatement);
 
     String JSBlockStatement = "JSBlockStatement";
 }

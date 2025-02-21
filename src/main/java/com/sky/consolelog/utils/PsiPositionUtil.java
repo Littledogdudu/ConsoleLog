@@ -28,9 +28,9 @@ public class PsiPositionUtil {
             case JSAssignmentExpression -> getJSAssignmentExpression(element);
             case JSIfStatement -> getJSIfStatement(element);
             case JSWhileStatement -> getJSWhileStatement(element);
-            // for语句直接放下一行罢
+            case JSForStatement, JSForInStatement -> blockStatementIsLastChild(element);
             case TypeScriptParameterList -> getTypeScriptParameterList(element);
-            case TypeScriptFunctionExpression -> getTypeScriptFunctionExpression(element);
+            case JSFunctionExpression, TypeScriptFunctionExpression -> getJSFunctionExpression(element);
             case JSCallExpression -> getJSCallExpression(element);
             case JSExpressionStatement -> getJSExpressionStatement(element);
             default -> null;
@@ -38,6 +38,14 @@ public class PsiPositionUtil {
     }
 
     private static ScopeOffset getJSVarStatement(PsiElement element) {
+        if (JSForStatementList.contains(element.getParent().toString())) {
+            // for循环中的变量
+            ScopeOffset offset = new ScopeOffset();
+            offset.setInsertEndOffset(element.getTextRange().getEndOffset());
+            offset.setNeedTab(true);
+            offset.setDefault(true);
+            return offset;
+        }
         ScopeOffset offset = new ScopeOffset();
         // 创建变量表达式获取到变量创建结束（或有;）处结束
         offset.setInsertEndOffset(element.getLastChild().getTextRange().getEndOffset());
@@ -63,7 +71,7 @@ public class PsiPositionUtil {
     }
 
     private static ScopeOffset getTypeScriptParameterList(PsiElement element) {
-        return getTypeScriptFunctionExpression(element.getParent());
+        return blockStatementIsLastChild(element.getParent());
     }
 
     /**
@@ -71,7 +79,7 @@ public class PsiPositionUtil {
      * @param element Psi元素
      * @return 末尾偏移量
      */
-    private static ScopeOffset getTypeScriptFunctionExpression(PsiElement element) {
+    private static ScopeOffset getJSFunctionExpression(PsiElement element) {
         return blockStatementIsLastChild(element);
     }
 
@@ -87,12 +95,12 @@ public class PsiPositionUtil {
                 @NotNull PsiElement[] children = argumentListElement.getChildren();
                 for (@NotNull PsiElement child : children) {
                     if (child instanceof TypeScriptFunctionExpression) {
-                        return getTypeScriptFunctionExpression(child);
+                        return getJSFunctionExpression(child);
                     }
                 }
                 break;
             case JSExpressionStatement:
-                return getJSExpressionStatement(parent);
+                return blockStatementIsLastChild(parent);
         }
         return getDefault(element);
     }
@@ -107,10 +115,14 @@ public class PsiPositionUtil {
 
     private static ScopeOffset blockStatementIsLastChild(PsiElement element) {
         ScopeOffset offset = new ScopeOffset();
-        PsiElement blockStatement_LBRACE = element.getLastChild().getFirstChild();
-        offset.setInsertEndOffset(blockStatement_LBRACE.getTextRange().getEndOffset());
-        offset.setNeedTab(true);
-        return offset;
+        PsiElement lastChild = element.getLastChild();
+        if (JSBlockStatement.equals(lastChild.toString())) {
+            PsiElement blockStatement_LBRACE = lastChild.getFirstChild();
+            offset.setInsertEndOffset(blockStatement_LBRACE.getTextRange().getEndOffset());
+            offset.setNeedTab(true);
+            return offset;
+        }
+        return getDefault(lastChild);
     }
 
     private static ScopeOffset blockStatementIsChild(PsiElement element) {
