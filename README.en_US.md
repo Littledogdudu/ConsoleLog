@@ -18,5 +18,8 @@ Default keymap as following:
 if you want to run this project, please modify the local path.
 ![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)
 
+Sorry, jsp not support  
+You can use the plugin on html code, but be careful: the statement is not removed if there is a syntax error after inserting the expression, because the PSI tree structure is chaotic at this point
+
 > The idea from vscode plugin [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)
 <!-- Plugin description end -->

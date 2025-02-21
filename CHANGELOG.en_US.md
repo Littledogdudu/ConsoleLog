@@ -9,6 +9,8 @@
 
 ### Fix
 - For double quote escaping and ${xxx} replacement, see the replaceConsoleLog method of the InsertConsoleLogAction class.
+
+### Verify
 - Plug-in Version Compatibility Interval Extended Forward (Verified)
 
 ## [1.0.2] - 2025-02-18

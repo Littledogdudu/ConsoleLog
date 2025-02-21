@@ -9,7 +9,9 @@
 
 ### Fix
 - 双引号转义修复，具体查看InsertConsoleLogAction类的replaceConsoleLog方法；🤡焯！
-- 
+
+### Add
+- 支持删除在HTML插入的表达式，且没有出现没有语法错误；如果存在语法错误将跳过不会删除
 
 ### Verify
 - 插件版本兼容区间向前扩展（已验证）

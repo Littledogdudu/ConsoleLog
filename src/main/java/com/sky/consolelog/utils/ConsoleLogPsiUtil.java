@@ -10,6 +10,8 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.xml.XmlToken;
 import com.sky.consolelog.constant.SettingConstant;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,11 +44,18 @@ public class ConsoleLogPsiUtil {
                         TextRange textRange = getTextRangeWithSemicolonAndPrevWhitespace(callExpression, document);
                         consoleLogRangeList.add(textRange);
                     }
-                }
-                if (element instanceof PsiComment comment) {
+                } else if (element instanceof PsiComment comment) {
                     if (isConsoleLog(comment)) {
                         TextRange textRange = getTextRangeWithSemicolonAndPrevWhitespace(comment);
                         consoleLogRangeList.add(textRange);
+                    }
+                } else if (element instanceof XmlToken xmlToken) {
+                    int endOffset = getEndOffsetNonContainSpace(xmlToken);
+                    if (endOffset != -1) {
+                        TextRange textRange = getTextRangeWithSemicolonAndPrevWhitespace(xmlToken, document, endOffset);
+                        if (textRange != null) {
+                            consoleLogRangeList.add(textRange);
+                        }
                     }
                 }
             }
@@ -174,11 +183,17 @@ public class ConsoleLogPsiUtil {
     public static boolean isConsoleLog(PsiComment psiComment) {
         String comment = psiComment.getText();
         if (comment != null) {
-            return comment.contains("console") && comment.substring(comment.indexOf("console"))
-                    .matches(SettingConstant.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
-                            + SettingConstant.CONSOLE_LOG_END_REGEX);
+            return comment.contains("console") && isMatchCommonConsoleLog(comment.substring(comment.indexOf("console")));
         }
         return false;
+    }
+
+    private static boolean isMatchCommonConsoleLog(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        return str.matches(SettingConstant.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
+                + SettingConstant.CONSOLE_LOG_END_REGEX);
     }
 
     /**
@@ -192,22 +207,10 @@ public class ConsoleLogPsiUtil {
         int endOffset = originalRange.getEndOffset();
         CharSequence text = document.getCharsSequence();
 
-        for (startOffset = startOffset - 1; startOffset >= 0; --startOffset) {
-            char c = text.charAt(startOffset);
+        startOffset = getStartOffsetContainSpace(startOffset, text);
 
-            if (!Character.isWhitespace(c)) {
-                // 遇到非空格字符停下并回撤偏移量
-                ++startOffset;
-                break;
-            }
-            if (c == '\n') {
-                // 遇到换行停下
-                break;
-            }
-        }
-
-        PsiElement callExpressionStatement = callExpression.getParent();
-        if (callExpressionStatement instanceof JSExpressionStatement) {
+        PsiElement callExpressionStatement = PsiTreeUtil.getParentOfType(callExpression, JSExpressionStatement.class);
+        if (callExpressionStatement != null) {
             // 获取带分号结束符的对象
             endOffset = callExpressionStatement.getTextRange().getEndOffset();
         } else {
@@ -236,6 +239,78 @@ public class ConsoleLogPsiUtil {
             startOffset = preSibling.getTextRange().getStartOffset();
         }
         return new TextRange(startOffset, endOffset);
+    }
+
+    /**
+     * 获取带分号范围的注释文本范围+表达式左边空白字符
+     * 示例：\n   console.log
+     * @param xmlToken 注释对象
+     * @return 注释整体文本范围对象
+     */
+    public static TextRange getTextRangeWithSemicolonAndPrevWhitespace(XmlToken xmlToken, Document document, Integer endOffset) {
+        String xmlTokenText = xmlToken.getText();
+        if (xmlTokenText != null && xmlTokenText.contains("console")) {
+            TextRange originalRange = xmlToken.getTextRange();
+            // 获取包括所有空格的前半段
+            int startOffset = originalRange.getStartOffset();
+            CharSequence text = document.getCharsSequence();
+            startOffset = getStartOffsetContainSpace(startOffset, text);
+            return new TextRange(startOffset, endOffset);
+        }
+        return null;
+    }
+
+    /**
+     * 扩大开始偏移量到上一语句末尾
+     * @param startOffset 开始偏移量
+     * @param text 文本
+     * @return 包含空格的开始偏移量
+     */
+    private static int getStartOffsetContainSpace(int startOffset, CharSequence text) {
+        for (startOffset = startOffset - 1; startOffset >= 0; --startOffset) {
+            char c = text.charAt(startOffset);
+
+            if (!Character.isWhitespace(c)) {
+                // 遇到非空格字符停下并回撤偏移量
+                ++startOffset;
+                break;
+            }
+            if (c == '\n') {
+                // 遇到换行停下
+                break;
+            }
+        }
+        return startOffset;
+    }
+
+    /**
+     * 扩大开始偏移量到console.log表达式末尾
+     * @param element console.log起始文本
+     * @return 末尾偏移量
+     */
+    private static int getEndOffsetNonContainSpace(PsiElement element) {
+        if (element.getText().contains("console")) {
+            StringBuilder str = new StringBuilder();
+            str.append(element.getText());
+            if (isMatchCommonConsoleLog(str.toString())) {
+                return element.getTextRange().getEndOffset();
+            }
+            while (element.getNextSibling() != null) {
+                str.append(element.getNextSibling().getText());
+                element = element.getNextSibling();
+                if (isMatchCommonConsoleLog(str.toString())) {
+                    break;
+                }
+            }
+            if (element.getNextSibling() != null) {
+                if (";".equals(element.getNextSibling().getText())) {
+                    return element.getNextSibling().getTextRange().getEndOffset();
+                } else {
+                    return element.getTextRange().getEndOffset();
+                }
+            }
+        }
+        return -1;
     }
 
     /**
