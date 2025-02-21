@@ -113,12 +113,12 @@ public class InsertConsoleLogAction extends AnAction {
             if (value.contains("\"")) {
                 // 新tips：因为replaceAll对替换项（replacement）的$有特殊处理，故此处使用Matcher.quoteReplacement对替换项做处理
                 // 哎光看源码了，今天看了注释才发现可以这么简单，焯！🤡
-                return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), Matcher.quoteReplacement(value.replaceAll("\"", "\\\\\"")));
+                return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), Matcher.quoteReplacement(value.replaceAll("\"", "\\\\\\\\\"")));
             }
             return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), Matcher.quoteReplacement(value));
         }
         if (value.contains("\"")) {
-            return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), value.replaceAll("\"", "\\\\\""));
+            return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), value.replaceAll("\"", "\\\\\\\\\""));
         }
         return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), value);
     }
