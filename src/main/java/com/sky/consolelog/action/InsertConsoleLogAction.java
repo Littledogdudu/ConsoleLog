@@ -25,11 +25,14 @@ import com.sky.consolelog.utils.PsiPositionUtil;
 import com.sky.consolelog.utils.PsiVariableUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 /**
- * @author by: SkySource
- * @Description: 按下Alt+1快捷键生成console.log调用表达式
+ * 按下Alt+1快捷键生成console.log调用表达式
+ * @author SkySource
  * @Date: 2025/1/24 22:43
  */
 public class InsertConsoleLogAction extends AnAction {
@@ -59,7 +62,7 @@ public class InsertConsoleLogAction extends AnAction {
 
         ConsoleLogSettingVo consoleLogSettingVo = new ConsoleLogSettingVo();
         // 检查是否有选中的文本
-        boolean hasSelectedText = getVariableName(editor, caret, elementAtCaretIndex, psiFile, consoleLogSettingVo);
+        boolean hasSelectedText = getVariableName(editor, psiFile, consoleLogSettingVo);
         if (!hasSelectedText) return;
         getMethodName(caret, psiFile, consoleLogSettingVo);
 
@@ -71,7 +74,14 @@ public class InsertConsoleLogAction extends AnAction {
         insertConsoleLogMsg(project, editor, psiFile, caret, scopeOffset, consoleLogMsg);
     }
 
-    private static boolean getVariableName(Editor editor, Caret caret, Integer elementAtCaretIndex, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
+    /**
+     * 获取光标处变量名称
+     * @return 变量名称
+     */
+    private static boolean getVariableName(Editor editor, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
+        Caret caret = editor.getCaretModel().getCurrentCaret();
+        int elementAtCaretIndex = caret.getOffset();
+
         String selectedText = editor.getSelectionModel().getSelectedText();
         if (selectedText != null && !selectedText.isEmpty()) {
             consoleLogSettingVo.setVariableName(selectedText);
@@ -87,19 +97,37 @@ public class InsertConsoleLogAction extends AnAction {
         return true;
     }
 
+    /**
+     * 获取光标处方法名称
+     */
     private static void getMethodName(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
         // 找到光标所在位置的 PSI 元素
         int caretOffset = caret.getOffset();
         PsiElement elementAtCaret = psiFile.findElementAt(caretOffset);
-        JSFunction containingFunction = PsiTreeUtil.getParentOfType(elementAtCaret, JSFunction.class, false);
-        if (containingFunction != null) {
-            String functionName = containingFunction.getName();
-            if (functionName != null) {
+
+        int loopCount = 0;
+        JSFunction function = PsiTreeUtil.getParentOfType(elementAtCaret, JSFunction.class, false);
+        while (!Objects.isNull(function) && "<anonymous>".equals(function.toString().substring(function.toString().indexOf(":") + 1))) {
+            function = PsiTreeUtil.getParentOfType(function, JSFunction.class, true);
+            if (++loopCount >= 5) {
+                break;
+            }
+        }
+
+        if (!Objects.isNull(function)) {
+            String functionName = function.getName();
+            if (!Objects.isNull(functionName)) {
                 consoleLogSettingVo.setMethodName(functionName);
             }
         }
     }
 
+    /**
+     * 获取需要插入的console.log表达式语句
+     *
+     * @param consoleLogSettingVo consoleLog设置
+     * @return console.log表达式语句
+     */
     private @NotNull String getCustomHandleConsoleLogMsg(ConsoleLogSettingVo consoleLogSettingVo) {
         String replaceConsoleLogStr = settings.consoleLogMsg;
         replaceConsoleLogStr = replaceConsoleLog(replaceConsoleLogStr, SettingConstant.AliasRegex.VARIABLE_REGEX, consoleLogSettingVo.getVariableName());
@@ -108,6 +136,16 @@ public class InsertConsoleLogAction extends AnAction {
                 replaceConsoleLogStr + "\", " + consoleLogSettingVo.getVariableName() + ");";
     }
 
+    /**
+     * 用于转义可能存在的双引号以防止出现<br/>
+     * console.log("arr["1"]: ", arr["1"])<br/>
+     * 的报错问题
+     *
+     * @param replaceConsoleLogStr 需要被转义的字符串
+     * @param aliasRegex 需要匹配的正则表达式
+     * @param value 替换值
+     * @return 转移过后的replaceConsoleLogStr
+     */
     private String replaceConsoleLog(String replaceConsoleLogStr, SettingConstant.AliasRegex aliasRegex, String value) {
         if (value.contains("$")) {
             if (value.contains("\"")) {
@@ -142,6 +180,9 @@ public class InsertConsoleLogAction extends AnAction {
         return PsiPositionUtil.getDefault(element);
     }
 
+    /**
+     * 插入console.log表达式信息
+     */
     private void insertConsoleLogMsg(Project project, Editor editor, PsiFile psiFile, Caret caret, ScopeOffset scopeOffset, String consoleLogMsg) {
         Document document = editor.getDocument();
         // 找到光标所在行的结束位置
@@ -150,32 +191,52 @@ public class InsertConsoleLogAction extends AnAction {
         // 获取光标所在行的内容，并计算缩进
         String currentLine = document.getText().substring(lineStartOffset, lineEndOffset);
         String indentation = currentLine.replace(currentLine.trim(), "");
+        // 存储偏移量以使光标回归到插入表达式后&记录当前缩进程度
+        Map<String, Object> offset = new HashMap<>(2);
+        offset.put("indentation", indentation);
+
+        CodeStyleSettings currentSettings = CodeStyle.getSettings(project);
+        CommonCodeStyleSettings languageSettings = currentSettings.getCommonSettings(psiFile.getLanguage());
+        CommonCodeStyleSettings.IndentOptions indentOptions = languageSettings.getIndentOptions();
+        int tabSize = indentOptions == null ? 2 : indentOptions.TAB_SIZE;
+
         // 插入代码前添加适当的缩进
-        String indentedCode;
         if (scopeOffset.getNeedTab()) {
-            CodeStyleSettings currentSettings = CodeStyle.getSettings(project);
-            CommonCodeStyleSettings languageSettings = currentSettings.getCommonSettings(psiFile.getLanguage());
-            CommonCodeStyleSettings.IndentOptions indentOptions = languageSettings.getIndentOptions();
-            int tabSize = 2;
-            if (indentOptions != null) {
-                tabSize = indentOptions.TAB_SIZE;
-            }
             indentation += " ".repeat(tabSize);
         }
-        indentedCode = indentation + consoleLogMsg;
+        String indentedCode = indentation + consoleLogMsg;
+
         // 在光标所在行的结束位置插入 console.log 语句
         if (scopeOffset.getDefault()) {
-            WriteCommandAction.runWriteCommandAction(project, () ->
-                    document.insertString(lineEndOffset + 1, indentedCode + "\n"));
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                document.insertString(lineEndOffset + 1, indentedCode + "\n");
+                offset.put("offset", lineEndOffset + indentedCode.length());
+            });
         } else {
-            WriteCommandAction.runWriteCommandAction(project, () ->
-                    document.insertString(scopeOffset.getInsertEndOffset(), "\n" + indentedCode));
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                if (scopeOffset.getNeedBegLine()) {
+                    document.insertString(scopeOffset.getInsertEndOffset(), "\n" + indentedCode);
+                    offset.put("offset", scopeOffset.getInsertEndOffset() + 1 + indentedCode.length());
+                } else {
+                    document.insertString(scopeOffset.getInsertEndOffset(), " ".repeat(tabSize) + consoleLogMsg);
+                    offset.put("offset", scopeOffset.getInsertEndOffset() + tabSize + consoleLogMsg.length());
+                }
+
+                if (scopeOffset.getNeedEndLine()) {
+                    String ch = document.getText().substring((int)offset.get("offset"), (int)offset.get("offset") + 1);
+                    if (!"\n".equals(ch)) {
+                        document.insertString((int)offset.get("offset"), "\n");
+                        document.insertString((int)offset.get("offset") + 1, (String)offset.get("indentation"));
+                    }
+                }
+            });
         }
+
         // 更新 PSI 树以反映文档变化
         PsiDocumentManager.getInstance(project).commitDocument(document);
         // 将光标移动到新插入的 console.log 语句后
         if (settings.autoFollowEnd) {
-            caret.moveToOffset(lineEndOffset + 1 + indentation.length() + consoleLogMsg.length());
+            caret.moveToOffset((int)offset.get("offset"));
         }
     }
 }

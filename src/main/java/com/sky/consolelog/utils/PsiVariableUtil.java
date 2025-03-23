@@ -9,11 +9,17 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 
 /**
- * @author by: SkySource
- * @Description: 专门用来检查并获取完整变量名的工具类
+ * 专门用来检查并获取完整变量名的工具类
+ *
+ * @author SkySource
  * @Date: 2025/2/19 12:09
  */
 public class PsiVariableUtil {
+
+    /**
+     * 获取光标处变量名称
+     * @return 当前光标处变量名称
+     */
     public static String getVariableNameByOffsetIndex(Editor editor, PsiFile psiFile, Caret caret, int elementAtCaretIndex) {
         // 光标处的元素
         PsiElement elementAtCaret = psiFile.findElementAt(elementAtCaretIndex);
@@ -59,6 +65,10 @@ public class PsiVariableUtil {
         return defaultGetVariableName(editor, caret);
     }
 
+    /**
+     * 获取变量名称的默认方法：通过光标前后内容获取变量名称
+     * @return 变量名称
+     */
     public static String defaultGetVariableName(Editor editor, Caret caret) {
         // 首先获取光标的偏移量
         int offset = caret.getOffset();
