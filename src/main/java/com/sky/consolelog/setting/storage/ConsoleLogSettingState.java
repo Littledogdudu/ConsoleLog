@@ -8,8 +8,9 @@ import com.sky.consolelog.constant.SettingConstant;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author by: SkySource
- * @Description: consoleLog持久化设置实体类
+ * consoleLog持久化设置实体类
+ *
+ * @author SkySource
  * @Date: 2025/1/24 21:24
  */
 @State(

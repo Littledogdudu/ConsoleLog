@@ -21,8 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author by: SkySource
- * @Description: 按下Alt+2快捷键删除所有符合插件规范的console.log调用表达式
+ * 按下Alt+2快捷键删除所有符合插件规范的console.log调用表达式
+ *
+ * @author SkySource
  * @Date: 2025/1/29 18:02
  */
 public class DeleteAllConsoleLogAction extends AnAction {
@@ -47,7 +48,7 @@ public class DeleteAllConsoleLogAction extends AnAction {
         if (regexConsoleLogMsg == null || regexConsoleLogMsg.isEmpty()) {
             return;
         }
-        Pattern pattern = Pattern.compile(regexConsoleLogMsg);
+        Pattern pattern = Pattern.compile(regexConsoleLogMsg, Pattern.DOTALL);
 
         // 以后考虑一下当前所在文件代码行数过多导致的性能问题吗？
         Document document = editor.getDocument();

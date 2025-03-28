@@ -1,8 +1,9 @@
 package com.sky.consolelog.setting;
 
 /**
- * @author by: SkySource
- * @Description: consoleLog变量实体类
+ * consoleLog变量实体类
+ *
+ * @author SkySource
  * @Date: 2025/1/25 11:55
  */
 public class ConsoleLogSettingVo {

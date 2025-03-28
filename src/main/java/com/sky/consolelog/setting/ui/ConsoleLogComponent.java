@@ -5,8 +5,9 @@ import com.sky.consolelog.constant.SettingConstant;
 import javax.swing.*;
 
 /**
- * @author by: SkySource
- * @Description:
+ * ConsoleLog设置的UI组件
+ *
+ * @author SkySource
  * @Date: 2025/1/24 21:29
  */
 public class ConsoleLogComponent {

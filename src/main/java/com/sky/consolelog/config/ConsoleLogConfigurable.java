@@ -10,8 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 /**
- * @author by: SkySource
- * @Description: 插件配置
+ * 插件配置
+ *
+ * @author SkySource
  * @Date: 2025/1/24 21:36
  */
 public class ConsoleLogConfigurable implements Configurable {

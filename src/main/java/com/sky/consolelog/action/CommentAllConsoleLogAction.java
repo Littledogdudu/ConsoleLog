@@ -23,8 +23,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author by: SkySource
- * @Description: 按下Alt+Shift+1快捷键注释所有符合插件规范的console.log调用表达式
+ * 按下Alt+Shift+1快捷键注释所有符合插件规范的console.log调用表达式
+ *
+ * @author SkySource
  * @Date: 2025/2/2 9:26
  */
 public class CommentAllConsoleLogAction extends AnAction {

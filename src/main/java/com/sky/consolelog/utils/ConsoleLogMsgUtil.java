@@ -6,8 +6,9 @@ import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import java.util.regex.Pattern;
 
 /**
- * @author by: SkySource
- * @Description: consoleLog信息处理工具
+ * consoleLog信息处理工具
+ *
+ * @author SkySource
  * @Date: 2025/2/1 22:06
  */
 public class ConsoleLogMsgUtil {

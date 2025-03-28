@@ -22,8 +22,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author by: SkySource
- * @Description: 按下Alt+Shift+2快捷键注释掉全部console.log调用表达式
+ * 按下Alt+Shift+2快捷键注释掉全部console.log调用表达式
+ *
+ * @author SkySource
  * @Date: 2025/2/2 16:12
  */
 public class UnCommentAllConsoleLogAction extends AnAction {

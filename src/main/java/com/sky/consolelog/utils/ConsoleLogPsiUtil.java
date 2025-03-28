@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.TreeMap;
 
 /**
- * @author by: SkySource
- * @Description: ConsoleLog PSI处理工具
+ * ConsoleLog PSI处理工具
+ *
+ * @author SkySource
  * @Date: 2025/2/2 9:30
  */
 public class ConsoleLogPsiUtil {
