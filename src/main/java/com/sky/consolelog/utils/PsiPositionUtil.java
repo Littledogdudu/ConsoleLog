@@ -1,6 +1,6 @@
 package com.sky.consolelog.utils;
 
-import com.intellij.lang.javascript.psi.ecma6.TypeScriptFunctionExpression;
+import com.intellij.lang.javascript.psi.JSFunctionExpression;
 import com.intellij.psi.PsiElement;
 import com.sky.consolelog.entities.ScopeOffset;
 import org.jetbrains.annotations.NotNull;
@@ -78,7 +78,7 @@ public class PsiPositionUtil {
                 // 获取函数部分
                 @NotNull PsiElement[] children = argumentListElement.getChildren();
                 for (@NotNull PsiElement child : children) {
-                    if (child instanceof TypeScriptFunctionExpression) {
+                    if (child instanceof JSFunctionExpression) {
                         return getMiddleBlockStatement(child);
                     }
                 }
