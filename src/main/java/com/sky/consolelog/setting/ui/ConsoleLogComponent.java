@@ -12,7 +12,6 @@ import javax.swing.*;
  */
 public class ConsoleLogComponent {
     private JPanel jPanel;
-    private JPanel buttonJPanel;
     private JTextField consoleLogMsgInput;
     private JButton resetButton;
     private JLabel signal;
@@ -22,6 +21,7 @@ public class ConsoleLogComponent {
     private JLabel methodLabel;
     private JLabel variable;
     private JCheckBox autoFollowEndCheckBox;
+    private JCheckBox isDoubleQuote;
 
     public ConsoleLogComponent() {
         resetButton.addActionListener(e -> {
@@ -47,5 +47,13 @@ public class ConsoleLogComponent {
 
     public void setAutoFollowEndCheckBox(Boolean checked) {
         autoFollowEndCheckBox.setSelected(checked);
+    }
+
+    public Boolean getIsDoubleQuote() {
+        return isDoubleQuote.isSelected();
+    }
+
+    public void setIsDoubleQuote(Boolean checked) {
+        isDoubleQuote.setSelected(checked);
     }
 }

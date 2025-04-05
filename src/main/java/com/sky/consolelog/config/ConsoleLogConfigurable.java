@@ -5,6 +5,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.util.NlsContexts;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.setting.ui.ConsoleLogComponent;
+import com.sky.consolelog.utils.TextFormatContextSingleton;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -33,7 +34,8 @@ public class ConsoleLogConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         return !component.getConsoleLogMsg().equals(this.settings.consoleLogMsg)
-               || !component.getAutoFollowEndCheckBox().equals(this.settings.autoFollowEnd);
+                || !component.getAutoFollowEndCheckBox().equals(this.settings.autoFollowEnd)
+                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote);
     }
 
     /**
@@ -43,6 +45,9 @@ public class ConsoleLogConfigurable implements Configurable {
     public void apply() {
         this.settings.consoleLogMsg = component.getConsoleLogMsg();
         this.settings.autoFollowEnd = component.getAutoFollowEndCheckBox();
+        this.settings.isDoubleQuote = component.getIsDoubleQuote();
+        // 更新TextFormatContext的CONSOLE常量
+        TextFormatContextSingleton.getInstance();
     }
 
     /**
@@ -52,5 +57,6 @@ public class ConsoleLogConfigurable implements Configurable {
     public void reset() {
         component.setConsoleLogMsg(this.settings.consoleLogMsg);
         component.setAutoFollowEndCheckBox(this.settings.autoFollowEnd);
+        component.setIsDoubleQuote(this.settings.isDoubleQuote);
     }
 }

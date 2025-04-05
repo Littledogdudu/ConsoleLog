@@ -15,14 +15,17 @@ public class ConsoleLogMsgUtil {
 
     /**
      * 构建consoleLog正则表达式
+     *
      * @return 返回设置的ConsoleLog语句正则表达式
      */
     public static String buildRegexConsoleLogMsg(ConsoleLogSettingState settings) {
         if (settings.consoleLogMsg == null || settings.consoleLogMsg.isEmpty()) {
             return null;
         }
+        // 更新TextFormatContext的CONSOLE常量
+        TextFormatContextSingleton.getInstance();
         StringBuilder regexConsoleLogMsg = new StringBuilder();
-        regexConsoleLogMsg.append(SettingConstant.CONSOLE_LOG_BEGIN_REGEX);
+        regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX);
         // 插件设置console.log内的文字提示指针
         int commandPointerIndex = 0;
 
@@ -60,7 +63,7 @@ public class ConsoleLogMsgUtil {
         if (commandPointerIndex < settings.consoleLogMsg.length()) {
             regexConsoleLogMsg.append(Pattern.quote(settings.consoleLogMsg.substring(commandPointerIndex)));
         }
-        regexConsoleLogMsg.append(SettingConstant.CONSOLE_LOG_END_REGEX);
+        regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_END_REGEX);
         return regexConsoleLogMsg.toString();
     }
 }

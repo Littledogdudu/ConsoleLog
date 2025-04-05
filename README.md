@@ -1,6 +1,4 @@
 # Console Log README
-- zh_CN [简体中文](./README.md)
-- en_US [English](./README.en_US.md)
 
 ![Build](https://github.com/Littledogdudu/ConsoleLog/workflows/Build/badge.svg)
 
@@ -20,13 +18,37 @@
 - Alt+Shift+2: Console Log Plugin: Uncomment Console Log Message
 
 - [x] 哈喽，你可以通过WebStorm的插件设置自定义你的打印模板哦，但是要注意尽量与众不同一点哦，不然可能会误删你不想删掉的console.log语句哦
+- [x] 可以在插件设置中自行设置插入打印语句后光标是否自动跟随到打印语句末尾（默认启用）
+- [x] 可以在插件设置中自行设置字符串使用双引号还是单引号包含（默认启用双引号）
+- [ ] 可以在插件设置中自行设置是否启用侧边栏，侧边栏显示当前打开文件的所有打印表达式（默认启用）
 
 运行这个插件需要把这个local方法的参数修改为你的WebStorm文件路径哦
 ![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)
 
-抱歉，暂时不支持jsp项目，该插件插入时可能只能插入在下一行，在没有语法错误的情况下，删除理论可以使用，具体原因是结构树都是XMLTOKEN，只能通过文本获取，麻烦且很多jsp项目也转到vue项目了，故不多做处理了  
-可以在html代码上使用该插件，但是需要注意：插入表达式后出现语法错误时不会删除该语句，因为此时的PSI树结构是混乱的
+抱歉，暂时不完全支持jsp项目（注释和解注释无法使用），该插件插入时可能只能插入在下一行，在没有语法错误的情况下，删除理论可以使用
 
 > 灵感来源于vscode插件 [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)  
-> 有新的主意可以在github上fork或提出issue或者发送到我的邮箱2378459785@qq.com哦
+> 有新的主意可以在[github](https://github.com/Littledogdudu/ConsoleLog)上fork或提出[issue](https://github.com/Littledogdudu/ConsoleLog/issues)或者发送到我的邮箱2378459785@qq.com哦  
+> 如果觉得插件对你的帮助很大很大，希望[github点个star](https://github.com/Littledogdudu/ConsoleLog)，真的感谢！
+
+**ConsoleLog** can quickly print console.log() in your code and free-hand
+
+Default keymap as following:
+- Alt+1: Console Log Plugin: Insert Console Log Message
+- Alt+2: Console Log Plugin: Delete All Console Log Message
+- Alt+Shift+1: Console Log Plugin: Comment All Console Log Message
+- Alt+Shift+2: Console Log Plugin: Uncomment Console Log Message
+
+- [x] you can go to settings to set what message you want to show
+- [x] You can set whether the cursor automatically follows to the end of the print statement after inserting the print statement in the plug-in settings (enabled by default)
+- [x] You can set whether the string is included in double or single quotes in the plugin settings (double quotes are enabled by default)
+- [ ] You can set whether to enable the sidebar in the plug-in settings, and the sidebar displays all print expressions of the currently open file (enabled by default)
+
+if you want to run this project, please modify the local path.
+![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)
+
+Sorry, jsp not support  
+You can use the plugin on html code, but be careful: the statement is not removed if there is a syntax error after inserting the expression, because the PSI tree structure is chaotic at this point
+
+> The idea from vscode plugin [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)
 <!-- Plugin description end -->

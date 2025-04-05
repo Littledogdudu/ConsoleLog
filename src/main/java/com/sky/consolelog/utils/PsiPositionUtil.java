@@ -2,10 +2,9 @@ package com.sky.consolelog.utils;
 
 import com.intellij.lang.javascript.psi.JSFunctionExpression;
 import com.intellij.psi.PsiElement;
+import com.sky.consolelog.constant.PsiPosition;
 import com.sky.consolelog.entities.ScopeOffset;
 import org.jetbrains.annotations.NotNull;
-
-import static com.sky.consolelog.constant.PsiPosition.*;
 
 /**
  * 获取插入位置的工具类
@@ -25,26 +24,26 @@ public class PsiPositionUtil {
 
     private static ScopeOffset getScopeOffsetByType(PsiElement element, String name) {
         return switch (name) {
-            case Variable.JS_VAR_STATEMENT -> getJSVarStatement(element);
-            case Variable.JS_ASSIGNMENT_EXPRESSION -> getJSAssignmentExpression(element);
-            case Condition.JS_IF_STATEMENT,
-                 Condition.JS_SWITCH_STATEMENT,
-                 Loop.JS_WHILE_STATEMENT,
-                 Loop.JS_FOR_STATEMENT,
-                 Loop.JS_FOR_IN_STATEMENT,
-                 Expression.JS_FUNCTION_PROPERTY,
-                 Expression.JS_FUNCTION_EXPRESSION,
-                 Expression.TYPE_SCRIPT_FUNCTION_EXPRESSION -> getMiddleBlockStatement(element);
-            case Condition.JS_CASE_CLAUSE -> getAfterColon(element);
-            case Loop.JS_DO_WHILE_STATEMENT -> getMiddleBlockStatementBeforeEnd(element);
-            case Expression.JS_CALL_EXPRESSION -> getJSCallExpression(element);
-            case Expression.JS_EXPRESSION_STATEMENT -> getJSExpressionStatement(element);
+            case PsiPosition.Variable.JS_VAR_STATEMENT -> getJSVarStatement(element);
+            case PsiPosition.Variable.JS_ASSIGNMENT_EXPRESSION -> getJSAssignmentExpression(element);
+            case PsiPosition.Condition.JS_IF_STATEMENT,
+                 PsiPosition.Condition.JS_SWITCH_STATEMENT,
+                 PsiPosition.Loop.JS_WHILE_STATEMENT,
+                 PsiPosition.Loop.JS_FOR_STATEMENT,
+                 PsiPosition.Loop.JS_FOR_IN_STATEMENT,
+                 PsiPosition.Expression.JS_FUNCTION_PROPERTY,
+                 PsiPosition.Expression.JS_FUNCTION_EXPRESSION,
+                 PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_EXPRESSION -> getMiddleBlockStatement(element);
+            case PsiPosition.Condition.JS_CASE_CLAUSE -> getAfterColon(element);
+            case PsiPosition.Loop.JS_DO_WHILE_STATEMENT -> getMiddleBlockStatementBeforeEnd(element);
+            case PsiPosition.Expression.JS_CALL_EXPRESSION -> getJSCallExpression(element);
+            case PsiPosition.Expression.JS_EXPRESSION_STATEMENT -> getJSExpressionStatement(element);
             default -> null;
         };
     }
 
     private static ScopeOffset getJSVarStatement(PsiElement element) {
-        if (Loop.JS_FOR_STATEMENT_LIST.contains(element.getParent().toString())) {
+        if (PsiPosition.Loop.JS_FOR_STATEMENT_LIST.contains(element.getParent().toString())) {
             // for循环中的变量
             ScopeOffset offset = new ScopeOffset();
             offset.setInsertEndOffset(element.getTextRange().getEndOffset());
@@ -70,7 +69,7 @@ public class PsiPositionUtil {
     private static ScopeOffset getJSCallExpression(PsiElement element) {
         PsiElement parent = element.getParent();
         switch (parent.toString()) {
-            case Expression.JS_REFERENCE_EXPRESSION_THEN:
+            case PsiPosition.Expression.JS_REFERENCE_EXPRESSION_THEN:
                 // 获取调用表达式元素
                 PsiElement callElement = parent.getParent();
                 // 获取到该调用表达式的参数列表元素
@@ -83,7 +82,7 @@ public class PsiPositionUtil {
                     }
                 }
                 break;
-            case Expression.JS_EXPRESSION_STATEMENT:
+            case PsiPosition.Expression.JS_EXPRESSION_STATEMENT:
                 return getMiddleBlockStatement(parent);
             default:
                 break;
@@ -105,7 +104,7 @@ public class PsiPositionUtil {
     private static ScopeOffset getMiddleBlockStatement(PsiElement element) {
         ScopeOffset offset = new ScopeOffset();
         for (@NotNull PsiElement child : element.getChildren()) {
-            if (JS_BLOCK_STATEMENT.equals(child.toString())) {
+            if (PsiPosition.JS_BLOCK_STATEMENT.equals(child.toString())) {
                 offset.setInsertEndOffset(child.getFirstChild().getTextRange().getEndOffset());
                 offset.setNeedTab(true);
                 offset.setNeedEndLine(true);
@@ -121,7 +120,7 @@ public class PsiPositionUtil {
     private static ScopeOffset getMiddleBlockStatementBeforeEnd(PsiElement element) {
         ScopeOffset offset = new ScopeOffset();
         for (@NotNull PsiElement child : element.getChildren()) {
-            if (JS_BLOCK_STATEMENT.equals(child.toString())) {
+            if (PsiPosition.JS_BLOCK_STATEMENT.equals(child.toString())) {
                 offset.setInsertEndOffset(child.getLastChild().getTextRange().getStartOffset());
                 offset.setNeedTab(true);
                 offset.setNeedBegLine(false);
@@ -138,7 +137,7 @@ public class PsiPositionUtil {
     private static ScopeOffset getAfterColon(PsiElement element) {
         ScopeOffset offset = new ScopeOffset();
         for (@NotNull PsiElement child : element.getChildren()) {
-            if (COLON_SIGNAL.equals(child.toString())) {
+            if (PsiPosition.COLON_SIGNAL.equals(child.toString())) {
                 offset.setInsertEndOffset(child.getTextRange().getEndOffset());
                 offset.setNeedTab(true);
                 return offset;

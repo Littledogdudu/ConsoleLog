@@ -17,21 +17,22 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.entities.ScopeOffset;
 import com.sky.consolelog.setting.ConsoleLogSettingVo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.PsiPositionUtil;
 import com.sky.consolelog.utils.PsiVariableUtil;
+import com.sky.consolelog.utils.TextFormatContext;
+import com.sky.consolelog.utils.TextFormatContextSingleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
 
 /**
  * 按下Alt+1快捷键生成console.log调用表达式
+ *
  * @author SkySource
  * @Date: 2025/1/24 22:43
  */
@@ -67,7 +68,9 @@ public class InsertConsoleLogAction extends AnAction {
         getMethodName(caret, psiFile, consoleLogSettingVo);
 
         // 构建 console.log
-        String consoleLogMsg = getCustomHandleConsoleLogMsg(consoleLogSettingVo);
+        // 获取文本格式上下文单例的同时更新策略
+        TextFormatContext textFormatContext = TextFormatContextSingleton.getInstance();
+        String consoleLogMsg = textFormatContext.getCustomHandleConsoleLogMsg(settings.consoleLogMsg, consoleLogSettingVo);
 
         // 找到最近的作用域块
         ScopeOffset scopeOffset = findScopeOffset(elementAtCaret);
@@ -76,6 +79,7 @@ public class InsertConsoleLogAction extends AnAction {
 
     /**
      * 获取光标处变量名称
+     *
      * @return 变量名称
      */
     private static boolean getVariableName(Editor editor, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
@@ -123,46 +127,8 @@ public class InsertConsoleLogAction extends AnAction {
     }
 
     /**
-     * 获取需要插入的console.log表达式语句
-     *
-     * @param consoleLogSettingVo consoleLog设置
-     * @return console.log表达式语句
-     */
-    private @NotNull String getCustomHandleConsoleLogMsg(ConsoleLogSettingVo consoleLogSettingVo) {
-        String replaceConsoleLogStr = settings.consoleLogMsg;
-        replaceConsoleLogStr = replaceConsoleLog(replaceConsoleLogStr, SettingConstant.AliasRegex.VARIABLE_REGEX, consoleLogSettingVo.getVariableName());
-        replaceConsoleLogStr = replaceConsoleLog(replaceConsoleLogStr, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
-        return SettingConstant.CONSOLE_LOG_COMMAND +
-                replaceConsoleLogStr + "\", " + consoleLogSettingVo.getVariableName() + ");";
-    }
-
-    /**
-     * 用于转义可能存在的双引号以防止出现<br/>
-     * console.log("arr["1"]: ", arr["1"])<br/>
-     * 的报错问题
-     *
-     * @param replaceConsoleLogStr 需要被转义的字符串
-     * @param aliasRegex 需要匹配的正则表达式
-     * @param value 替换值
-     * @return 转移过后的replaceConsoleLogStr
-     */
-    private String replaceConsoleLog(String replaceConsoleLogStr, SettingConstant.AliasRegex aliasRegex, String value) {
-        if (value.contains("$")) {
-            if (value.contains("\"")) {
-                // 新tips：因为replaceAll对替换项（replacement）的$有特殊处理，故此处使用Matcher.quoteReplacement对替换项做处理
-                // 哎光看源码了，今天看了注释才发现可以这么简单，焯！🤡
-                return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), Matcher.quoteReplacement(value.replaceAll("\"", "\\\\\\\\\"")));
-            }
-            return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), Matcher.quoteReplacement(value));
-        }
-        if (value.contains("\"")) {
-            return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), value.replaceAll("\"", "\\\\\\\\\""));
-        }
-        return replaceConsoleLogStr.replaceAll(aliasRegex.getKey(), value);
-    }
-
-    /**
      * 找到对应语句块并得到对应末尾偏移量
+     *
      * @param element 当前光标所在PSI元素
      * @return 对应语句块末尾偏移量
      */
@@ -223,10 +189,10 @@ public class InsertConsoleLogAction extends AnAction {
                 }
 
                 if (scopeOffset.getNeedEndLine()) {
-                    String ch = document.getText().substring((int)offset.get("offset"), (int)offset.get("offset") + 1);
+                    String ch = document.getText().substring((int) offset.get("offset"), (int) offset.get("offset") + 1);
                     if (!"\n".equals(ch)) {
-                        document.insertString((int)offset.get("offset"), "\n");
-                        document.insertString((int)offset.get("offset") + 1, (String)offset.get("indentation"));
+                        document.insertString((int) offset.get("offset"), "\n");
+                        document.insertString((int) offset.get("offset") + 1, (String) offset.get("indentation"));
                     }
                 }
             });
@@ -236,7 +202,7 @@ public class InsertConsoleLogAction extends AnAction {
         PsiDocumentManager.getInstance(project).commitDocument(document);
         // 将光标移动到新插入的 console.log 语句后
         if (settings.autoFollowEnd) {
-            caret.moveToOffset((int)offset.get("offset"));
+            caret.moveToOffset((int) offset.get("offset"));
         }
     }
 }

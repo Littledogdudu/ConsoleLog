@@ -19,10 +19,18 @@ import org.jetbrains.annotations.NotNull;
 )
 @Service(value = Service.Level.APP)
 public final class ConsoleLogSettingState implements PersistentStateComponent<ConsoleLogSettingState> {
-    /** 默认打印语句 */
+    /**
+     * 默认打印语句
+     */
     public String consoleLogMsg = SettingConstant.DEFAULT_CONSOLE_LOG_MSG;
-    /** 插入后光标是否自动跟随到log表达式末尾 */
+    /**
+     * 插入后光标是否自动跟随到log表达式末尾
+     */
     public Boolean autoFollowEnd = true;
+    /**
+     * 是否使用双引号
+     */
+    public Boolean isDoubleQuote;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -33,5 +41,6 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public void loadState(@NotNull ConsoleLogSettingState state) {
         this.consoleLogMsg = state.consoleLogMsg;
         this.autoFollowEnd = state.autoFollowEnd;
+        this.isDoubleQuote = state.isDoubleQuote;
     }
 }

@@ -30,6 +30,7 @@ public class ConsoleLogPsiUtil {
 
     /**
      * 检测当前文件所有文本的console.log语句位置
+     *
      * @param psiFile 文件PSI对象
      * @return console.log调用表达式文本位置集合，返回的集合包括用户自己编写的console.log也包括符合插件编写规范的console.log
      */
@@ -67,7 +68,8 @@ public class ConsoleLogPsiUtil {
     /**
      * 检测当前文件所有文本的console.log语句位置，但是按textRange的距离【近->远】排序
      * （暂未使用，本来考虑在文件比较大的时候使用异步的，以后再说吧）
-     * @param psiFile 文件PSI对象
+     *
+     * @param psiFile   文件PSI对象
      * @param textRange 原目的是当前光标所在文本范围
      * @return 按textRange的距离【近->远】排序的console.log调用表达式文本位置集合，
      * 返回的集合包括用户自己编写的console.log也包括符合插件编写规范的console.log
@@ -101,6 +103,7 @@ public class ConsoleLogPsiUtil {
 
     /**
      * 检测当前文件所有文本的console.log语句行号
+     *
      * @param psiFile 文件PSI对象
      * @return console.log调用表达式文本行号集合，返回的集合包括用户自己编写的console.log也包括符合插件编写规范的console.log
      */
@@ -130,6 +133,7 @@ public class ConsoleLogPsiUtil {
 
     /**
      * 检测当前文件所有文本的console.log语句位置
+     *
      * @param psiFile 文件PSI对象
      * @return console.log调用表达式文本位置集合，返回的集合包括用户自己编写的console.log也包括符合插件编写规范的console.log
      */
@@ -155,6 +159,7 @@ public class ConsoleLogPsiUtil {
 
     /**
      * 判断是否为console.log调用表达式
+     *
      * @param callExpression 调用表达式对象
      * @return 如果时console.log调用表达式则返回true，否则返回false
      */
@@ -178,6 +183,7 @@ public class ConsoleLogPsiUtil {
      * // );<br/>
      * 需要针对多行做处理，额，应该只有我在写这个插件的时候会改成这么逆天的格式吧。<br/>
      * 不多做处理了，只能管在同一行的
+     *
      * @param psiComment 注释掉的表达式
      * @return 如果时console.log调用表达式则返回true，否则返回false
      */
@@ -193,12 +199,13 @@ public class ConsoleLogPsiUtil {
         if (str == null || str.isEmpty()) {
             return false;
         }
-        return str.matches(SettingConstant.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
-                + SettingConstant.CONSOLE_LOG_END_REGEX);
+        return str.matches(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
+                + TextFormatContext.CONSOLE_LOG_END_REGEX);
     }
 
     /**
      * 获取带分号范围的表达式文本范围+表达式左边空白字符
+     *
      * @param callExpression 调用表达式对象
      * @return 表达式文本范围对象
      */
@@ -227,6 +234,7 @@ public class ConsoleLogPsiUtil {
     /**
      * 获取带分号范围的注释文本范围+表达式左边空白字符
      * 示例：\n   console.log
+     *
      * @param comment 注释对象
      * @return 注释整体文本范围对象
      */
@@ -245,6 +253,7 @@ public class ConsoleLogPsiUtil {
     /**
      * 获取带分号范围的注释文本范围+表达式左边空白字符
      * 示例：\n   console.log
+     *
      * @param xmlToken 注释对象
      * @return 注释整体文本范围对象
      */
@@ -263,8 +272,9 @@ public class ConsoleLogPsiUtil {
 
     /**
      * 扩大开始偏移量到上一语句末尾
+     *
      * @param startOffset 开始偏移量
-     * @param text 文本
+     * @param text        文本
      * @return 包含空格的开始偏移量
      */
     private static int getStartOffsetContainSpace(int startOffset, CharSequence text) {
@@ -286,6 +296,7 @@ public class ConsoleLogPsiUtil {
 
     /**
      * 扩大开始偏移量到console.log表达式末尾
+     *
      * @param element console.log起始文本
      * @return 末尾偏移量
      */
@@ -317,6 +328,7 @@ public class ConsoleLogPsiUtil {
     /**
      * 获取带分号范围的注释文本范围+表达式左边空白字符
      * 示例：\n   console.log
+     *
      * @param comment 注释对象
      * @return 注释整体文本范围对象
      */

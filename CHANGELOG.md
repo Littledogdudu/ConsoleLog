@@ -1,9 +1,12 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 # Console Log CHANGELOG
-- zh_CN [简体中文](./CHANGELOG.md)
-- en_US [English](./CHANGELOG.en_US.md)
 
 ## [Unreleased]
+
+## [1.0.4] - 2025-04-05
+
+### Add
+- 🎉设置中增加了单/双引号切换
 
 ## [1.0.3] - 2025-02-19
 
@@ -12,6 +15,7 @@
 
 ### Add
 - 支持删除在HTML插入的表达式，且没有出现没有语法错误；如果存在语法错误将跳过不会删除
+- while和for循环的插入位置更加准确
 
 ### Verify
 - 插件版本兼容区间向前扩展（已验证）

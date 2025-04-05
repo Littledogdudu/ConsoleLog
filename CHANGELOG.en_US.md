@@ -5,10 +5,16 @@
 
 ## [Unreleased]
 
+## [1.0.4] - 2025-03-23
+
+### Feature
+- 🎉new Feature: 
+
 ## [1.0.3] - 2025-02-19
 
 ### Fix
 - For double quote escaping and ${xxx} replacement, see the replaceConsoleLog method of the InsertConsoleLogAction class.
+- The insertion position of the while and for loops is more accurate
 
 ### Verify
 - Plug-in Version Compatibility Interval Extended Forward (Verified)

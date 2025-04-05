@@ -40,7 +40,7 @@ dependencies {
     intellijPlatform {
 //        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
         // 设置本地调试IDE
-        local("D:\\JetBrains\\WebStorm 2024.3.1.1")
+        local("D:\\JetBrains\\WebStorm 2024.3.5")
 
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
