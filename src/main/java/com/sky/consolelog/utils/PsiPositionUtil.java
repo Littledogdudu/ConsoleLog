@@ -24,7 +24,8 @@ public class PsiPositionUtil {
 
     private static ScopeOffset getScopeOffsetByType(PsiElement element, String name) {
         return switch (name) {
-            case PsiPosition.Variable.JS_VAR_STATEMENT -> getJSVarStatement(element);
+            case PsiPosition.Variable.JS_VAR_STATEMENT,
+                 PsiPosition.Variable.JS_PROPERTY -> getJSVarStatement(element);
             case PsiPosition.Variable.JS_ASSIGNMENT_EXPRESSION -> getJSAssignmentExpression(element);
             case PsiPosition.Condition.JS_IF_STATEMENT,
                  PsiPosition.Condition.JS_SWITCH_STATEMENT,
