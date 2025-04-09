@@ -5,10 +5,11 @@
 
 ## [Unreleased]
 
-## [1.0.4] - 2025-03-23
+## [1.0.4] - 2025-04-05
 
-### Feature
-- 🎉new Feature: 
+### Add
+- 🎉 Single/double quotation mark toggle has been added to the settings
+- Fixed the bug of the variable insertion position
 
 ## [1.0.3] - 2025-02-19
 

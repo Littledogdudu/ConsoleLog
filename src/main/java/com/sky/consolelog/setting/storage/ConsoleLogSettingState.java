@@ -30,7 +30,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     /**
      * 是否使用双引号
      */
-    public Boolean isDoubleQuote;
+    public Boolean isDoubleQuote = true;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
