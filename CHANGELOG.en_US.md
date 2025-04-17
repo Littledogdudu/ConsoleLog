@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+## [1.0.5] - 2025-04-17
+
+### Fix
+- version 2025 compatible
+
 ## [1.0.4] - 2025-04-05
 
 ### Add
