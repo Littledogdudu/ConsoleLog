@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
  */
 public class ConsoleLogToolWindowComponent {
     private final JPanel panel;
+    private final JBCheckBox commentCheckBox;
     private final JBCheckBox specCheckBox;
     private final JBList<ConsoleLogSearchInfo> logList;
     private final DefaultListModel<ConsoleLogSearchInfo> model;
@@ -43,13 +44,16 @@ public class ConsoleLogToolWindowComponent {
         TextFormatContextSingleton.getInstance();
         this.project = project;
         panel = new JPanel(new BorderLayout());
+        commentCheckBox = new JBCheckBox();
         specCheckBox = new JBCheckBox();
         model = new DefaultListModel<>();
         logList = new JBList<>(model);
 
-        specCheckBox.setText("是否启用针对性查找");
+        commentCheckBox.setText("展示注释项");
+        specCheckBox.setText("启用针对性查找");
         Box topBox = Box.createHorizontalBox();
         topBox.add(Box.createHorizontalGlue());
+        topBox.add(commentCheckBox);
         topBox.add(specCheckBox);
 
         JSeparator separator = new JSeparator();
@@ -66,6 +70,9 @@ public class ConsoleLogToolWindowComponent {
 
         // 监听【是否启用针对性查找】按钮
         specCheckBox.addActionListener(e -> {
+            updateLogListEntries();
+        });
+        commentCheckBox.addActionListener(e -> {
             updateLogListEntries();
         });
         // 监听鼠标点击--到达表达式位置
@@ -165,6 +172,12 @@ public class ConsoleLogToolWindowComponent {
             int start = matcher.start();
             // 打印表达式所在行号
             int lineNumber = document.getLineNumber(start);
+            // 检查是否排除注释项
+            if (!commentCheckBox.isSelected()) {
+                if (document.getText(new TextRange(document.getLineStartOffset(lineNumber), start)).contains(SettingConstant.COMMENT_SIGNAL)) {
+                    continue;
+                }
+            }
             // 打印表达式所在行末尾位置
             int end = document.getLineEndOffset(lineNumber);
             String searchText = context.substring(start, end).replaceAll("\n", "").trim();
