@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
  */
 public class TextFormatContext {
     private TextFormatStrategy textFormatStrategy;
-    private final ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
     /**
      * 策略对象缓存（即单例模式）
      */
@@ -29,9 +28,11 @@ public class TextFormatContext {
     public static String CONSOLE_LOG_COMMAND = "console.log(\"";
     public static String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\"") + "\\s*";
     public static String CONSOLE_LOG_END_REGEX = "\"\\s*" + Pattern.quote(",") + ".*" + Pattern.quote(")") + "\\s*" + ";?";
+    public static String CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = "console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\"") + "\\s*";
 
     public void setTextFormatStrategyByProjectSetting() {
         Class<? extends TextFormatStrategy> strategy = DoubleQuoteTextFormatStrategy.class;
+        ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
         if (settings != null && !settings.isDoubleQuote) {
             strategy = SingleQuoteTextFormatStrategy.class;
         }
@@ -39,6 +40,7 @@ public class TextFormatContext {
         CONSOLE_LOG_COMMAND = textFormatStrategy.getBeginText();
         CONSOLE_LOG_BEGIN_REGEX = textFormatStrategy.getBeginRegexText();
         CONSOLE_LOG_END_REGEX = textFormatStrategy.getEndRegexText();
+        CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = textFormatStrategy.getBeginRegexText().replaceFirst("\\\\s\\*", "");
     }
 
     /**

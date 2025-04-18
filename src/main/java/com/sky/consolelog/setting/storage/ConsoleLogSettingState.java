@@ -32,6 +32,11 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      */
     public Boolean isDoubleQuote = true;
 
+    /**
+     * 是否启用侧边栏
+     */
+    public Boolean enableSideWindow = true;
+
     @Override
     public @NotNull ConsoleLogSettingState getState() {
         return this;
@@ -42,5 +47,6 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.consoleLogMsg = state.consoleLogMsg;
         this.autoFollowEnd = state.autoFollowEnd;
         this.isDoubleQuote = state.isDoubleQuote;
+        this.enableSideWindow = state.enableSideWindow;
     }
 }

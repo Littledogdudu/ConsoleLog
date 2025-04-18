@@ -35,7 +35,8 @@ public class ConsoleLogConfigurable implements Configurable {
     public boolean isModified() {
         return !component.getConsoleLogMsg().equals(this.settings.consoleLogMsg)
                 || !component.getAutoFollowEndCheckBox().equals(this.settings.autoFollowEnd)
-                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote);
+                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote)
+                || !component.getEnableSideWindow().equals(this.settings.enableSideWindow);
     }
 
     /**
@@ -48,6 +49,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.isDoubleQuote = component.getIsDoubleQuote();
         // 更新TextFormatContext的CONSOLE常量
         TextFormatContextSingleton.getInstance();
+        this.settings.enableSideWindow = component.getEnableSideWindow();
     }
 
     /**
@@ -58,5 +60,6 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setConsoleLogMsg(this.settings.consoleLogMsg);
         component.setAutoFollowEndCheckBox(this.settings.autoFollowEnd);
         component.setIsDoubleQuote(this.settings.isDoubleQuote);
+        component.setEnableSideWindow(this.settings.enableSideWindow);
     }
 }

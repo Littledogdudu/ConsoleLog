@@ -22,6 +22,7 @@ public class ConsoleLogComponent {
     private JLabel variable;
     private JCheckBox autoFollowEndCheckBox;
     private JCheckBox isDoubleQuote;
+    private JCheckBox enableSideWindow;
 
     public ConsoleLogComponent() {
         resetButton.addActionListener(e -> {
@@ -55,5 +56,13 @@ public class ConsoleLogComponent {
 
     public void setIsDoubleQuote(Boolean checked) {
         isDoubleQuote.setSelected(checked);
+    }
+
+    public Boolean getEnableSideWindow() {
+        return enableSideWindow.isSelected();
+    }
+
+    public void setEnableSideWindow(Boolean checked) {
+        enableSideWindow.setSelected(checked);
     }
 }
