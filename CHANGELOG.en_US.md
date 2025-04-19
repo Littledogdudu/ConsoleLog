@@ -10,6 +10,9 @@
 ### Add
 - Added the console log query sidebar, which is enabled by default and can be disabled in the settings
 
+### Optimized
+- setting style optimization
+
 ## [1.0.5] - 2025-04-17
 
 ### Fix
