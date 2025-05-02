@@ -5,6 +5,15 @@
 
 ## [Unreleased]
 
+## [1.0.6] - 2025-04-17
+
+### Fix
+- Insert Position Fix
+
+### Optimized
+- Settings UI Optimization
+- Optimized performance of inserting expressions in single and double quotation marks
+
 ## [1.0.5] - 2025-04-17
 
 ### Fix

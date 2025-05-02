@@ -26,7 +26,9 @@
 - [ ] 可以在插件设置中自行设置是否启用侧边栏，侧边栏显示当前打开文件的所有打印表达式（默认启用）
 
 > 可在[github](https://github.com/Littledogdudu/ConsoleLog/releases)或者[jetbrain marketplace](https://plugins.jetbrains.com/plugin/26574-console-log/versions)上下载对应心仪版本  
-> 1.0.6版本是插件最主要功能的最佳版本，是没有加入多光标支持和侧边栏的版本
+> 1.0.6版本是插件最主要功能的最佳版本，是没有加入多光标支持、选中区域删除/注释/解注释和侧边栏的版本  
+> 1.1.0版本是当前加入多光标支持和选中区域删除/注释/解注释功能的最佳版本  
+> 1.2.0版本是当前加入侧边栏的支持的最佳版本
 
 运行这个插件需要把这个local方法的参数修改为你的WebStorm文件路径哦
 ![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)
