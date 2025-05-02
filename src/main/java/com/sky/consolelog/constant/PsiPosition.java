@@ -23,7 +23,6 @@ public interface PsiPosition {
          * variable = "var";
          */
         String JS_VAR_STATEMENT = "JSVarStatement";
-        String JS_PROPERTY = "JSProperty";
     }
 
     /**
