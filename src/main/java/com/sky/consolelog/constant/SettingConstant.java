@@ -15,6 +15,10 @@ public interface SettingConstant {
     String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(") + "\\s*";
     String CONSOLE_LOG_END_REGEX = "\\s*" + Pattern.quote(",") + ".*" + Pattern.quote(")") + "\\s*" + ";?";
     String ALL_REGEX = ".*";
+    String CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = "console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(") + "\\s*";
+
+    /** 注释符号 */
+    String COMMENT_SIGNAL = "//";
     /**
      * 注释符号偏移长度
      */

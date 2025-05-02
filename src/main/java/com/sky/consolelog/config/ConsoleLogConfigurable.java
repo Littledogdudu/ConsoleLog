@@ -5,6 +5,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.util.NlsContexts;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.setting.ui.ConsoleLogComponent;
+import com.sky.consolelog.utils.FileTypeUtil;
 import com.sky.consolelog.utils.TextFormatContextSingleton;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,14 @@ public class ConsoleLogConfigurable implements Configurable {
     public boolean isModified() {
         return !component.getConsoleLogMsg().equals(this.settings.consoleLogMsg)
                 || !component.getAutoFollowEndCheckBox().equals(this.settings.autoFollowEnd)
-                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote);
+                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote)
+                || !component.getEnableSideWindow().equals(this.settings.enableSideWindow)
+                || !component.getFileTypeAllInCheckBox().equals(this.settings.fileTypeAllIn)
+                || !component.getVueSideCheckBox().equals(this.settings.vueSide)
+                || !component.getJavaScriptSideCheckBox().equals(this.settings.javaScriptSide)
+                || !component.getTypeScriptSideCheckBox().equals(this.settings.typeScriptSide)
+                || !component.getTextSideCheckBox().equals(this.settings.textSide)
+        ;
     }
 
     /**
@@ -46,6 +54,14 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.consoleLogMsg = component.getConsoleLogMsg();
         this.settings.autoFollowEnd = component.getAutoFollowEndCheckBox();
         this.settings.isDoubleQuote = component.getIsDoubleQuote();
+        this.settings.enableSideWindow = component.getEnableSideWindow();
+        // 是否启用侧边栏（重启生效）
+        this.settings.fileTypeAllIn = component.getFileTypeAllInCheckBox();
+        // 文件类型
+        this.settings.vueSide = component.getVueSideCheckBox();
+        this.settings.javaScriptSide = component.getJavaScriptSideCheckBox();
+        this.settings.typeScriptSide = component.getTypeScriptSideCheckBox();
+        this.settings.textSide = component.getTextSideCheckBox();
 
         finalSetting(settings, component);
     }
@@ -58,6 +74,12 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setConsoleLogMsg(this.settings.consoleLogMsg);
         component.setAutoFollowEndCheckBox(this.settings.autoFollowEnd);
         component.setIsDoubleQuote(this.settings.isDoubleQuote);
+        component.setEnableSideWindow(this.settings.enableSideWindow);
+        component.setFileTypeAllInCheckBox(this.settings.fileTypeAllIn);
+        component.setVueSideCheckBox(this.settings.vueSide);
+        component.setJavaScriptSideCheckBox(this.settings.javaScriptSide);
+        component.setTypeScriptSideCheckBox(this.settings.typeScriptSide);
+        component.setTextSideCheckBox(this.settings.textSide);
 
         finalSetting(settings, component);
     }
@@ -66,6 +88,13 @@ public class ConsoleLogConfigurable implements Configurable {
         if (settings != null) {
             // 更新TextFormatContext的CONSOLE常量
             TextFormatContextSingleton.getInstance().setTextFormatStrategyByProjectSetting(settings);
+            // 更新允许的文件类型
+            FileTypeUtil.setSettingFileTypeList(settings);
+        }
+        if (component != null) {
+            // 设置禁用关系
+            component.setLanguageCheckBoxStatus();
+            component.setEnableSideWindowStatus();
         }
     }
 }

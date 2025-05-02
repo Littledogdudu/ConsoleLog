@@ -26,6 +26,11 @@
         <applicationService serviceImplementation="com.sky.consolelog.setting.storage.ConsoleLogSettingState"/>
         <applicationConfigurable instance="com.sky.consolelog.config.ConsoleLogConfigurable" displayName="Console Log Plugin"/>
     </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Console Log" icon="/META-INF/toolWindowIcon.png" anchor="right" factoryClass="com.sky.consolelog.search.ConsoleLogToolWindowFactory"/>
+    </extensions>
+
     <actions>
         <action id="Insert Console Log Message" class="com.sky.consolelog.action.InsertConsoleLogAction"
                 text="Console Log Plugin: Insert Console Log Message" description="Quick Insert console.log() in code">
