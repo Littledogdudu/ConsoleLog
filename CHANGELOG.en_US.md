@@ -5,6 +5,13 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-05-02
+
+### Feature
+- You can set whether to enable the sidebar in the plug-in settings, and the sidebar displays all print expressions of the currently open file (enabled by default)
+- The sidebar supports clicking on the print statement that is located to the corresponding line. 
+- Sidebar support query All print expressions without annotations are only those that conform to the plug-in specification format
+
 ## [1.0.6] - 2025-04-17
 
 ### Fix
