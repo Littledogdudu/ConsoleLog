@@ -1,8 +1,11 @@
 package com.sky.consolelog.setting.ui;
 
+import com.intellij.openapi.Disposable;
 import com.sky.consolelog.constant.SettingConstant;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * ConsoleLog设置的UI组件
@@ -10,7 +13,7 @@ import javax.swing.*;
  * @author SkySource
  * @Date: 2025/1/24 21:29
  */
-public class ConsoleLogComponent {
+public class ConsoleLogComponent implements Disposable {
     private JPanel jPanel;
     private JTextField consoleLogMsgInput;
     private JButton resetButton;
@@ -23,10 +26,13 @@ public class ConsoleLogComponent {
     private JCheckBox autoFollowEndCheckBox;
     private JCheckBox isDoubleQuote;
 
+    /** 清空按钮监听器 */
+    private final ActionListener resetButtonActionListener = event -> {
+        setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
+    };
+
     public ConsoleLogComponent() {
-        resetButton.addActionListener(e -> {
-            setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
-        });
+        resetButton.addActionListener(resetButtonActionListener);
     }
 
     public JPanel getPanel() {
@@ -55,5 +61,10 @@ public class ConsoleLogComponent {
 
     public void setIsDoubleQuote(Boolean checked) {
         isDoubleQuote.setSelected(checked);
+    }
+
+    @Override
+    public void dispose() {
+        resetButton.removeActionListener(resetButtonActionListener);
     }
 }

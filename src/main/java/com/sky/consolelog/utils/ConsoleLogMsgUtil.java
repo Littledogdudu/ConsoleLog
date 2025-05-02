@@ -13,19 +13,33 @@ import java.util.regex.Pattern;
  */
 public class ConsoleLogMsgUtil {
 
+    private static String currentConsoleLogMsg = "";
+    private static String consoleLogMsgRegex = "";
+
     /**
      * 构建consoleLog正则表达式
      *
      * @return 返回设置的ConsoleLog语句正则表达式
      */
     public static String buildRegexConsoleLogMsg(ConsoleLogSettingState settings) {
+        return buildRegexConsoleLogMsg(settings, TextFormatContext.CONSOLE_LOG_BEGIN_REGEX, TextFormatContext.CONSOLE_LOG_END_REGEX);
+    }
+
+    /**
+     * 构建consoleLog正则表达式
+     *
+     * @return 返回设置的ConsoleLog语句正则表达式
+     */
+    public static String buildRegexConsoleLogMsg(ConsoleLogSettingState settings, String beginRegex, String endRegex) {
         if (settings.consoleLogMsg == null || settings.consoleLogMsg.isEmpty()) {
             return null;
         }
-        // 更新TextFormatContext的CONSOLE常量
-        TextFormatContextSingleton.getInstance();
+
+        if (settings.consoleLogMsg.equals(currentConsoleLogMsg)) {
+            return consoleLogMsgRegex;
+        }
         StringBuilder regexConsoleLogMsg = new StringBuilder();
-        regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX);
+        regexConsoleLogMsg.append(beginRegex);
         // 插件设置console.log内的文字提示指针
         int commandPointerIndex = 0;
 
@@ -57,13 +71,16 @@ public class ConsoleLogMsgUtil {
 
             // 字面化普通字符串，指定的子字符串使用.*替代
             regexConsoleLogMsg.append(Pattern.quote(settings.consoleLogMsg.substring(commandPointerIndex, commandBegIndex)))
-                    .append(".*");
+                    .append(SettingConstant.ALL_REGEX);
             commandPointerIndex = commandEndIndex;
         }
         if (commandPointerIndex < settings.consoleLogMsg.length()) {
             regexConsoleLogMsg.append(Pattern.quote(settings.consoleLogMsg.substring(commandPointerIndex)));
         }
-        regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_END_REGEX);
-        return regexConsoleLogMsg.toString();
+        regexConsoleLogMsg.append(endRegex);
+
+        currentConsoleLogMsg = settings.consoleLogMsg;
+        consoleLogMsgRegex = regexConsoleLogMsg.toString();
+        return consoleLogMsgRegex;
     }
 }

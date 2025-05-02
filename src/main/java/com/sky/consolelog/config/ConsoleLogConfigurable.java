@@ -46,8 +46,8 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.consoleLogMsg = component.getConsoleLogMsg();
         this.settings.autoFollowEnd = component.getAutoFollowEndCheckBox();
         this.settings.isDoubleQuote = component.getIsDoubleQuote();
-        // 更新TextFormatContext的CONSOLE常量
-        TextFormatContextSingleton.getInstance();
+
+        finalSetting(settings, component);
     }
 
     /**
@@ -58,5 +58,14 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setConsoleLogMsg(this.settings.consoleLogMsg);
         component.setAutoFollowEndCheckBox(this.settings.autoFollowEnd);
         component.setIsDoubleQuote(this.settings.isDoubleQuote);
+
+        finalSetting(settings, component);
+    }
+
+    public static void finalSetting(ConsoleLogSettingState settings, ConsoleLogComponent component) {
+        if (settings != null) {
+            // 更新TextFormatContext的CONSOLE常量
+            TextFormatContextSingleton.getInstance().setTextFormatStrategyByProjectSetting(settings);
+        }
     }
 }

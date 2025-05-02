@@ -1,6 +1,5 @@
 package com.sky.consolelog.utils;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.sky.consolelog.setting.ConsoleLogSettingVo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.strategy.text.DoubleQuoteTextFormatStrategy;
@@ -20,17 +19,17 @@ import java.util.regex.Pattern;
  */
 public class TextFormatContext {
     private TextFormatStrategy textFormatStrategy;
-    private final ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
     /**
      * 策略对象缓存（即单例模式）
      */
     private final Map<Class<? extends TextFormatStrategy>, TextFormatStrategy> cache = new HashMap<>(2);
 
     public static String CONSOLE_LOG_COMMAND = "console.log(\"";
-    public static String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\"") + "\\s*";
+    public static String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\\s*\"");
     public static String CONSOLE_LOG_END_REGEX = "\"\\s*" + Pattern.quote(",") + ".*" + Pattern.quote(")") + "\\s*" + ";?";
+    public static String CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = "console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\\s*\"");
 
-    public void setTextFormatStrategyByProjectSetting() {
+    public void setTextFormatStrategyByProjectSetting(ConsoleLogSettingState settings) {
         Class<? extends TextFormatStrategy> strategy = DoubleQuoteTextFormatStrategy.class;
         if (settings != null && !settings.isDoubleQuote) {
             strategy = SingleQuoteTextFormatStrategy.class;
@@ -39,6 +38,7 @@ public class TextFormatContext {
         CONSOLE_LOG_COMMAND = textFormatStrategy.getBeginText();
         CONSOLE_LOG_BEGIN_REGEX = textFormatStrategy.getBeginRegexText();
         CONSOLE_LOG_END_REGEX = textFormatStrategy.getEndRegexText();
+        CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = textFormatStrategy.getBeginRegexText().replaceFirst("\\\\s\\*", "");
     }
 
     /**

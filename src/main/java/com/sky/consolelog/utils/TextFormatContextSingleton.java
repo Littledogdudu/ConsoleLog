@@ -19,7 +19,6 @@ public class TextFormatContextSingleton {
     }
 
     public static TextFormatContext getInstance() {
-        TextFormatContextHolder.TEXT_FORMAT_CONTEXT.setTextFormatStrategyByProjectSetting();
         return TextFormatContextHolder.TEXT_FORMAT_CONTEXT;
     }
 }

@@ -4,6 +4,7 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.sky.consolelog.config.ConsoleLogConfigurable;
 import com.sky.consolelog.constant.SettingConstant;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,9 +39,16 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     }
 
     @Override
+    public void noStateLoaded() {
+        ConsoleLogConfigurable.finalSetting(this, null);
+    }
+
+    @Override
     public void loadState(@NotNull ConsoleLogSettingState state) {
         this.consoleLogMsg = state.consoleLogMsg;
         this.autoFollowEnd = state.autoFollowEnd;
         this.isDoubleQuote = state.isDoubleQuote;
+
+        ConsoleLogConfigurable.finalSetting(this, null);
     }
 }
