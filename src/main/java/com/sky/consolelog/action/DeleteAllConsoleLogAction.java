@@ -14,6 +14,7 @@ import com.intellij.psi.PsiFile;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
+import com.sky.consolelog.utils.TextRangeHandle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -53,9 +54,13 @@ public class DeleteAllConsoleLogAction extends AnAction {
         // 以后考虑一下当前所在文件代码行数过多导致的性能问题吗？
         Document document = editor.getDocument();
         List<TextRange> consoleLogRangeList = ConsoleLogPsiUtil.detectAll(psiFile, document);
+
+        // 处理选中区域和console.log表达式
+        List<TextRange> consoleLogNewRangeList = TextRangeHandle.handleSelectedAndConsoleLogTextRange(settings, editor, consoleLogRangeList);
+
         WriteCommandAction.runWriteCommandAction(project, () -> {
             int deleteStringSize = 0;
-            for (TextRange range : consoleLogRangeList) {
+            for (TextRange range : consoleLogNewRangeList) {
                 TextRange newRange = new TextRange(range.getStartOffset() - deleteStringSize, range.getEndOffset() - deleteStringSize);
                 String text = document.getText(newRange);
                 Matcher matcher = pattern.matcher(text);

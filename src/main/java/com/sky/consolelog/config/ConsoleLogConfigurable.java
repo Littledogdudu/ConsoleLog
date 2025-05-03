@@ -35,7 +35,10 @@ public class ConsoleLogConfigurable implements Configurable {
     public boolean isModified() {
         return !component.getConsoleLogMsg().equals(this.settings.consoleLogMsg)
                 || !component.getAutoFollowEndCheckBox().equals(this.settings.autoFollowEnd)
-                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote);
+                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote)
+                || !component.getDeleteInSelectionCheckBox().equals(this.settings.deleteInSelectionCheckBox)
+                || !component.getCommentInSelectionCheckBox().equals(this.settings.commentInSelectionCheckBox)
+                || !component.getUnCommentSelectionCheckBox().equals(this.settings.unCommentSelectionCheckBox);
     }
 
     /**
@@ -46,6 +49,9 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.consoleLogMsg = component.getConsoleLogMsg();
         this.settings.autoFollowEnd = component.getAutoFollowEndCheckBox();
         this.settings.isDoubleQuote = component.getIsDoubleQuote();
+        this.settings.deleteInSelectionCheckBox = component.getDeleteInSelectionCheckBox();
+        this.settings.commentInSelectionCheckBox = component.getCommentInSelectionCheckBox();
+        this.settings.unCommentSelectionCheckBox = component.getUnCommentSelectionCheckBox();
 
         finalSetting(settings, component);
     }
@@ -58,6 +64,9 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setConsoleLogMsg(this.settings.consoleLogMsg);
         component.setAutoFollowEndCheckBox(this.settings.autoFollowEnd);
         component.setIsDoubleQuote(this.settings.isDoubleQuote);
+        component.setDeleteInSelectionCheckBox(this.settings.deleteInSelectionCheckBox);
+        component.setCommentInSelectionCheckBox(this.settings.commentInSelectionCheckBox);
+        component.setUnCommentSelectionCheckBox(this.settings.unCommentSelectionCheckBox);
 
         finalSetting(settings, component);
     }
