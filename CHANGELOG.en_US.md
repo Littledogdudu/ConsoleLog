@@ -5,6 +5,16 @@
 
 ## [Unreleased]
 
+## [1.1.1] - 
+
+### Feature
+- Multi-cursor support when inserting
+
+## [1.1.0] - 2025-05-04
+
+### Feature
+- When selecting Chinese book, delete annotation only in the selected area
+
 ## [1.0.6] - 2025-04-17
 
 ### Fix
