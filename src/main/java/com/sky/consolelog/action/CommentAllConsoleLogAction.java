@@ -15,6 +15,7 @@ import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
+import com.sky.consolelog.utils.TextRangeHandle;
 
 import java.util.List;
 import java.util.Map;
@@ -54,10 +55,14 @@ public class CommentAllConsoleLogAction extends AnAction {
 
         Document document = editor.getDocument();
         TreeMap<TextRange, List<Integer>> consoleLogLineNumberMap = ConsoleLogPsiUtil.detectAllButSkipComment(psiFile, document);
-        if (!consoleLogLineNumberMap.isEmpty()) {
+
+        // 处理选中区域和console.log表达式
+        Map<TextRange, List<Integer>> consoleLogNewLineNumberMap = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogLineNumberMap, settings.commentInSelection);
+
+        if (!consoleLogNewLineNumberMap.isEmpty()) {
             WriteCommandAction.runWriteCommandAction(project, () -> {
                 int insertCommentSignalSize = 0;
-                for (Map.Entry<TextRange, List<Integer>> map : consoleLogLineNumberMap.entrySet()) {
+                for (Map.Entry<TextRange, List<Integer>> map : consoleLogNewLineNumberMap.entrySet()) {
                     TextRange range = map.getKey();
                     List<Integer> lineNumberList = map.getValue();
                     TextRange newRange = new TextRange(range.getStartOffset() + insertCommentSignalSize, range.getEndOffset() + insertCommentSignalSize);
