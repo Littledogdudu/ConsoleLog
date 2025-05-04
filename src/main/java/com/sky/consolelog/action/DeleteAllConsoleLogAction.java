@@ -56,7 +56,7 @@ public class DeleteAllConsoleLogAction extends AnAction {
         List<TextRange> consoleLogRangeList = ConsoleLogPsiUtil.detectAll(psiFile, document);
 
         // 处理选中区域和console.log表达式
-        List<TextRange> consoleLogNewRangeList = TextRangeHandle.handleSelectedAndConsoleLogTextRange(settings, editor, consoleLogRangeList);
+        List<TextRange> consoleLogNewRangeList = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogRangeList, settings.deleteInSelection);
 
         WriteCommandAction.runWriteCommandAction(project, () -> {
             int deleteStringSize = 0;

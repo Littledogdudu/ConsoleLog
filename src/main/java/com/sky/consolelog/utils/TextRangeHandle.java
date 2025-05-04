@@ -2,7 +2,6 @@ package com.sky.consolelog.utils;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.TextRange;
-import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +22,12 @@ public class TextRangeHandle {
      * @param consoleLogRangeList 当前编辑器内文本所有表达式对应的文本域集合
      * @return 选中区域内 指定 文本域
      */
-    public static List<TextRange> handleSelectedAndConsoleLogTextRange(ConsoleLogSettingState settings, Editor editor, List<TextRange> consoleLogRangeList) {
+    public static List<TextRange> handleSelectedAndConsoleLogTextRange(Editor editor, List<TextRange> consoleLogRangeList, boolean isOperationInSelectionSetting) {
         List<TextRange> consoleLogNewRangeList = consoleLogRangeList;
         if (editor.getSelectionModel().getSelectedText() == null || editor.getSelectionModel().getSelectedText().isEmpty()) {
             return consoleLogNewRangeList;
         }
-        if (settings.deleteInSelectionCheckBox) {
+        if (isOperationInSelectionSetting) {
             int[] selectedStartOffset = editor.getSelectionModel().getBlockSelectionStarts();
             int[] selectedEndOffset = editor.getSelectionModel().getBlockSelectionEnds();
             consoleLogNewRangeList = new ArrayList<>();
