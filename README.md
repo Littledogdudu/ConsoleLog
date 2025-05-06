@@ -17,6 +17,7 @@
 - Alt+Shift+1: Console Log Plugin: Comment All Console Log Message
 - Alt+Shift+2: Console Log Plugin: Uncomment Console Log Message
 
+
 - [x] 哈喽，你可以通过WebStorm的插件设置自定义你的打印模板哦，但是要注意尽量与众不同一点哦，不然可能会误删你不想删掉的console.log语句哦
 - [x] 智能地插入打印语句，包智能的，嘿嘿🤭
 - [x] 可以在插件设置中自行设置插入打印语句后光标是否自动跟随到打印语句末尾（默认启用）
@@ -46,6 +47,7 @@ Default keymap as following:
 - Alt+2: Console Log Plugin: Delete All Console Log Message
 - Alt+Shift+1: Console Log Plugin: Comment All Console Log Message
 - Alt+Shift+2: Console Log Plugin: Uncomment Console Log Message
+
 
 - [x] you can go to settings to set what message you want to show
 - [x] Intelligently insert print statements, hei hei 🤭
