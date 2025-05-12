@@ -5,13 +5,13 @@
 
 ## [Unreleased]
 
+### Feature
+- Multi-cursor support when inserting
+
 ## [1.1.1] - 2025-05-12
 
 ### Fix
 - Fix bug🐛: PSI JS type casting issue (proposed by igor.pavlenko)
-
-### Feature
-- Multi-cursor support when inserting
 
 ## [1.1.0] - 2025-05-04
 
