@@ -1,9 +1,7 @@
 package com.sky.consolelog.utils;
 
 import com.intellij.lang.javascript.psi.JSCallExpression;
-import com.intellij.lang.javascript.psi.JSExpression;
 import com.intellij.lang.javascript.psi.JSExpressionStatement;
-import com.intellij.lang.javascript.psi.JSReferenceExpression;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
@@ -13,6 +11,7 @@ import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.xml.XmlToken;
 import com.sky.consolelog.constant.SettingConstant;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -164,13 +163,15 @@ public class ConsoleLogPsiUtil {
      * @return 如果时console.log调用表达式则返回true，否则返回false
      */
     public static boolean isConsoleLog(JSCallExpression callExpression) {
-        JSReferenceExpression methodExpression = (JSReferenceExpression) callExpression.getMethodExpression();
-        if (methodExpression == null) return false;
-        JSExpression qualifier = methodExpression.getQualifier();
-
-        if (qualifier != null && "console".equals(qualifier.getText())) {
-            String methodName = methodExpression.getReferenceName();
-            return "log".equals(methodName);
+        String callExpressionText = callExpression.getText();
+        if (StringUtils.isNotEmpty(callExpressionText) &&
+                callExpressionText.matches(
+                        SettingConstant.ALL_REGEX +
+                                SettingConstant.CONSOLE_LOG_BEGIN_REGEX +
+                                SettingConstant.ALL_REGEX
+                )
+        ) {
+            return true;
         }
         return false;
     }
