@@ -32,6 +32,18 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      * 是否使用双引号
      */
     public Boolean isDoubleQuote = true;
+    /**
+     * 是否仅在选中区域内删除
+     */
+    public Boolean deleteInSelection = true;
+    /**
+     * 是否仅在选中区域内注释
+     */
+    public Boolean commentInSelection = true;
+    /**
+     * 是否仅在选中区域内取消注释
+     */
+    public Boolean unCommentSelection = true;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -48,6 +60,9 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.consoleLogMsg = state.consoleLogMsg;
         this.autoFollowEnd = state.autoFollowEnd;
         this.isDoubleQuote = state.isDoubleQuote;
+        this.deleteInSelection = state.deleteInSelection;
+        this.commentInSelection = state.commentInSelection;
+        this.unCommentSelection = state.unCommentSelection;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }

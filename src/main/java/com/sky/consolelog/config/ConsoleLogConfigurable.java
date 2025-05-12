@@ -35,7 +35,10 @@ public class ConsoleLogConfigurable implements Configurable {
     public boolean isModified() {
         return !component.getConsoleLogMsg().equals(this.settings.consoleLogMsg)
                 || !component.getAutoFollowEndCheckBox().equals(this.settings.autoFollowEnd)
-                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote);
+                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote)
+                || !component.getDeleteInSelectionCheckBox().equals(this.settings.deleteInSelection)
+                || !component.getCommentInSelectionCheckBox().equals(this.settings.commentInSelection)
+                || !component.getUnCommentSelectionCheckBox().equals(this.settings.unCommentSelection);
     }
 
     /**
@@ -46,6 +49,9 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.consoleLogMsg = component.getConsoleLogMsg();
         this.settings.autoFollowEnd = component.getAutoFollowEndCheckBox();
         this.settings.isDoubleQuote = component.getIsDoubleQuote();
+        this.settings.deleteInSelection = component.getDeleteInSelectionCheckBox();
+        this.settings.commentInSelection = component.getCommentInSelectionCheckBox();
+        this.settings.unCommentSelection = component.getUnCommentSelectionCheckBox();
 
         finalSetting(settings, component);
     }
@@ -58,6 +64,9 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setConsoleLogMsg(this.settings.consoleLogMsg);
         component.setAutoFollowEndCheckBox(this.settings.autoFollowEnd);
         component.setIsDoubleQuote(this.settings.isDoubleQuote);
+        component.setDeleteInSelectionCheckBox(this.settings.deleteInSelection);
+        component.setCommentInSelectionCheckBox(this.settings.commentInSelection);
+        component.setUnCommentSelectionCheckBox(this.settings.unCommentSelection);
 
         finalSetting(settings, component);
     }

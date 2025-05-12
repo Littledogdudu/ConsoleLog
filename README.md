@@ -23,8 +23,10 @@
 - [x] 可以在插件设置中自行设置插入打印语句后光标是否自动跟随到打印语句末尾（默认启用）
 - [x] 可以在插件设置中自行设置字符串使用双引号还是单引号包含（默认启用双引号）
 - [ ] 插入时多光标支持
-- [ ] 选中文本时仅在选中区域内删除/注释/解注释（默认启用）
+- [x] 存在选中文本时（支持多光标区域选中）仅在选中区域内删除/注释/解注释（默认启用）
 - [ ] 可以在插件设置中自行设置是否启用侧边栏，侧边栏显示当前打开文件的所有打印表达式（默认启用）
+- [ ] 侧边栏支持点击定位到对应行的打印语句
+- [ ] 侧边栏支持查询 所有打印表达式/不包含注释的打印表达式/仅符合插件规范格式的打印表达式
 
 > 可在[github](https://github.com/Littledogdudu/ConsoleLog/releases)或者[jetbrain marketplace](https://plugins.jetbrains.com/plugin/26574-console-log/versions)上下载对应心仪版本  
 > 1.0.6版本是插件最主要功能的最佳版本，是没有加入多光标支持、选中区域删除/注释/解注释和侧边栏的版本  
@@ -53,9 +55,11 @@ Default keymap as following:
 - [x] Intelligently insert print statements, hei hei 🤭
 - [x] You can set whether the cursor automatically follows to the end of the print statement after inserting the print statement in the plug-in settings (enabled by default)
 - [x] You can set whether the string is included in double or single quotes in the plugin settings (double quotes are enabled by default)
-- [ ] Multi-cursor support when inserting
-- [ ] When selecting Chinese book, delete annotation only in the selected area (enabled by default)
+- [x] Multi-cursor support when inserting
+- [x] When selecting Chinese book, delete annotation only in the selected area (enabled by default)
 - [ ] You can set whether to enable the sidebar in the plug-in settings, and the sidebar displays all print expressions of the currently open file (enabled by default)
+- [ ] The sidebar supports clicking on the print statement that is located to the corresponding line.
+- [ ] Query support in the sidebar All print expressions without comments are only print expressions that conform to the plug-in specification format
 
 if you want to run this project, please modify the local path.
 ![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)

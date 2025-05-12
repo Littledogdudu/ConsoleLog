@@ -4,7 +4,6 @@ import com.intellij.openapi.Disposable;
 import com.sky.consolelog.constant.SettingConstant;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
@@ -25,6 +24,9 @@ public class ConsoleLogComponent implements Disposable {
     private JLabel variable;
     private JCheckBox autoFollowEndCheckBox;
     private JCheckBox isDoubleQuote;
+    private JCheckBox deleteInSelectionCheckBox;
+    private JCheckBox commentInSelectionCheckBox;
+    private JCheckBox unCommentSelectionCheckBox;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = event -> {
@@ -61,6 +63,30 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setIsDoubleQuote(Boolean checked) {
         isDoubleQuote.setSelected(checked);
+    }
+
+    public Boolean getDeleteInSelectionCheckBox() {
+        return deleteInSelectionCheckBox.isSelected();
+    }
+
+    public void setDeleteInSelectionCheckBox(Boolean checked) {
+        this.deleteInSelectionCheckBox.setSelected(checked);
+    }
+
+    public Boolean getCommentInSelectionCheckBox() {
+        return commentInSelectionCheckBox.isSelected();
+    }
+
+    public void setCommentInSelectionCheckBox(Boolean checked) {
+        this.commentInSelectionCheckBox.setSelected(checked);
+    }
+
+    public Boolean getUnCommentSelectionCheckBox() {
+        return unCommentSelectionCheckBox.isSelected();
+    }
+
+    public void setUnCommentSelectionCheckBox(Boolean checked) {
+        this.unCommentSelectionCheckBox.setSelected(checked);
     }
 
     @Override
