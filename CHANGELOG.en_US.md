@@ -8,6 +8,9 @@
 ### Feature
 - Multi-cursor support when inserting
 
+## [1.1.2] - 2025-05-15
+
+- Support adding file names and line numbers in formatted strings(proposed by yan.wt)
 ## [1.1.1] - 2025-05-12
 
 ### Fix
