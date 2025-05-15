@@ -6,7 +6,10 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.sky.consolelog.config.ConsoleLogConfigurable;
 import com.sky.consolelog.constant.SettingConstant;
+import com.sky.consolelog.utils.Base64Util;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.Serializable;
 
 /**
  * consoleLog持久化设置实体类
@@ -16,10 +19,10 @@ import org.jetbrains.annotations.NotNull;
  */
 @State(
         name = "com.sky.consolelog.idea.plugin.setting.storage.ConsoleLogSettingState",
-        storages = @Storage("console-log-setting.xml")
+        storages = @Storage(value = "console-log-setting.xml")
 )
 @Service(value = Service.Level.APP)
-public final class ConsoleLogSettingState implements PersistentStateComponent<ConsoleLogSettingState> {
+public final class ConsoleLogSettingState implements PersistentStateComponent<ConsoleLogSettingState>, Serializable {
     /**
      * 默认打印语句
      */
@@ -51,7 +54,17 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
-        return this;
+        ConsoleLogSettingState state = new ConsoleLogSettingState();
+        // 对 consoleLogMsg 进行 Base64 编码后再赋值
+        state.consoleLogMsg = Base64Util.encode(this.consoleLogMsg);
+        state.autoFollowEnd = this.autoFollowEnd;
+        state.isDoubleQuote = this.isDoubleQuote;
+        state.deleteInSelection = this.deleteInSelection;
+        state.commentInSelection = this.commentInSelection;
+        state.unCommentSelection = this.unCommentSelection;
+        state.variableLineNumber = this.variableLineNumber;
+        state.fileSuffix = this.fileSuffix;
+        return state;
     }
 
     @Override
@@ -61,7 +74,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
 
     @Override
     public void loadState(@NotNull ConsoleLogSettingState state) {
-        this.consoleLogMsg = state.consoleLogMsg;
+        this.consoleLogMsg = Base64Util.decode(state.consoleLogMsg);
         this.autoFollowEnd = state.autoFollowEnd;
         this.isDoubleQuote = state.isDoubleQuote;
         this.deleteInSelection = state.deleteInSelection;
