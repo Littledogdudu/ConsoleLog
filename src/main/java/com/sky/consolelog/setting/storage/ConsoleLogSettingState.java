@@ -44,6 +44,10 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      * 是否仅在选中区域内取消注释
      */
     public Boolean unCommentSelection = true;
+    /** 行号是否使用打印变量所在的行号 */
+    public Boolean variableLineNumber = false;
+    /** 打印的文件名是否需要后缀名 */
+    public Boolean fileSuffix = true;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -63,6 +67,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.deleteInSelection = state.deleteInSelection;
         this.commentInSelection = state.commentInSelection;
         this.unCommentSelection = state.unCommentSelection;
+        this.variableLineNumber = state.variableLineNumber;
+        this.fileSuffix = state.fileSuffix;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }

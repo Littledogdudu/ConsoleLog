@@ -27,6 +27,8 @@ public class ConsoleLogComponent implements Disposable {
     private JCheckBox deleteInSelectionCheckBox;
     private JCheckBox commentInSelectionCheckBox;
     private JCheckBox unCommentSelectionCheckBox;
+    private JCheckBox variableLineNumberCheckBox;
+    private JCheckBox fileSuffixCheckBox;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = event -> {
@@ -87,6 +89,22 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setUnCommentSelectionCheckBox(Boolean checked) {
         this.unCommentSelectionCheckBox.setSelected(checked);
+    }
+
+    public Boolean getVariableLineNumberCheckBox() {
+        return variableLineNumberCheckBox.isSelected();
+    }
+
+    public void setVariableLineNumberCheckBox(Boolean checked) {
+        this.variableLineNumberCheckBox.setSelected(checked);
+    }
+
+    public Boolean getFileSuffixCheckBox() {
+        return fileSuffixCheckBox.isSelected();
+    }
+
+    public void setFileSuffixCheckBox(Boolean checked) {
+        this.fileSuffixCheckBox.setSelected(checked);
     }
 
     @Override

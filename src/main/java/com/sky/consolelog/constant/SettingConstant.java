@@ -34,7 +34,11 @@ public interface SettingConstant {
         /**
          * 设置别名：方法名
          */
-        METHOD_COMMAND("${methodName}");
+        METHOD_COMMAND("${methodName}"),
+        /** 设置别名：行数 */
+        LINE_NUMBER_COMMAND("${lineNumber}"),
+        /** 设置别名：文件名 */
+        FILE_NAME_COMMAND("${fileName}");
 
         final String key;
 
@@ -55,7 +59,11 @@ public interface SettingConstant {
         /**
          * 设置别名：用于正则匹配的方法名
          */
-        METHOD_REGEX(Pattern.quote("${methodName}"));
+        METHOD_REGEX(Pattern.quote("${methodName}")),
+        /** 设置别名：用于正则匹配的行数 */
+        LINE_NUMBER_REGEX(Pattern.quote("${lineNumber}")),
+        /** 设置别名：用于正则匹配的文件名 */
+        FILE_NAME_REGEX(Pattern.quote("${fileName}"));
 
         final String key;
 

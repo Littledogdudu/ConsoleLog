@@ -38,7 +38,9 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote)
                 || !component.getDeleteInSelectionCheckBox().equals(this.settings.deleteInSelection)
                 || !component.getCommentInSelectionCheckBox().equals(this.settings.commentInSelection)
-                || !component.getUnCommentSelectionCheckBox().equals(this.settings.unCommentSelection);
+                || !component.getUnCommentSelectionCheckBox().equals(this.settings.unCommentSelection)
+                || !component.getVariableLineNumberCheckBox().equals(this.settings.variableLineNumber)
+                || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix);
     }
 
     /**
@@ -52,6 +54,8 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.deleteInSelection = component.getDeleteInSelectionCheckBox();
         this.settings.commentInSelection = component.getCommentInSelectionCheckBox();
         this.settings.unCommentSelection = component.getUnCommentSelectionCheckBox();
+        this.settings.variableLineNumber = component.getVariableLineNumberCheckBox();
+        this.settings.fileSuffix = component.getFileSuffixCheckBox();
 
         finalSetting(settings, component);
     }
@@ -67,6 +71,8 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setDeleteInSelectionCheckBox(this.settings.deleteInSelection);
         component.setCommentInSelectionCheckBox(this.settings.commentInSelection);
         component.setUnCommentSelectionCheckBox(this.settings.unCommentSelection);
+        component.setVariableLineNumberCheckBox(this.settings.variableLineNumber);
+        component.setFileSuffixCheckBox(this.settings.fileSuffix);
 
         finalSetting(settings, component);
     }

@@ -61,19 +61,26 @@ public class InsertConsoleLogAction extends AnAction {
             return;
         }
 
+        // 找到最近的作用域块
+        ScopeOffset scopeOffset = findScopeOffset(elementAtCaret);
+
         ConsoleLogSettingVo consoleLogSettingVo = new ConsoleLogSettingVo();
         // 检查是否有选中的文本
         boolean hasSelectedText = getVariableName(editor, psiFile, consoleLogSettingVo);
         if (!hasSelectedText) return;
         getMethodName(caret, psiFile, consoleLogSettingVo);
+        if (settings.variableLineNumber) {
+            getLineNumber(caret, psiFile, consoleLogSettingVo);
+        } else {
+            getLineNumber(scopeOffset, psiFile, consoleLogSettingVo);
+        }
+        getFileName(psiFile, settings, consoleLogSettingVo);
 
         // 构建 console.log
         // 获取文本格式上下文单例的同时更新策略
         TextFormatContext textFormatContext = TextFormatContextSingleton.getInstance();
         String consoleLogMsg = textFormatContext.getCustomHandleConsoleLogMsg(settings.consoleLogMsg, consoleLogSettingVo);
 
-        // 找到最近的作用域块
-        ScopeOffset scopeOffset = findScopeOffset(elementAtCaret);
         insertConsoleLogMsg(project, editor, psiFile, caret, scopeOffset, consoleLogMsg);
     }
 
@@ -124,6 +131,41 @@ public class InsertConsoleLogAction extends AnAction {
                 consoleLogSettingVo.setMethodName(functionName);
             }
         }
+    }
+
+    /**
+     * 获取当前光标所在位置的行号
+     * @param caret 光标对象
+     * @param psiFile 当前文件对象
+     * @param consoleLogSettingVo 占位符值
+     */
+    private static void getLineNumber(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
+        int offset = caret.getOffset();
+        Document document = psiFile.getFileDocument();
+        consoleLogSettingVo.setLineNumber(document.getLineNumber(offset) + 1);
+    }
+
+    /**
+     * 获取打印表达式将要插入位置的行号
+     * @param psiFile 当前文件对象
+     * @param scopeOffset 插入位置对象
+     * @param consoleLogSettingVo 占位符值
+     */
+    private static void getLineNumber(ScopeOffset scopeOffset, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
+        int offset = scopeOffset.getInsertEndOffset();
+        if (scopeOffset.getNeedBegLine()) {
+            ++offset;
+        }
+        Document document = psiFile.getFileDocument();
+        consoleLogSettingVo.setLineNumber(document.getLineNumber(offset) + 1);
+    }
+
+    private static void getFileName(PsiFile psiFile, ConsoleLogSettingState settings, ConsoleLogSettingVo consoleLogSettingVo) {
+        String fileName = psiFile.getName();
+        if (!settings.fileSuffix) {
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+        }
+        consoleLogSettingVo.setFileName(fileName);
     }
 
     /**
