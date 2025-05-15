@@ -70,9 +70,9 @@ public class InsertConsoleLogAction extends AnAction {
         if (!hasSelectedText) return;
         getMethodName(caret, psiFile, consoleLogSettingVo);
         if (settings.variableLineNumber) {
-            getLineNumber(caret, psiFile, consoleLogSettingVo);
+            getLineNumber(caret, editor, consoleLogSettingVo);
         } else {
-            getLineNumber(scopeOffset, psiFile, consoleLogSettingVo);
+            getLineNumber(scopeOffset, editor, consoleLogSettingVo);
         }
         getFileName(psiFile, settings, consoleLogSettingVo);
 
@@ -139,9 +139,9 @@ public class InsertConsoleLogAction extends AnAction {
      * @param psiFile 当前文件对象
      * @param consoleLogSettingVo 占位符值
      */
-    private static void getLineNumber(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
+    private static void getLineNumber(Caret caret, Editor editor, ConsoleLogSettingVo consoleLogSettingVo) {
         int offset = caret.getOffset();
-        Document document = psiFile.getFileDocument();
+        Document document = editor.getDocument();
         consoleLogSettingVo.setLineNumber(document.getLineNumber(offset) + 1);
     }
 
@@ -151,12 +151,12 @@ public class InsertConsoleLogAction extends AnAction {
      * @param scopeOffset 插入位置对象
      * @param consoleLogSettingVo 占位符值
      */
-    private static void getLineNumber(ScopeOffset scopeOffset, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
+    private static void getLineNumber(ScopeOffset scopeOffset, Editor editor, ConsoleLogSettingVo consoleLogSettingVo) {
         int offset = scopeOffset.getInsertEndOffset();
         if (scopeOffset.getNeedBegLine()) {
             ++offset;
         }
-        Document document = psiFile.getFileDocument();
+        Document document = editor.getDocument();
         consoleLogSettingVo.setLineNumber(document.getLineNumber(offset) + 1);
     }
 
