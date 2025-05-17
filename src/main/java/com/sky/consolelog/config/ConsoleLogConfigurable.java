@@ -35,7 +35,9 @@ public class ConsoleLogConfigurable implements Configurable {
     public boolean isModified() {
         return !component.getConsoleLogMsg().equals(this.settings.consoleLogMsg)
                 || !component.getAutoFollowEndCheckBox().equals(this.settings.autoFollowEnd)
-                || !component.getIsDoubleQuote().equals(this.settings.isDoubleQuote)
+                || !component.getSingleQuoteRadioButton().equals(this.settings.singleQuote)
+                || !component.getDoubleQuoteRadioButton().equals(this.settings.doubleQuote)
+                || !component.getBackTickRadioButton().equals(this.settings.backTickQuote)
                 || !component.getDeleteInSelectionCheckBox().equals(this.settings.deleteInSelection)
                 || !component.getCommentInSelectionCheckBox().equals(this.settings.commentInSelection)
                 || !component.getUnCommentSelectionCheckBox().equals(this.settings.unCommentSelection)
@@ -50,7 +52,9 @@ public class ConsoleLogConfigurable implements Configurable {
     public void apply() {
         this.settings.consoleLogMsg = component.getConsoleLogMsg();
         this.settings.autoFollowEnd = component.getAutoFollowEndCheckBox();
-        this.settings.isDoubleQuote = component.getIsDoubleQuote();
+        this.settings.singleQuote = component.getSingleQuoteRadioButton();
+        this.settings.doubleQuote = component.getDoubleQuoteRadioButton();
+        this.settings.backTickQuote = component.getBackTickRadioButton();
         this.settings.deleteInSelection = component.getDeleteInSelectionCheckBox();
         this.settings.commentInSelection = component.getCommentInSelectionCheckBox();
         this.settings.unCommentSelection = component.getUnCommentSelectionCheckBox();
@@ -67,7 +71,9 @@ public class ConsoleLogConfigurable implements Configurable {
     public void reset() {
         component.setConsoleLogMsg(this.settings.consoleLogMsg);
         component.setAutoFollowEndCheckBox(this.settings.autoFollowEnd);
-        component.setIsDoubleQuote(this.settings.isDoubleQuote);
+        component.setSingleQuoteRadioButton(this.settings.singleQuote);
+        component.setDoubleQuoteRadioButton(this.settings.doubleQuote);
+        component.setBackTickRadioButton(this.settings.backTickQuote);
         component.setDeleteInSelectionCheckBox(this.settings.deleteInSelection);
         component.setCommentInSelectionCheckBox(this.settings.commentInSelection);
         component.setUnCommentSelectionCheckBox(this.settings.unCommentSelection);

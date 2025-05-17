@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 public interface SettingConstant {
     String DOUBLE_QUOTE = "\"";
     String SINGLE_QUOTE = "'";
+    String BACKTICK = "`";
     String CONSOLE_LOG_COMMAND = "console.log(";
     String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(") + "\\s*";
     String CONSOLE_LOG_END_REGEX = "\\s*" + Pattern.quote(",") + ".*" + Pattern.quote(")") + "\\s*" + ";?";

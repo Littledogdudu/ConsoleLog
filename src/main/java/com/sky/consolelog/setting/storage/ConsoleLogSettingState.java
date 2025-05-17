@@ -32,9 +32,17 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      */
     public Boolean autoFollowEnd = true;
     /**
+     * 是否使用单引号
+     */
+    public Boolean singleQuote = false;
+    /**
      * 是否使用双引号
      */
-    public Boolean isDoubleQuote = true;
+    public Boolean doubleQuote = true;
+    /**
+     * 是否使用反引号
+     */
+    public Boolean backTickQuote = false;
     /**
      * 是否仅在选中区域内删除
      */
@@ -58,7 +66,9 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         // 对 consoleLogMsg 进行 Base64 编码后再赋值
         state.consoleLogMsg = Base64Util.encode(this.consoleLogMsg);
         state.autoFollowEnd = this.autoFollowEnd;
-        state.isDoubleQuote = this.isDoubleQuote;
+        state.singleQuote = this.singleQuote;
+        state.doubleQuote = this.doubleQuote;
+        state.backTickQuote = this.backTickQuote;
         state.deleteInSelection = this.deleteInSelection;
         state.commentInSelection = this.commentInSelection;
         state.unCommentSelection = this.unCommentSelection;
@@ -76,7 +86,9 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public void loadState(@NotNull ConsoleLogSettingState state) {
         this.consoleLogMsg = Base64Util.decode(state.consoleLogMsg);
         this.autoFollowEnd = state.autoFollowEnd;
-        this.isDoubleQuote = state.isDoubleQuote;
+        this.singleQuote = state.singleQuote;
+        this.doubleQuote = state.doubleQuote;
+        this.backTickQuote = state.backTickQuote;
         this.deleteInSelection = state.deleteInSelection;
         this.commentInSelection = state.commentInSelection;
         this.unCommentSelection = state.unCommentSelection;

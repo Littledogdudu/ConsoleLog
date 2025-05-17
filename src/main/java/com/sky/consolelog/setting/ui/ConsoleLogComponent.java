@@ -23,12 +23,14 @@ public class ConsoleLogComponent implements Disposable {
     private JLabel methodLabel;
     private JLabel variable;
     private JCheckBox autoFollowEndCheckBox;
-    private JCheckBox isDoubleQuote;
     private JCheckBox deleteInSelectionCheckBox;
     private JCheckBox commentInSelectionCheckBox;
     private JCheckBox unCommentSelectionCheckBox;
     private JCheckBox variableLineNumberCheckBox;
     private JCheckBox fileSuffixCheckBox;
+    private JRadioButton singleQuoteRadioButton;
+    private JRadioButton doubleQuoteRadioButton;
+    private JRadioButton backTickRadioButton;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = event -> {
@@ -37,6 +39,10 @@ public class ConsoleLogComponent implements Disposable {
 
     public ConsoleLogComponent() {
         resetButton.addActionListener(resetButtonActionListener);
+        ButtonGroup signalRadioGroup = new ButtonGroup();
+        signalRadioGroup.add(singleQuoteRadioButton);
+        signalRadioGroup.add(doubleQuoteRadioButton);
+        signalRadioGroup.add(backTickRadioButton);
     }
 
     public JPanel getPanel() {
@@ -59,12 +65,28 @@ public class ConsoleLogComponent implements Disposable {
         autoFollowEndCheckBox.setSelected(checked);
     }
 
-    public Boolean getIsDoubleQuote() {
-        return isDoubleQuote.isSelected();
+    public Boolean getSingleQuoteRadioButton() {
+        return singleQuoteRadioButton.isSelected();
     }
 
-    public void setIsDoubleQuote(Boolean checked) {
-        isDoubleQuote.setSelected(checked);
+    public void setSingleQuoteRadioButton(Boolean checked) {
+        singleQuoteRadioButton.setSelected(checked);
+    }
+
+    public Boolean getDoubleQuoteRadioButton() {
+        return doubleQuoteRadioButton.isSelected();
+    }
+
+    public void setDoubleQuoteRadioButton(Boolean checked) {
+        doubleQuoteRadioButton.setSelected(checked);
+    }
+
+    public Boolean getBackTickRadioButton() {
+        return backTickRadioButton.isSelected();
+    }
+
+    public void setBackTickRadioButton(Boolean checked) {
+        backTickRadioButton.setSelected(checked);
     }
 
     public Boolean getDeleteInSelectionCheckBox() {

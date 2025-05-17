@@ -2,6 +2,7 @@ package com.sky.consolelog.utils;
 
 import com.sky.consolelog.setting.ConsoleLogSettingVo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
+import com.sky.consolelog.utils.strategy.text.BacktickTextFormatStrategy;
 import com.sky.consolelog.utils.strategy.text.DoubleQuoteTextFormatStrategy;
 import com.sky.consolelog.utils.strategy.text.SingleQuoteTextFormatStrategy;
 import com.sky.consolelog.utils.strategy.text.TextFormatStrategy;
@@ -22,7 +23,7 @@ public class TextFormatContext {
     /**
      * 策略对象缓存（即单例模式）
      */
-    private final Map<Class<? extends TextFormatStrategy>, TextFormatStrategy> cache = new HashMap<>(2);
+    private final Map<Class<? extends TextFormatStrategy>, TextFormatStrategy> cache = new HashMap<>(3);
 
     public static String CONSOLE_LOG_COMMAND = "console.log(\"";
     public static String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\\s*\"");
@@ -31,8 +32,12 @@ public class TextFormatContext {
 
     public void setTextFormatStrategyByProjectSetting(ConsoleLogSettingState settings) {
         Class<? extends TextFormatStrategy> strategy = DoubleQuoteTextFormatStrategy.class;
-        if (settings != null && !settings.isDoubleQuote) {
-            strategy = SingleQuoteTextFormatStrategy.class;
+        if (settings != null) {
+            if (settings.singleQuote) {
+                strategy = SingleQuoteTextFormatStrategy.class;
+            } else if (settings.backTickQuote) {
+                strategy = BacktickTextFormatStrategy.class;
+            }
         }
         this.setStrategy(strategy);
         CONSOLE_LOG_COMMAND = textFormatStrategy.getBeginText();
