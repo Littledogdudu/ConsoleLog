@@ -33,7 +33,9 @@ public class PsiPositionUtil {
                  PsiPosition.Loop.JS_FOR_IN_STATEMENT,
                  PsiPosition.Expression.JS_FUNCTION_PROPERTY,
                  PsiPosition.Expression.JS_FUNCTION_EXPRESSION,
-                 PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_EXPRESSION -> getMiddleBlockStatement(element);
+                 PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_EXPRESSION,
+                 PsiPosition.Expression.JS_FUNCTION,
+                 PsiPosition.Exception.JS_CATCH_BLOCK -> getMiddleBlockStatement(element);
             case PsiPosition.Condition.JS_CASE_CLAUSE -> getAfterColon(element);
             case PsiPosition.Loop.JS_DO_WHILE_STATEMENT -> getMiddleBlockStatementBeforeEnd(element);
             case PsiPosition.Expression.JS_CALL_EXPRESSION -> getJSCallExpression(element);
@@ -82,7 +84,8 @@ public class PsiPositionUtil {
                     }
                 }
                 break;
-            case PsiPosition.Expression.JS_EXPRESSION_STATEMENT:
+            case PsiPosition.Expression.JS_EXPRESSION_STATEMENT,
+                 PsiPosition.Condition.JS_IF_STATEMENT:
                 return getMiddleBlockStatement(parent);
             default:
                 break;
