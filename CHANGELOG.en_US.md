@@ -5,9 +5,19 @@
 
 ## [Unreleased]
 
+## [1.1.3] - 2025-05-16
+
+### Feature
+- In addition to single quotes, backticks (') support has been added
+
+### Fixed
+- The issue of inserting catch statement blocks, if judgment expressions, and some function parameters into the position is fixed
+
 ## [1.1.2] - 2025-05-15
 
+### Feature
 - Support adding file names and line numbers in formatted strings(proposed by yan.wt)
+
 ## [1.1.1] - 2025-05-12
 
 ### Fix
