@@ -178,7 +178,7 @@ public class InsertConsoleLogAction extends AnAction {
         int count = 0;
         ScopeOffset offset = PsiPositionUtil.getScopeOffsetByType(element);
         PsiElement parent = element.getParent();
-        while (parent != null && offset == null && count++ < 5) {
+        while (parent != null && offset == null && count++ < 10) {
             offset = PsiPositionUtil.getScopeOffsetByType(parent);
             if (offset != null) {
                 return offset;
