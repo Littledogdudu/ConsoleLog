@@ -23,7 +23,6 @@ import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.PsiPositionUtil;
 import com.sky.consolelog.utils.PsiVariableUtil;
 import com.sky.consolelog.utils.TextFormatContext;
-import com.sky.consolelog.utils.TextFormatContextSingleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -78,8 +77,7 @@ public class InsertConsoleLogAction extends AnAction {
 
         // 构建 console.log
         // 获取文本格式上下文单例的同时更新策略
-        TextFormatContext textFormatContext = TextFormatContextSingleton.getInstance();
-        String consoleLogMsg = textFormatContext.getCustomHandleConsoleLogMsg(settings.consoleLogMsg, consoleLogSettingVo);
+        String consoleLogMsg = TextFormatContext.INSTANCE.getCustomHandleConsoleLogMsg(settings.consoleLogMsg, consoleLogSettingVo);
 
         insertConsoleLogMsg(project, editor, psiFile, caret, scopeOffset, consoleLogMsg);
     }

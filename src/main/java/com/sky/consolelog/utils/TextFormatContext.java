@@ -7,9 +7,6 @@ import com.sky.consolelog.utils.strategy.text.DoubleQuoteTextFormatStrategy;
 import com.sky.consolelog.utils.strategy.text.SingleQuoteTextFormatStrategy;
 import com.sky.consolelog.utils.strategy.text.TextFormatStrategy;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -18,12 +15,14 @@ import java.util.regex.Pattern;
  * @author SkySource
  * @Date: 2025/4/4 23:12
  */
-public class TextFormatContext {
-    private TextFormatStrategy textFormatStrategy;
+public enum TextFormatContext {
     /**
-     * 策略对象缓存（即单例模式）
+     * 文本格式策略 枚举方式实现单例模式<br/>
+     * 枚举方式实现单例模式可有效防止反射攻击和反序列化攻击，本质上也是饿汉单例
      */
-    private final Map<Class<? extends TextFormatStrategy>, TextFormatStrategy> cache = new HashMap<>(3);
+    INSTANCE;
+
+    private TextFormatStrategy textFormatStrategy;
 
     public static String FORM_SIGNAL = "\"";
     public static String CONSOLE_LOG_COMMAND = "console.log(" + FORM_SIGNAL;
@@ -32,12 +31,12 @@ public class TextFormatContext {
     public static String CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = "console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\\s*") + FORM_SIGNAL;
 
     public void setTextFormatStrategyByProjectSetting(ConsoleLogSettingState settings) {
-        Class<? extends TextFormatStrategy> strategy = DoubleQuoteTextFormatStrategy.class;
+        TextFormatStrategy strategy = DoubleQuoteTextFormatStrategy.getInstance();
         if (settings != null) {
             if (settings.singleQuote) {
-                strategy = SingleQuoteTextFormatStrategy.class;
+                strategy = SingleQuoteTextFormatStrategy.getInstance();
             } else if (settings.backTickQuote) {
-                strategy = BacktickTextFormatStrategy.class;
+                strategy = BacktickTextFormatStrategy.getInstance();
             }
         }
         this.setStrategy(strategy);
@@ -52,16 +51,8 @@ public class TextFormatContext {
     /**
      * 设置文本格式策略
      */
-    public void setStrategy(Class<? extends TextFormatStrategy> clazz) {
-        if (cache.get(clazz) == null) {
-            try {
-                cache.put(clazz, clazz.getDeclaredConstructor().newInstance());
-            } catch (InstantiationException | InvocationTargetException | IllegalAccessException |
-                     NoSuchMethodException e) {
-                throw new RuntimeException("I am so sorry, 没有找到对应的策略");
-            }
-        }
-        this.textFormatStrategy = cache.get(clazz);
+    public void setStrategy(TextFormatStrategy strategy) {
+        this.textFormatStrategy = strategy;
     }
 
     public String getCustomHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {

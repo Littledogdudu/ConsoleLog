@@ -5,7 +5,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.util.NlsContexts;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.setting.ui.ConsoleLogComponent;
-import com.sky.consolelog.utils.TextFormatContextSingleton;
+import com.sky.consolelog.utils.TextFormatContext;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -86,7 +86,7 @@ public class ConsoleLogConfigurable implements Configurable {
     public static void finalSetting(ConsoleLogSettingState settings, ConsoleLogComponent component) {
         if (settings != null) {
             // 更新TextFormatContext的CONSOLE常量
-            TextFormatContextSingleton.getInstance().setTextFormatStrategyByProjectSetting(settings);
+            TextFormatContext.INSTANCE.setTextFormatStrategyByProjectSetting(settings);
         }
     }
 }
