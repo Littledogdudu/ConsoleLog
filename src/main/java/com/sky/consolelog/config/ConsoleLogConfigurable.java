@@ -7,7 +7,6 @@ import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.setting.ui.ConsoleLogComponent;
 import com.sky.consolelog.utils.TextFormatContext;
 import com.sky.consolelog.utils.FileTypeUtil;
-import com.sky.consolelog.utils.TextFormatContextSingleton;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;

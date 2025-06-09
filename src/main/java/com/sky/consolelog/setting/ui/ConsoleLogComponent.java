@@ -31,6 +31,9 @@ public class ConsoleLogComponent implements Disposable {
     private JRadioButton singleQuoteRadioButton;
     private JRadioButton doubleQuoteRadioButton;
     private JRadioButton backTickRadioButton;
+    private JPanel basic;
+    private JPanel format;
+    private JPanel component;
     private JCheckBox enableSideWindow;
     private JCheckBox fileTypeAllInCheckBox;
     private JCheckBox vueSideCheckBox;
