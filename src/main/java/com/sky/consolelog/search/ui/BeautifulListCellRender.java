@@ -1,14 +1,14 @@
 package com.sky.consolelog.search.ui;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.GraphicsUtil;
 import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.UIUtil;
 import com.sky.consolelog.entities.ConsoleLogSearchInfo;
+import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentListener;
 
 /**
  * 列表样式渲染器
@@ -17,8 +17,9 @@ import java.awt.event.ComponentListener;
  * @Date: 2025/4/18 21:41:30
  */
 public class BeautifulListCellRender extends JPanel implements ListCellRenderer<ConsoleLogSearchInfo> {
-    private final JLabel textLabel;
-    private final JLabel lineLabel;
+    private static JLabel textLabel;
+    private static JLabel lineLabel;
+    private static JLabel arrowLabel;
 
     public BeautifulListCellRender() {
         setLayout(new BorderLayout());
@@ -26,18 +27,26 @@ public class BeautifulListCellRender extends JPanel implements ListCellRenderer<
         setBackground(JBColor.WHITE);
         setBorder(JBUI.Borders.empty(10));
 
-        textLabel = new JLabel();
+        ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
+        setSideListItemFontSize(settings.sideFontSize);
+        // 表达式文本标签
         textLabel.setOpaque(false);
-        textLabel.setFont(UIUtil.getLabelFont(UIUtil.FontSize.SMALL));
         textLabel.setForeground(JBColor.BLACK);
-
-        lineLabel = new JLabel();
+        // 行号标签
         lineLabel.setOpaque(false);
-        lineLabel.setFont(UIUtil.getLabelFont(UIUtil.FontSize.SMALL));
         lineLabel.setForeground(JBColor.GRAY);
+        // 箭头标签
+        arrowLabel.setOpaque(false);
+        arrowLabel.setForeground(JBColor.GRAY);
 
+        // 创建一个中间面板来容纳 lineLabel、arrowLabel 和 textLabel
+        JPanel lineArrow = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        lineArrow.setOpaque(false);
+        lineArrow.add(lineLabel);
+        lineArrow.add(arrowLabel);
+
+        add(lineArrow, BorderLayout.WEST);
         add(textLabel, BorderLayout.CENTER);
-        add(lineLabel, BorderLayout.EAST);
     }
 
     @Override
@@ -81,5 +90,17 @@ public class BeautifulListCellRender extends JPanel implements ListCellRenderer<
             return text + "【" + line + "】";
         }
         return null;
+    }
+
+    public static void setSideListItemFontSize(int size) {
+        Font font = new Font(UIManager.getFont("Label.font").getFontName(), Font.PLAIN, size);
+        if (textLabel == null || lineLabel == null || arrowLabel == null) {
+            textLabel = new JLabel();
+            lineLabel = new JLabel();
+            arrowLabel = new JLabel("→");
+        }
+        textLabel.setFont(font);
+        lineLabel.setFont(font);
+        arrowLabel.setFont(font);
     }
 }

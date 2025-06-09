@@ -9,6 +9,7 @@ import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.utils.Base64Util;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -89,6 +90,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      */
     public Boolean textSide = false;
     public static List<String> fileTypeList = new ArrayList<>(6);
+    /** 侧边栏字体大小 */
+    public Integer sideFontSize = UIManager.getFont("Label.font").getSize();
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -104,6 +107,13 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.unCommentSelection = this.unCommentSelection;
         state.variableLineNumber = this.variableLineNumber;
         state.fileSuffix = this.fileSuffix;
+        state.enableSideWindow = this.enableSideWindow;
+        state.fileTypeAllIn = this.fileTypeAllIn;
+        state.vueSide = this.vueSide;
+        state.javaScriptSide = this.javaScriptSide;
+        state.typeScriptSide = this.typeScriptSide;
+        state.textSide = this.textSide;
+        state.sideFontSize = this.sideFontSize;
         return state;
     }
 
@@ -130,6 +140,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.javaScriptSide = state.javaScriptSide;
         this.typeScriptSide = state.typeScriptSide;
         this.textSide = state.textSide;
+        this.sideFontSize = state.sideFontSize;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }

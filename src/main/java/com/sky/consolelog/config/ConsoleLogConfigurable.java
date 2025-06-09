@@ -49,6 +49,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getJavaScriptSideCheckBox().equals(this.settings.javaScriptSide)
                 || !component.getTypeScriptSideCheckBox().equals(this.settings.typeScriptSide)
                 || !component.getTextSideCheckBox().equals(this.settings.textSide)
+                || !component.getSideFontSize().equals(this.settings.sideFontSize)
                 ;
     }
 
@@ -75,6 +76,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.javaScriptSide = component.getJavaScriptSideCheckBox();
         this.settings.typeScriptSide = component.getTypeScriptSideCheckBox();
         this.settings.textSide = component.getTextSideCheckBox();
+        this.settings.sideFontSize = component.getSideFontSize();
 
         finalSetting(settings, component);
     }
@@ -100,6 +102,7 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setJavaScriptSideCheckBox(this.settings.javaScriptSide);
         component.setTypeScriptSideCheckBox(this.settings.typeScriptSide);
         component.setTextSideCheckBox(this.settings.textSide);
+        component.setSideFontSize(this.settings.sideFontSize);
 
         finalSetting(settings, component);
     }
@@ -115,6 +118,8 @@ public class ConsoleLogConfigurable implements Configurable {
             // 设置禁用关系
             component.setLanguageCheckBoxStatus();
             component.setEnableSideWindowStatus();
+            // 如果没有配置字体大小，则设置默认
+            component.setDefaultSideFontSize();
         }
     }
 }

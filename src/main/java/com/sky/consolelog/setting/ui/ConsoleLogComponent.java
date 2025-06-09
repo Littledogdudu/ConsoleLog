@@ -2,6 +2,8 @@ package com.sky.consolelog.setting.ui;
 
 import com.intellij.openapi.Disposable;
 import com.sky.consolelog.constant.SettingConstant;
+import com.sky.consolelog.search.ui.BeautifulListCellRender;
+import com.sky.consolelog.search.ui.ConsoleLogToolWindowComponent;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -40,6 +42,7 @@ public class ConsoleLogComponent implements Disposable {
     private JCheckBox javaScriptSideCheckBox;
     private JCheckBox typeScriptSideCheckBox;
     private JCheckBox textSideCheckBox;
+    private JComboBox<Integer> sideFontSize;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = e -> setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
@@ -54,18 +57,22 @@ public class ConsoleLogComponent implements Disposable {
         signalRadioGroup.add(backTickRadioButton);
         enableSideWindow.addActionListener(enableSideWindowActionListener);
         fileTypeAllInCheckBox.addActionListener(fileTypeAllInCheckBoxActionListener);
+        setSideFontSizeOptions();
+        setDefaultSideFontSize();
     }
 
     public void setEnableSideWindowStatus() {
-        if (enableSideWindow.isSelected()) {
+        if (getEnableSideWindow()) {
             fileTypeAllInCheckBox.setEnabled(true);
             setLanguageCheckBoxStatus();
+            sideFontSize.setEnabled(true);
         } else {
             fileTypeAllInCheckBox.setEnabled(false);
             vueSideCheckBox.setEnabled(false);
             javaScriptSideCheckBox.setEnabled(false);
             typeScriptSideCheckBox.setEnabled(false);
             textSideCheckBox.setEnabled(false);
+            sideFontSize.setEnabled(false);
         }
     }
 
@@ -81,6 +88,22 @@ public class ConsoleLogComponent implements Disposable {
             javaScriptSideCheckBox.setEnabled(true);
             typeScriptSideCheckBox.setEnabled(true);
             textSideCheckBox.setEnabled(true);
+        }
+    }
+
+    private void setSideFontSizeOptions() {
+        for (int size = 8; size <= 72; size += 2) {
+            sideFontSize.addItem(size);
+        }
+    }
+
+    /**
+     * 尝试重新渲染侧边栏字体大小
+     */
+    public void setDefaultSideFontSize() {
+        if (getEnableSideWindow()) {
+            // 重新渲染侧边栏样式
+            ConsoleLogToolWindowComponent.setLogListCellRender(new BeautifulListCellRender());
         }
     }
 
@@ -214,6 +237,14 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setFileTypeAllInCheckBox(Boolean checked) {
         fileTypeAllInCheckBox.setSelected(checked);
+    }
+
+    public Integer getSideFontSize() {
+        return (Integer) sideFontSize.getSelectedItem();
+    }
+
+    public void setSideFontSize(Integer size) {
+        sideFontSize.setSelectedItem(size);
     }
 
     @Override

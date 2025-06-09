@@ -30,6 +30,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +45,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     private final JLabel tip;
     private final JBCheckBox commentCheckBox;
     private final JBCheckBox specCheckBox;
-    private final JBList<ConsoleLogSearchInfo> logList;
+    private static JBList<ConsoleLogSearchInfo> logList;
     private final DefaultListModel<ConsoleLogSearchInfo> model;
     private final Project project;
 
@@ -86,7 +87,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         JSeparator separator = new JSeparator();
 
         // 触发快速查找
-        logList.setCellRenderer(new BeautifulListCellRender());
+        setLogListCellRender(new BeautifulListCellRender());
 
         panel.add(topBox, BorderLayout.NORTH);
         panel.add(separator, BorderLayout.CENTER);
@@ -246,6 +247,14 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             ConsoleLogSearchInfo searchInfo = new ConsoleLogSearchInfo(searchText, lineNumber, end);
             model.addElement(searchInfo);
         }
+    }
+
+    public static void setLogListCellRender(ListCellRenderer<ConsoleLogSearchInfo> render) {
+        if (Objects.isNull(logList)) {
+            return;
+        }
+        logList.setCellRenderer(render);
+        logList.repaint();
     }
 
     public JComponent getComponent() {
