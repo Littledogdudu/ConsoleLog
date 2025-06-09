@@ -41,6 +41,8 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
     public @NotNull String getCustomHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.VARIABLE_REGEX, consoleLogSettingVo.getVariableName());
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
         return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
                 consoleLogMsg + this.getFormSignal() + ", " + consoleLogSettingVo.getVariableName() + ");";
     }

@@ -4,7 +4,6 @@ import com.intellij.openapi.Disposable;
 import com.sky.consolelog.constant.SettingConstant;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
@@ -24,7 +23,14 @@ public class ConsoleLogComponent implements Disposable {
     private JLabel methodLabel;
     private JLabel variable;
     private JCheckBox autoFollowEndCheckBox;
-    private JCheckBox isDoubleQuote;
+    private JCheckBox deleteInSelectionCheckBox;
+    private JCheckBox commentInSelectionCheckBox;
+    private JCheckBox unCommentSelectionCheckBox;
+    private JCheckBox variableLineNumberCheckBox;
+    private JCheckBox fileSuffixCheckBox;
+    private JRadioButton singleQuoteRadioButton;
+    private JRadioButton doubleQuoteRadioButton;
+    private JRadioButton backTickRadioButton;
     private JCheckBox enableSideWindow;
     private JCheckBox fileTypeAllInCheckBox;
     private JCheckBox vueSideCheckBox;
@@ -33,27 +39,16 @@ public class ConsoleLogComponent implements Disposable {
     private JCheckBox textSideCheckBox;
 
     /** 清空按钮监听器 */
-    private final ActionListener resetButtonActionListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
-        }
-    };
-    private final ActionListener enableSideWindowActionListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            setEnableSideWindowStatus();
-        }
-    };
-    private final ActionListener fileTypeAllInCheckBoxActionListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            setLanguageCheckBoxStatus();
-        }
-    };
+    private final ActionListener resetButtonActionListener = e -> setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
+    private final ActionListener enableSideWindowActionListener = e -> setEnableSideWindowStatus();
+    private final ActionListener fileTypeAllInCheckBoxActionListener = e -> setLanguageCheckBoxStatus();
 
     public ConsoleLogComponent() {
         resetButton.addActionListener(resetButtonActionListener);
+        ButtonGroup signalRadioGroup = new ButtonGroup();
+        signalRadioGroup.add(singleQuoteRadioButton);
+        signalRadioGroup.add(doubleQuoteRadioButton);
+        signalRadioGroup.add(backTickRadioButton);
         enableSideWindow.addActionListener(enableSideWindowActionListener);
         fileTypeAllInCheckBox.addActionListener(fileTypeAllInCheckBoxActionListener);
     }
@@ -106,12 +101,68 @@ public class ConsoleLogComponent implements Disposable {
         autoFollowEndCheckBox.setSelected(checked);
     }
 
-    public Boolean getIsDoubleQuote() {
-        return isDoubleQuote.isSelected();
+    public Boolean getSingleQuoteRadioButton() {
+        return singleQuoteRadioButton.isSelected();
     }
 
-    public void setIsDoubleQuote(Boolean checked) {
-        isDoubleQuote.setSelected(checked);
+    public void setSingleQuoteRadioButton(Boolean checked) {
+        singleQuoteRadioButton.setSelected(checked);
+    }
+
+    public Boolean getDoubleQuoteRadioButton() {
+        return doubleQuoteRadioButton.isSelected();
+    }
+
+    public void setDoubleQuoteRadioButton(Boolean checked) {
+        doubleQuoteRadioButton.setSelected(checked);
+    }
+
+    public Boolean getBackTickRadioButton() {
+        return backTickRadioButton.isSelected();
+    }
+
+    public void setBackTickRadioButton(Boolean checked) {
+        backTickRadioButton.setSelected(checked);
+    }
+
+    public Boolean getDeleteInSelectionCheckBox() {
+        return deleteInSelectionCheckBox.isSelected();
+    }
+
+    public void setDeleteInSelectionCheckBox(Boolean checked) {
+        this.deleteInSelectionCheckBox.setSelected(checked);
+    }
+
+    public Boolean getCommentInSelectionCheckBox() {
+        return commentInSelectionCheckBox.isSelected();
+    }
+
+    public void setCommentInSelectionCheckBox(Boolean checked) {
+        this.commentInSelectionCheckBox.setSelected(checked);
+    }
+
+    public Boolean getUnCommentSelectionCheckBox() {
+        return unCommentSelectionCheckBox.isSelected();
+    }
+
+    public void setUnCommentSelectionCheckBox(Boolean checked) {
+        this.unCommentSelectionCheckBox.setSelected(checked);
+    }
+
+    public Boolean getVariableLineNumberCheckBox() {
+        return variableLineNumberCheckBox.isSelected();
+    }
+
+    public void setVariableLineNumberCheckBox(Boolean checked) {
+        this.variableLineNumberCheckBox.setSelected(checked);
+    }
+
+    public Boolean getFileSuffixCheckBox() {
+        return fileSuffixCheckBox.isSelected();
+    }
+
+    public void setFileSuffixCheckBox(Boolean checked) {
+        this.fileSuffixCheckBox.setSelected(checked);
     }
 
     public Boolean getEnableSideWindow() {

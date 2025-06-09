@@ -6,7 +6,10 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.sky.consolelog.config.ConsoleLogConfigurable;
 import com.sky.consolelog.constant.SettingConstant;
+import com.sky.consolelog.utils.Base64Util;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +22,10 @@ import java.util.List;
  */
 @State(
         name = "com.sky.consolelog.idea.plugin.setting.storage.ConsoleLogSettingState",
-        storages = @Storage("console-log-setting.xml")
+        storages = @Storage(value = "console-log-setting.xml")
 )
 @Service(value = Service.Level.APP)
-public final class ConsoleLogSettingState implements PersistentStateComponent<ConsoleLogSettingState> {
+public final class ConsoleLogSettingState implements PersistentStateComponent<ConsoleLogSettingState>, Serializable {
     /**
      * 默认打印语句
      */
@@ -32,9 +35,33 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      */
     public Boolean autoFollowEnd = true;
     /**
+     * 是否使用单引号
+     */
+    public Boolean singleQuote = false;
+    /**
      * 是否使用双引号
      */
-    public Boolean isDoubleQuote = true;
+    public Boolean doubleQuote = true;
+    /**
+     * 是否使用反引号
+     */
+    public Boolean backTickQuote = false;
+    /**
+     * 是否仅在选中区域内删除
+     */
+    public Boolean deleteInSelection = true;
+    /**
+     * 是否仅在选中区域内注释
+     */
+    public Boolean commentInSelection = true;
+    /**
+     * 是否仅在选中区域内取消注释
+     */
+    public Boolean unCommentSelection = true;
+    /** 行号是否使用打印变量所在的行号 */
+    public Boolean variableLineNumber = false;
+    /** 打印的文件名是否需要后缀名 */
+    public Boolean fileSuffix = true;
 
     /**
      * 是否启用侧边栏（重启生效）
@@ -65,7 +92,19 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
-        return this;
+        ConsoleLogSettingState state = new ConsoleLogSettingState();
+        // 对 consoleLogMsg 进行 Base64 编码后再赋值
+        state.consoleLogMsg = Base64Util.encode(this.consoleLogMsg);
+        state.autoFollowEnd = this.autoFollowEnd;
+        state.singleQuote = this.singleQuote;
+        state.doubleQuote = this.doubleQuote;
+        state.backTickQuote = this.backTickQuote;
+        state.deleteInSelection = this.deleteInSelection;
+        state.commentInSelection = this.commentInSelection;
+        state.unCommentSelection = this.unCommentSelection;
+        state.variableLineNumber = this.variableLineNumber;
+        state.fileSuffix = this.fileSuffix;
+        return state;
     }
 
     @Override
@@ -75,15 +114,23 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
 
     @Override
     public void loadState(@NotNull ConsoleLogSettingState state) {
-        this.consoleLogMsg = state.consoleLogMsg;
+        this.consoleLogMsg = Base64Util.decode(state.consoleLogMsg);
         this.autoFollowEnd = state.autoFollowEnd;
-        this.isDoubleQuote = state.isDoubleQuote;
+        this.singleQuote = state.singleQuote;
+        this.doubleQuote = state.doubleQuote;
+        this.backTickQuote = state.backTickQuote;
+        this.deleteInSelection = state.deleteInSelection;
+        this.commentInSelection = state.commentInSelection;
+        this.unCommentSelection = state.unCommentSelection;
+        this.variableLineNumber = state.variableLineNumber;
+        this.fileSuffix = state.fileSuffix;
         this.enableSideWindow = state.enableSideWindow;
         this.fileTypeAllIn = state.fileTypeAllIn;
         this.vueSide = state.vueSide;
         this.javaScriptSide = state.javaScriptSide;
         this.typeScriptSide = state.typeScriptSide;
         this.textSide = state.textSide;
+
         ConsoleLogConfigurable.finalSetting(this, null);
     }
 }

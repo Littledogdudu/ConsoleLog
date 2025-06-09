@@ -15,6 +15,7 @@ import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
+import com.sky.consolelog.utils.TextRangeHandle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -53,9 +54,13 @@ public class UnCommentAllConsoleLogAction extends AnAction {
 
         Document document = editor.getDocument();
         List<TextRange> consoleLogRangeList = ConsoleLogPsiUtil.detectAllOnlyComment(psiFile);
+
+        // 处理选中区域和console.log表达式
+        List<TextRange> consoleLogNewRangeList = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogRangeList, settings.unCommentSelection);
+
         WriteCommandAction.runWriteCommandAction(project, () -> {
             int deleteStringSize = 0;
-            for (TextRange range : consoleLogRangeList) {
+            for (TextRange range : consoleLogNewRangeList) {
                 TextRange newRange = new TextRange(range.getStartOffset() - deleteStringSize, range.getEndOffset() - deleteStringSize);
                 String text = document.getText(newRange);
                 Matcher matcher = pattern.matcher(text);

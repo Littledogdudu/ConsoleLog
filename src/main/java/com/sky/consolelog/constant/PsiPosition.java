@@ -53,6 +53,7 @@ public interface PsiPosition {
          * });
          */
         String JS_EXPRESSION_STATEMENT = "JSExpressionStatement";
+        String JS_FUNCTION = "JSFunction";
     }
 
     /**
@@ -86,6 +87,13 @@ public interface PsiPosition {
         String JS_FOR_IN_STATEMENT = "JSForInStatement";
         String JS_FOR_STATEMENT = "JSForStatement";
         List<String> JS_FOR_STATEMENT_LIST = Arrays.asList(JS_FOR_IN_STATEMENT, JS_FOR_STATEMENT);
+    }
+
+    /**
+     * 异常捕获
+     */
+    interface Exception {
+        String JS_CATCH_BLOCK = "JSCatchBlock";
     }
 
 

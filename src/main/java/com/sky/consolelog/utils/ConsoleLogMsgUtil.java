@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 public class ConsoleLogMsgUtil {
 
     private static String currentConsoleLogMsg = "";
+    private static String currentFormSignal = "";
     private static String consoleLogMsgRegex = "";
 
     /**
@@ -35,7 +36,7 @@ public class ConsoleLogMsgUtil {
             return null;
         }
 
-        if (settings.consoleLogMsg.equals(currentConsoleLogMsg)) {
+        if (settings.consoleLogMsg.equals(currentConsoleLogMsg) && TextFormatContext.FORM_SIGNAL.equals(currentFormSignal)) {
             return consoleLogMsgRegex;
         }
         StringBuilder regexConsoleLogMsg = new StringBuilder();
@@ -79,6 +80,7 @@ public class ConsoleLogMsgUtil {
         }
         regexConsoleLogMsg.append(endRegex);
 
+        currentFormSignal = TextFormatContext.FORM_SIGNAL;
         currentConsoleLogMsg = settings.consoleLogMsg;
         consoleLogMsgRegex = regexConsoleLogMsg.toString();
         return consoleLogMsgRegex;

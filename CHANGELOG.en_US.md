@@ -9,8 +9,31 @@
 
 ### Feature
 - You can set whether to enable the sidebar in the plug-in settings, and the sidebar displays all print expressions of the currently open file (enabled by default)
-- The sidebar supports clicking on the print statement that is located to the corresponding line. 
+- The sidebar supports clicking on the print statement that is located to the corresponding line.
 - Sidebar support query All print expressions without annotations are only those that conform to the plug-in specification format
+
+## [1.1.3] - 2025-05-16
+
+### Feature
+- In addition to single quotes, backticks (') support has been added
+
+### Fixed
+- The issue of inserting catch statement blocks, if judgment expressions, and some function parameters into the position is fixed
+
+## [1.1.2] - 2025-05-15
+
+### Feature
+- Support adding file names and line numbers in formatted strings(proposed by yan.wt)
+
+## [1.1.1] - 2025-05-12
+
+### Fix
+- Fix bug🐛: PSI JS type casting issue (proposed by igor.pavlenko)
+
+## [1.1.0] - 2025-05-04
+
+### Feature
+- When selecting Chinese book, delete annotation only in the selected area
 
 ## [1.0.6] - 2025-04-17
 
