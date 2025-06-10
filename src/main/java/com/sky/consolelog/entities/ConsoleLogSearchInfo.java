@@ -13,11 +13,14 @@ public class ConsoleLogSearchInfo {
     private Integer line;
     /** 打印表达式末尾偏移量 */
     private Integer endOffset;
+    /** 节点级别（类树状结构） */
+    private Integer level = 0;
 
-    public ConsoleLogSearchInfo(String text, Integer line, Integer endOffset) {
+    public ConsoleLogSearchInfo(String text, Integer line, Integer endOffset, Integer level) {
         this.text = text;
         this.line = line;
         this.endOffset = endOffset;
+        this.level = level;
     }
 
     public String getText() {
@@ -42,5 +45,13 @@ public class ConsoleLogSearchInfo {
 
     public void setEndOffset(Integer endOffset) {
         this.endOffset = endOffset;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 }

@@ -9,6 +9,7 @@ import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Optional;
 
 /**
  * 列表样式渲染器
@@ -53,6 +54,11 @@ public class BeautifulListCellRender extends JPanel implements ListCellRenderer<
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         GraphicsUtil.setupAntialiasing(g2);
+
+        // 层级属性设置
+        int level = Optional.of((Integer)getClientProperty("level")).orElse(0);
+        g2.translate(level * 20, 0);
+
         g2.setColor(new JBColor(new Color(0, 0, 0, 20), new Color(169, 169, 169, 20)));
         g2.fillRoundRect(0, 0, getWidth() - 5, getHeight() - 5, 10, 10);
         g2.dispose();
@@ -66,6 +72,10 @@ public class BeautifulListCellRender extends JPanel implements ListCellRenderer<
             textLabel.setText(value.getText());
             lineLabel.setText(line);
             setToolTipText(createToolTipText(value.getText(), line));
+            // 设置该数据的层级属性传递给paintComponent方法
+            int level = value.getLevel();
+            putClientProperty("level", level);
+            lineLabel.setBorder(JBUI.Borders.emptyLeft(level * 20));
         } else {
             textLabel.setText("");
             lineLabel.setText("");

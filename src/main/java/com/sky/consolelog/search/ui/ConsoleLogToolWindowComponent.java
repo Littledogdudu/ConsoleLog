@@ -23,6 +23,7 @@ import com.sky.consolelog.entities.ConsoleLogSearchInfo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.TextFormatContext;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -43,8 +44,12 @@ import java.util.regex.Pattern;
 public class ConsoleLogToolWindowComponent implements Disposable {
     private final JPanel panel;
     private final JLabel tip;
+    /** 显示注释项 */
     private final JBCheckBox commentCheckBox;
+    /** 启用针对性查找 */
     private final JBCheckBox specCheckBox;
+    /** 开启标签查找 */
+    private final JBCheckBox levelCheckBox;
     private static JBList<ConsoleLogSearchInfo> logList;
     private final DefaultListModel<ConsoleLogSearchInfo> model;
     private final Project project;
@@ -70,6 +75,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         tip = new JLabel("");
         commentCheckBox = new JBCheckBox();
         specCheckBox = new JBCheckBox();
+        levelCheckBox = new JBCheckBox();
         model = new DefaultListModel<>();
         logList = new JBList<>(model);
 
@@ -210,20 +216,25 @@ public class ConsoleLogToolWindowComponent implements Disposable {
 
         String context = document.getText();
         Matcher matcher = null;
+        StringBuilder regexBuilder = new StringBuilder("(");
         if (specCheckBox.isSelected()) {
             // 只查找插件指定格式的表达式
             String consoleLogMsgRegex = ConsoleLogMsgUtil.buildRegexConsoleLogMsg(settings, TextFormatContext.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE, TextFormatContext.CONSOLE_LOG_END_REGEX);
-            if (consoleLogMsgRegex != null) {
-                Pattern pattern = Pattern.compile(consoleLogMsgRegex);
-                matcher = pattern.matcher(context);
+            if (consoleLogMsgRegex == null) {
+                return;
             }
+            regexBuilder.append(consoleLogMsgRegex);
         } else {
             // 查找所有控制台打印表达式
-            Pattern beginRegex = Pattern.compile(SettingConstant.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE);
-            matcher = beginRegex.matcher(context);
+            regexBuilder.append(SettingConstant.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE);
         }
 
-        while (matcher != null && matcher.find()) {
+        regexBuilder.append(")");
+        settings.tags.stream().filter(StringUtils::isNotEmpty).forEach(tag -> regexBuilder.append("|(").append(tag).append(")"));
+        Pattern pattern = Pattern.compile(regexBuilder.toString());
+        matcher = pattern.matcher(context);
+
+        while (matcher.find()) {
             // 打印表达式起始位置
             int start = matcher.start();
             // 打印表达式所在行号
@@ -244,7 +255,11 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             // 打印表达式所在行末尾位置
             int end = document.getLineEndOffset(lineNumber);
             String searchText = context.substring(start, end).replaceAll("\n", "").trim();
-            ConsoleLogSearchInfo searchInfo = new ConsoleLogSearchInfo(searchText, lineNumber, end);
+            int level = 0;
+            if (StringUtils.isNotEmpty(matcher.group(1))) {
+                level = 1;
+            }
+            ConsoleLogSearchInfo searchInfo = new ConsoleLogSearchInfo(searchText, lineNumber, end, level);
             model.addElement(searchInfo);
         }
     }

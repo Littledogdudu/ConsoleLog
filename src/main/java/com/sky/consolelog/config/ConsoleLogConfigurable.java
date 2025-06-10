@@ -50,6 +50,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getTypeScriptSideCheckBox().equals(this.settings.typeScriptSide)
                 || !component.getTextSideCheckBox().equals(this.settings.textSide)
                 || !component.getSideFontSize().equals(this.settings.sideFontSize)
+                || !component.getTags().equals(this.settings.tags)
                 ;
     }
 
@@ -77,6 +78,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.typeScriptSide = component.getTypeScriptSideCheckBox();
         this.settings.textSide = component.getTextSideCheckBox();
         this.settings.sideFontSize = component.getSideFontSize();
+        this.settings.tags = component.getTags();
 
         finalSetting(settings, component);
     }
@@ -103,6 +105,7 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setTypeScriptSideCheckBox(this.settings.typeScriptSide);
         component.setTextSideCheckBox(this.settings.textSide);
         component.setSideFontSize(this.settings.sideFontSize);
+        component.setTags(this.settings.tags);
 
         finalSetting(settings, component);
     }

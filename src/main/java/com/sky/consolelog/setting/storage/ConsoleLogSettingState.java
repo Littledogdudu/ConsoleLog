@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.Serializable;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -92,6 +92,12 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public static List<String> fileTypeList = new ArrayList<>(6);
     /** 侧边栏字体大小 */
     public Integer sideFontSize = UIManager.getFont("Label.font").getSize();
+    /** 侧边栏标签查找项 */
+    public List<String> tags = Arrays.asList(
+            "<template>", "</template>",
+            "<script.*?>", "</script>",
+            "<style.*?>", "</style>"
+    );
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -114,6 +120,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.typeScriptSide = this.typeScriptSide;
         state.textSide = this.textSide;
         state.sideFontSize = this.sideFontSize;
+        state.tags = this.tags;
         return state;
     }
 
@@ -141,6 +148,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.typeScriptSide = state.typeScriptSide;
         this.textSide = state.textSide;
         this.sideFontSize = state.sideFontSize;
+        this.tags = state.tags;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }
