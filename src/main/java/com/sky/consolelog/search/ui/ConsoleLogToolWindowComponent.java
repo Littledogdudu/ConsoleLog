@@ -86,7 +86,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         specCheckBox.setText("启用针对性查找");
         levelCheckBox.setText("启用标签查找");
         Box topBox = Box.createHorizontalBox();
-        topBox.add(Box.createHorizontalGlue());
+        topBox.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         topBox.add(tip);
         topBox.add(commentCheckBox);
         topBox.add(specCheckBox);
