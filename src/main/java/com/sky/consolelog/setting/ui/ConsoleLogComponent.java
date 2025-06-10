@@ -1,19 +1,13 @@
 package com.sky.consolelog.setting.ui;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.Disposable;
 import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.search.ui.BeautifulListCellRender;
 import com.sky.consolelog.search.ui.ConsoleLogToolWindowComponent;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.*;
 import java.util.List;
 
 /**
@@ -51,11 +45,7 @@ public class ConsoleLogComponent implements Disposable {
     private JCheckBox typeScriptSideCheckBox;
     private JCheckBox textSideCheckBox;
     private JComboBox<Integer> sideFontSize;
-    private JPanel dynamicTagContainer;
-    private JButton addTagButton;
-    private JPanel dynamicTag;
-    private JPanel addTagButtonContainer;
-    private final List<String> tags = new ArrayList<>();
+    private JTextField tagTextField;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = e -> setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
@@ -63,12 +53,6 @@ public class ConsoleLogComponent implements Disposable {
     private final ActionListener enableSideWindowActionListener = e -> setEnableSideWindowStatus();
     /** 侧边栏查找不限定语言类型按钮监听器 */
     private final ActionListener fileTypeAllInCheckBoxActionListener = e -> setLanguageCheckBoxStatus();
-    /** 标签输入框监听器 */
-    private final Map<JTextField, DocumentListener> tagTextFieldActionListenerMap = new HashMap<>();
-    /** 删除标签按钮监听器 */
-    private final Map<JButton, ActionListener> removeTagButtonActionListenerMap = new HashMap<>();
-    /** 添加标签按钮监听器 */
-    private final ActionListener addTagButtonActionListener = e -> addTag();
 
     public ConsoleLogComponent() {
         resetButton.addActionListener(resetButtonActionListener);
@@ -84,10 +68,6 @@ public class ConsoleLogComponent implements Disposable {
         
         setSideFontSizeOptions();
         setDefaultSideFontSize();
-
-        initRenderTags();
-        addTagButton.addActionListener(addTagButtonActionListener);
-        dynamicTag.setLayout(new BoxLayout(dynamicTag, BoxLayout.Y_AXIS));
     }
 
     /**
@@ -142,92 +122,6 @@ public class ConsoleLogComponent implements Disposable {
         if (getEnableSideWindow()) {
             // 重新渲染侧边栏样式
             ConsoleLogToolWindowComponent.setLogListCellRender(new BeautifulListCellRender());
-        }
-    }
-
-    private void addTag() {
-        addTag("", 0);
-    }
-
-    private void addTag(String tag, int index) {
-        if (StringUtils.isNotEmpty(tag)) {
-            tags.add(tag);
-        } else {
-            tags.add("");
-            index = tags.size() - 1;
-        }
-        int innerIndex = index;
-
-        //#region 文本框
-        JTextField tagText = new JTextField(tags.get(innerIndex));
-        DocumentListener tagTextFieldDocumentListener = new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                tags.set(innerIndex, tagText.getText());
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                tags.set(innerIndex, tagText.getText());
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                tags.set(innerIndex, tagText.getText());
-            }
-        };
-        tagText.getDocument().addDocumentListener(tagTextFieldDocumentListener);
-        tagTextFieldActionListenerMap.put(tagText, tagTextFieldDocumentListener);
-        //#endregion
-
-        //#region 删除按钮
-        JButton removeButton = new JButton(AllIcons.General.Remove);
-        removeButton.setPreferredSize(new Dimension(50, 50));
-        ActionListener removeTagButtonActionListener = event -> {
-            int confirm = JOptionPane.showConfirmDialog(
-                    ConsoleLogComponent.this.getPanel(),
-                    "确定要删除这个标签吗？",
-                    "确认删除",
-                    JOptionPane.YES_NO_OPTION
-            );
-            if (confirm == JOptionPane.YES_OPTION) {
-                // 移除监听器自身
-                ActionListener listener = removeTagButtonActionListenerMap.get(removeButton);
-                if (Objects.nonNull(listener)) {
-                    removeButton.removeActionListener(listener);
-                    removeTagButtonActionListenerMap.remove(removeButton);
-                }
-                DocumentListener documentListener = tagTextFieldActionListenerMap.get(tagText);
-                if (Objects.nonNull(documentListener)) {
-                    tagText.getDocument().removeDocumentListener(documentListener);
-                }
-                dynamicTag.remove(innerIndex);
-                tags.remove(innerIndex);
-                dynamicTag.revalidate();
-                dynamicTag.repaint();
-            }
-        };
-        removeButton.addActionListener(removeTagButtonActionListener);
-        removeTagButtonActionListenerMap.put(removeButton, removeTagButtonActionListener);
-        //#endregion
-
-        JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        rowPanel.add(tagText);
-        rowPanel.add(removeButton);
-        dynamicTag.add(rowPanel, innerIndex);
-        dynamicTag.revalidate();
-        dynamicTag.repaint();
-    }
-
-    /**
-     * 初始化渲染标签
-     */
-    public void initRenderTags() {
-        if (CollectionUtils.isEmpty(this.tags)) {
-            return;
-        }
-        for (int index = 0; index < tags.size(); index++) {
-            addTag(tags.get(index), index);
         }
     }
 
@@ -371,13 +265,15 @@ public class ConsoleLogComponent implements Disposable {
         sideFontSize.setSelectedItem(size);
     }
 
-    public List<String> getTags() {
-        return tags;
+    public String getTextTags() {
+        return tagTextField.getText();
     }
 
-    public void setTags(List<String> tags) {
-        this.tags.clear();
-        this.tags.addAll(tags);
+    public void setTextTags(List<String> tags) {
+        if (CollectionUtils.isEmpty(tags)) {
+            tagTextField.setText("");
+        }
+        tagTextField.setText(String.join(SettingConstant.TAGS_DELIMITER, tags));
     }
 
     @Override
@@ -385,12 +281,5 @@ public class ConsoleLogComponent implements Disposable {
         resetButton.removeActionListener(resetButtonActionListener);
         enableSideWindow.removeActionListener(enableSideWindowActionListener);
         fileTypeAllInCheckBox.removeActionListener(fileTypeAllInCheckBoxActionListener);
-        removeTagButtonActionListenerMap.forEach(AbstractButton::removeActionListener);
-        tagTextFieldActionListenerMap.forEach((textField, listener) -> textField.getDocument().removeDocumentListener(listener));
-        addTagButton.removeActionListener(addTagButtonActionListener);
-    }
-
-    private void createUIComponents() {
-        dynamicTag = new JPanel();
     }
 }

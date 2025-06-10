@@ -84,11 +84,13 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         tip.setForeground(JBColor.GRAY);
         commentCheckBox.setText("展示注释项");
         specCheckBox.setText("启用针对性查找");
+        levelCheckBox.setText("启用标签查找");
         Box topBox = Box.createHorizontalBox();
         topBox.add(Box.createHorizontalGlue());
         topBox.add(tip);
         topBox.add(commentCheckBox);
         topBox.add(specCheckBox);
+        topBox.add(levelCheckBox);
 
         JSeparator separator = new JSeparator();
 
@@ -110,6 +112,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         // 监听【是否启用针对性查找】按钮
         specCheckBox.addActionListener(actionListener);
         commentCheckBox.addActionListener(actionListener);
+        levelCheckBox.addActionListener(actionListener);
         // 监听鼠标点击--到达表达式位置
         logList.addMouseListener(mouseAdapter);
         // 添加文件切换监听器
@@ -214,11 +217,15 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     private void setConsoleLogs(Document document, ConsoleLogSettingState settings) {
         model.clear();
 
+        boolean enableSpec = specCheckBox.isSelected();
+        boolean enableComment = commentCheckBox.isSelected();
+        boolean enableLevel = levelCheckBox.isSelected();
+
         String context = document.getText();
         Matcher matcher = null;
         StringBuilder regexBuilder = new StringBuilder("(");
-        if (specCheckBox.isSelected()) {
-            // 只查找插件指定格式的表达式
+        if (enableSpec) {
+            // 启用只查找插件指定格式的表达式
             String consoleLogMsgRegex = ConsoleLogMsgUtil.buildRegexConsoleLogMsg(settings, TextFormatContext.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE, TextFormatContext.CONSOLE_LOG_END_REGEX);
             if (consoleLogMsgRegex == null) {
                 return;
@@ -230,7 +237,10 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         }
 
         regexBuilder.append(")");
-        settings.tags.stream().filter(StringUtils::isNotEmpty).forEach(tag -> regexBuilder.append("|(").append(tag).append(")"));
+        if (enableLevel) {
+            // 启用级别
+            settings.tags.stream().filter(StringUtils::isNotEmpty).forEach(tag -> regexBuilder.append("|(").append(tag).append(")"));
+        }
         Pattern pattern = Pattern.compile(regexBuilder.toString());
         matcher = pattern.matcher(context);
 
@@ -240,8 +250,8 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             // 打印表达式所在行号
             int lineNumber = document.getLineNumber(start);
             // 检查是否排除注释项
-            if (!commentCheckBox.isSelected()) {
-                // 排除注释项
+            if (!enableComment) {
+                // 启用排除注释项
                 if (document.getText(new TextRange(document.getLineStartOffset(lineNumber), start)).contains(SettingConstant.COMMENT_SIGNAL)) {
                     continue;
                 }
@@ -256,7 +266,8 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             int end = document.getLineEndOffset(lineNumber);
             String searchText = context.substring(start, end).replaceAll("\n", "").trim();
             int level = 0;
-            if (StringUtils.isNotEmpty(matcher.group(1))) {
+            if (enableLevel && StringUtils.isNotEmpty(matcher.group(1))) {
+                // 启用级别
                 level = 1;
             }
             ConsoleLogSearchInfo searchInfo = new ConsoleLogSearchInfo(searchText, lineNumber, end, level);

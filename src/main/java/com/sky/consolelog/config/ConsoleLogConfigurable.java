@@ -3,6 +3,7 @@ package com.sky.consolelog.config;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.util.NlsContexts;
+import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.setting.ui.ConsoleLogComponent;
 import com.sky.consolelog.utils.TextFormatContext;
@@ -10,6 +11,7 @@ import com.sky.consolelog.utils.FileTypeUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Arrays;
 
 /**
  * 插件配置
@@ -50,7 +52,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getTypeScriptSideCheckBox().equals(this.settings.typeScriptSide)
                 || !component.getTextSideCheckBox().equals(this.settings.textSide)
                 || !component.getSideFontSize().equals(this.settings.sideFontSize)
-                || !component.getTags().equals(this.settings.tags)
+                || !Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).toList().equals(this.settings.tags)
                 ;
     }
 
@@ -78,7 +80,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.typeScriptSide = component.getTypeScriptSideCheckBox();
         this.settings.textSide = component.getTextSideCheckBox();
         this.settings.sideFontSize = component.getSideFontSize();
-        this.settings.tags = component.getTags();
+        this.settings.tags = Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).toList();
 
         finalSetting(settings, component);
     }
@@ -105,7 +107,7 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setTypeScriptSideCheckBox(this.settings.typeScriptSide);
         component.setTextSideCheckBox(this.settings.textSide);
         component.setSideFontSize(this.settings.sideFontSize);
-        component.setTags(this.settings.tags);
+        component.setTextTags(this.settings.tags);
 
         finalSetting(settings, component);
     }

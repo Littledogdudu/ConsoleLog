@@ -60,7 +60,7 @@ public class BeautifulListCellRender extends JPanel implements ListCellRenderer<
         g2.translate(level * 20, 0);
 
         g2.setColor(new JBColor(new Color(0, 0, 0, 20), new Color(169, 169, 169, 20)));
-        g2.fillRoundRect(0, 0, getWidth() - 5, getHeight() - 5, 10, 10);
+        g2.fillRoundRect(0, 0, getWidth() - 5 - level * 20, getHeight() - 5, 10, 10);
         g2.dispose();
         super.paintComponent(g2);
     }
@@ -103,12 +103,12 @@ public class BeautifulListCellRender extends JPanel implements ListCellRenderer<
     }
 
     public static void setSideListItemFontSize(int size) {
-        Font font = new Font(UIManager.getFont("Label.font").getFontName(), Font.PLAIN, size);
         if (textLabel == null || lineLabel == null || arrowLabel == null) {
             textLabel = new JLabel();
             lineLabel = new JLabel();
             arrowLabel = new JLabel("→");
         }
+        Font font = textLabel.getFont().deriveFont(Float.valueOf(size));
         textLabel.setFont(font);
         lineLabel.setFont(font);
         arrowLabel.setFont(font);
