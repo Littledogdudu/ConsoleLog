@@ -15,6 +15,7 @@
 ### Feature
 - Optimized the sidebar style
 - The sidebar supports custom label queries
+- i18n
 
 ## [1.2.0] - 2025-05-02
 
