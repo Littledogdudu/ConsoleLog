@@ -85,6 +85,10 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         commentCheckBox.setText("展示注释项");
         specCheckBox.setText("启用针对性查找");
         levelCheckBox.setText("启用标签查找");
+
+        ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
+        levelCheckBox.setSelected(settings.defaultTagSearch);
+
         Box topBox = Box.createHorizontalBox();
         topBox.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         topBox.add(tip);

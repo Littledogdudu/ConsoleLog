@@ -53,6 +53,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getTextSideCheckBox().equals(this.settings.textSide)
                 || !component.getSideFontSize().equals(this.settings.sideFontSize)
                 || !Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).toList().equals(this.settings.tags)
+                || !component.getDefaultTagSearchCheckBox().equals(this.settings.defaultTagSearch)
                 ;
     }
 
@@ -81,6 +82,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.textSide = component.getTextSideCheckBox();
         this.settings.sideFontSize = component.getSideFontSize();
         this.settings.tags = Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).toList();
+        this.settings.defaultTagSearch = component.getDefaultTagSearchCheckBox();
 
         finalSetting(settings, component);
     }
@@ -108,6 +110,7 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setTextSideCheckBox(this.settings.textSide);
         component.setSideFontSize(this.settings.sideFontSize);
         component.setTextTags(this.settings.tags);
+        component.setDefaultTagSearchCheckBox(this.settings.defaultTagSearch);
 
         finalSetting(settings, component);
     }

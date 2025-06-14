@@ -92,6 +92,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public static List<String> fileTypeList = new ArrayList<>(6);
     /** 侧边栏字体大小 */
     public Integer sideFontSize = UIManager.getFont("Label.font").getSize();
+    /** 首次启动侧边栏默认启用标签查询 */
+    public Boolean defaultTagSearch = false;
     /** 侧边栏标签查找项 */
     public List<String> tags = Arrays.asList(
             "<template>", "</template>",
@@ -121,6 +123,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.textSide = this.textSide;
         state.sideFontSize = this.sideFontSize;
         state.tags = this.tags;
+        state.defaultTagSearch = this.defaultTagSearch;
         return state;
     }
 
@@ -149,6 +152,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.textSide = state.textSide;
         this.sideFontSize = state.sideFontSize;
         this.tags = state.tags;
+        this.defaultTagSearch = state.defaultTagSearch;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }

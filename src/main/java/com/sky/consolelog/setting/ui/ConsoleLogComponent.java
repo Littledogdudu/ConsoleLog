@@ -46,6 +46,7 @@ public class ConsoleLogComponent implements Disposable {
     private JCheckBox textSideCheckBox;
     private JComboBox<Integer> sideFontSize;
     private JTextField tagTextField;
+    private JCheckBox defaultTagSearchCheckBox;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = e -> setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
@@ -274,6 +275,14 @@ public class ConsoleLogComponent implements Disposable {
             tagTextField.setText("");
         }
         tagTextField.setText(String.join(SettingConstant.TAGS_DELIMITER, tags));
+    }
+
+    public Boolean getDefaultTagSearchCheckBox() {
+        return defaultTagSearchCheckBox.isSelected();
+    }
+
+    public void setDefaultTagSearchCheckBox(Boolean checked) {
+        defaultTagSearchCheckBox.setSelected(checked);
     }
 
     @Override
