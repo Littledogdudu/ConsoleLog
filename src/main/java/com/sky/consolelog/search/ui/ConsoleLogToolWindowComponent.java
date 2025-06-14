@@ -22,6 +22,7 @@ import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.entities.ConsoleLogSearchInfo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
+import com.sky.consolelog.utils.MessageUtils;
 import com.sky.consolelog.utils.TextFormatContext;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -82,9 +83,9 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         tip.setOpaque(false);
         tip.setFont(UIUtil.getLabelFont(UIUtil.FontSize.SMALL));
         tip.setForeground(JBColor.GRAY);
-        commentCheckBox.setText("展示注释项");
-        specCheckBox.setText("启用针对性查找");
-        levelCheckBox.setText("启用标签查找");
+        commentCheckBox.setText(MessageUtils.message("sidebar.commentCheckBox"));
+        specCheckBox.setText(MessageUtils.message("sidebar.specCheckBox"));
+        levelCheckBox.setText(MessageUtils.message("sidebar.levelCheckBox"));
 
         ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
         levelCheckBox.setSelected(settings.defaultTagSearch);
