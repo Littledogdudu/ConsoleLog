@@ -3,7 +3,8 @@
 ![Build](https://github.com/Littledogdudu/ConsoleLog/workflows/Build/badge.svg)
 
 <!-- Plugin description -->
-**ConsoleLog**能够通过光标所在位置快速打印console.log语句，并在结束调试后一键删除
+**ConsoleLog**能够通过光标所在位置快速打印console.log语句，并在结束调试后一键删除  
+更适用于WebStorm和IDEA的前端开发插件
 
 默认的快捷键：
 - Alt+1: 插入 console.log()

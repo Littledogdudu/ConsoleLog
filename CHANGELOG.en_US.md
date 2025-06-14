@@ -5,6 +5,17 @@
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-06-14
+
+### Contains the initial version of the sidebar feature that was never released
+- You can set whether to enable the sidebar in the plugin settings, and the sidebar will show all print expressions for the currently open file (enabled by default)
+- The sidebar supports clicking to locate the print statement of the corresponding line
+- Sidebar support for queries All Print Expressions/Print Expressions without Comments/Only Print Expressions that conform to the plug-in's specification format
+
+### Feature
+- Optimized the sidebar style
+- The sidebar supports custom label queries
+
 ## [1.2.0] - 2025-05-02
 
 ### Feature
