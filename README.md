@@ -79,13 +79,13 @@
 ![sidebar.png](.github/readme/sidebar.png)
 
 ### 侧边栏顶部查询选项设置按钮
-#### 展示注释项
+#### 展示/隐藏注释项（眼睛图标）
 启用后：侧边栏将查询所有打印表达式，包含注释项
 默认禁用：侧边栏将查询所有打印表达式，不包含注释项
-#### 启用针对性查找
+#### 启用/禁用针对性查找（小火箭图标/禁用图标）
 启用后：侧边栏将查询所有符合插件生成规范的打印表达式
 默认禁用：侧边栏将查询所有console.log表达式
-#### 启用标签查找
+#### 启用/禁用标签查找（书签图标）
 启用后：根据设置中设置的标签项继续查找，标签项为1级，表达式为2级（缩进2字符）
 禁用后：禁用标签查找
 
@@ -167,27 +167,27 @@ radio group to change the type of quotation marks used to wrap console.log expre
 ![sidebar.png](.github/readme/sidebar.png)
 
 ### Query option settings button at the top of the sidebar
-#### show comment
-When enabled: The sidebar will query all print expressions, including comment items
+#### show/hidden comment (eye icon)
+When enabled: The sidebar will query all print expressions, including comment items  
 Disabled by default: The sidebar will query all print expressions and do not contain comment items
-#### targeted lookup
-When enabled: The sidebar will query all print expressions that meet the plugin's generation specifications
+#### enable/disable targeted lookup (rocket/disable icon)
+When enabled: The sidebar will query all print expressions that meet the plugin's generation specifications  
 Disabled by default: The sidebar will query all console.log expressions
-#### tag lookup
-Enabled: Continue to search according to the label items set in the settings, the label item is level 1, and the expression is level 2 (indented 2 characters)
+#### enable/disable tag lookup (bookmark icon)
+Enabled: Continue to search according to the label items set in the settings, the label item is level 1, and the expression is level 2 (indented 2 characters)  
 Disabled: Disables tag lookup
 
 ### whether to enable the sidebar (restart takes effect)
-Enabled by default: Enables the sidebar
+Enabled by default: Enables the sidebar  
 After disabled: Disable the sidebar
 ### sidebar lookup is not limited to file types
-Enabled by default: Enables sidebar lookup for print expressions for any file type that is currently open
+Enabled by default: Enables sidebar lookup for print expressions for any file type that is currently open  
 After disabled: Only files that are currently open and of the Chinese file type are searched and displayed in the sidebar
 ### sidebar font size
 Used to customize the sidebar font size
 ### label lookup is enabled by default when you first launch the sidebar
-Enabled: Every time you open the IDE, the sidebar will enable sidebar label lookup by default (the label items can be set in the settings below items)
+Enabled: Every time you open the IDE, the sidebar will enable sidebar label lookup by default (the label items can be set in the settings below items)  
 Disabled by default: The sidebar does not enable tag lookup by default (it can also be temporarily changed via Enable Tag Lookup at the top of the sidebar)
 ### sidebar custom label query items
-Customize the tag items found in the sidebar, use semicolons to split each tag item, and support regular expressions
+Customize the tag items found in the sidebar, use semicolons to split each tag item, and support regular expressions  
 <!-- Plugin description end -->
