@@ -12,10 +12,10 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.UIUtil;
 import com.sky.consolelog.constant.SettingConstant;
@@ -46,20 +46,36 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     private final JPanel panel;
     private final JLabel tip;
     /** 显示注释项 */
-    private final JBCheckBox commentCheckBox;
+    private final JButton commentCheckBox;
     /** 启用针对性查找 */
-    private final JBCheckBox specCheckBox;
+    private final JButton specCheckBox;
     /** 开启标签查找 */
-    private final JBCheckBox levelCheckBox;
+    private final JButton levelCheckBox;
     private static JBList<ConsoleLogSearchInfo> logList;
     private final DefaultListModel<ConsoleLogSearchInfo> model;
     private final Project project;
 
     private Document currentDocument = null;
     private DocumentListener currentDocumentListener = null;
-    private final ActionListener actionListener = event -> {
+
+    private final ActionListener commentActionListener = event -> {
+        updateCommentButtonIcon();
+        updateCommentTipToolText();
         updateLogListEntries();
     };
+
+    private final ActionListener specActionListener = event -> {
+        updateSpecButtonIcon();
+        updateSpecTipToolText();
+        updateLogListEntries();
+    };
+
+    private final ActionListener levelActionListener = event -> {
+        updateLevelButtonIcon();
+        updateLevelTipToolText();
+        updateLogListEntries();
+    };
+
     private final MouseAdapter mouseAdapter = new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {
@@ -74,27 +90,35 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         this.project = project;
         panel = new JPanel(new BorderLayout());
         tip = new JLabel("");
-        commentCheckBox = new JBCheckBox();
-        specCheckBox = new JBCheckBox();
-        levelCheckBox = new JBCheckBox();
+        commentCheckBox = new JButton();
+        specCheckBox = new JButton();
+        levelCheckBox = new JButton();
         model = new DefaultListModel<>();
         logList = new JBList<>(model);
 
         tip.setOpaque(false);
         tip.setFont(UIUtil.getLabelFont(UIUtil.FontSize.SMALL));
         tip.setForeground(JBColor.GRAY);
-        commentCheckBox.setText(MessageUtils.message("sidebar.commentCheckBox"));
-        specCheckBox.setText(MessageUtils.message("sidebar.specCheckBox"));
-        levelCheckBox.setText(MessageUtils.message("sidebar.levelCheckBox"));
 
         ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
+        commentCheckBox.setSelected(false);
+        specCheckBox.setSelected(false);
         levelCheckBox.setSelected(settings.defaultTagSearch);
 
+        setIconButtonStyle(commentCheckBox, loadIcon("/META-INF/icons/eye-closed-16.svg"), loadIcon("/META-INF/icons/eye-16-selected.svg"));
+        setIconButtonStyle(specCheckBox, loadIcon("/META-INF/icons/x-circle-16.svg"), loadIcon("/META-INF/icons/rocket-16-selected.svg"));
+        setIconButtonStyle(levelCheckBox, loadIcon("/META-INF/icons/bookmark-slash-16.svg"), loadIcon("/META-INF/icons/bookmark-16-selected.svg"));
+        updateCommentTipToolText();
+        updateSpecTipToolText();
+        updateLevelTipToolText();
+
         Box topBox = Box.createHorizontalBox();
-        topBox.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        topBox.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 0));
         topBox.add(tip);
         topBox.add(commentCheckBox);
+        topBox.add(Box.createHorizontalStrut(10));
         topBox.add(specCheckBox);
+        topBox.add(Box.createHorizontalStrut(10));
         topBox.add(levelCheckBox);
 
         JSeparator separator = new JSeparator();
@@ -115,9 +139,9 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         }
 
         // 监听【是否启用针对性查找】按钮
-        specCheckBox.addActionListener(actionListener);
-        commentCheckBox.addActionListener(actionListener);
-        levelCheckBox.addActionListener(actionListener);
+        commentCheckBox.addActionListener(commentActionListener);
+        specCheckBox.addActionListener(specActionListener);
+        levelCheckBox.addActionListener(levelActionListener);
         // 监听鼠标点击--到达表达式位置
         logList.addMouseListener(mouseAdapter);
         // 添加文件切换监听器
@@ -292,11 +316,76 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         return panel;
     }
 
+    /**
+     * 统一设置图标样式
+     * @param button 按钮
+     * @param icon 未选中时展示的图标
+     * @param selectedIcon 选中时展示的图标
+     */
+    private void setIconButtonStyle(JButton button, Icon icon, Icon selectedIcon) {
+        button.setBorderPainted(false);
+        button.setIcon(icon);
+        button.setSelectedIcon(selectedIcon);
+        button.setPreferredSize(new Dimension(16, 16));
+        button.setMinimumSize(new Dimension(16, 16));
+        button.setMaximumSize(new Dimension(16, 16));
+    }
+
+    /**
+     * 更新是否显示注释项按钮图标
+     */
+    private void updateCommentButtonIcon() {
+        boolean selected = !commentCheckBox.isSelected();
+        commentCheckBox.setSelected(selected);
+    }
+
+    /**
+     * 更新是否启用针对性查找按钮图标
+     */
+    private void updateSpecButtonIcon() {
+        boolean selected = !specCheckBox.isSelected();
+        specCheckBox.setSelected(selected);
+    }
+
+    /**
+     * 更新是否启用标签查找按钮图标
+     */
+    private void updateLevelButtonIcon() {
+        boolean selected = !levelCheckBox.isSelected();
+        levelCheckBox.setSelected(selected);
+    }
+
+    /**
+     * 更新是否显示注释项按钮提示文本
+     */
+    private void updateCommentTipToolText() {
+        commentCheckBox.setToolTipText(MessageUtils.message(commentCheckBox.isSelected() ? "sidebar.disableCommentCheckBox" : "sidebar.commentCheckBox"));
+    }
+
+    /**
+     * 更新是否启用针对性查找按钮提示文本
+     */
+    private void updateSpecTipToolText() {
+        specCheckBox.setToolTipText(MessageUtils.message(specCheckBox.isSelected() ? "sidebar.disableSpecCheckBox" : "sidebar.specCheckBox"));
+    }
+
+    /**
+     * 更新是否启用标签查找按钮提示文本
+     */
+    private void updateLevelTipToolText() {
+        levelCheckBox.setToolTipText(MessageUtils.message(levelCheckBox.isSelected() ? "sidebar.disableLevelCheckBox" : "sidebar.levelCheckBox"));
+    }
+
+    private Icon loadIcon(String path) {
+        return IconLoader.getIcon(path, ConsoleLogToolWindowComponent.class);
+    }
+
     @Override
     public void dispose() {
         removeCurrentDocumentListener();
-        specCheckBox.removeActionListener(actionListener);
-        commentCheckBox.removeActionListener(actionListener);
+        specCheckBox.removeActionListener(specActionListener);
+        commentCheckBox.removeActionListener(commentActionListener);
+        levelCheckBox.removeActionListener(levelActionListener);
         logList.removeMouseListener(mouseAdapter);
 
         project.dispose();
