@@ -359,21 +359,21 @@ public class ConsoleLogToolWindowComponent implements Disposable {
      * 更新是否显示注释项按钮提示文本
      */
     private void updateCommentTipToolText() {
-        commentCheckBox.setToolTipText(MessageUtils.message(commentCheckBox.isSelected() ? "sidebar.disableCommentCheckBox" : "sidebar.commentCheckBox"));
+        commentCheckBox.setToolTipText(MessageUtils.message(commentCheckBox.isSelected() ? "sidebar.commentCheckBox" : "sidebar.disableCommentCheckBox"));
     }
 
     /**
      * 更新是否启用针对性查找按钮提示文本
      */
     private void updateSpecTipToolText() {
-        specCheckBox.setToolTipText(MessageUtils.message(specCheckBox.isSelected() ? "sidebar.disableSpecCheckBox" : "sidebar.specCheckBox"));
+        specCheckBox.setToolTipText(MessageUtils.message(specCheckBox.isSelected() ? "sidebar.specCheckBox" : "sidebar.disableSpecCheckBox"));
     }
 
     /**
      * 更新是否启用标签查找按钮提示文本
      */
     private void updateLevelTipToolText() {
-        levelCheckBox.setToolTipText(MessageUtils.message(levelCheckBox.isSelected() ? "sidebar.disableLevelCheckBox" : "sidebar.levelCheckBox"));
+        levelCheckBox.setToolTipText(MessageUtils.message(levelCheckBox.isSelected() ? "sidebar.levelCheckBox" : "sidebar.disableLevelCheckBox"));
     }
 
     private Icon loadIcon(String path) {
