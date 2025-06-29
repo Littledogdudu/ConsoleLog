@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+## [1.1.4] - 2025-06-30
+
+### Feature
+- When the variable is undefined near the cursor, a statement that determines the direction of data flow is generated, and the act of deleting/commenting/uncommenting is generated
+
 ## [1.1.3] - 2025-05-16
 
 ### Feature

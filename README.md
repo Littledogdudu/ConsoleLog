@@ -24,6 +24,7 @@
 - [x] 可以在插件设置中自行设置字符串使用双引号还是单引号包含（默认启用双引号）
 - [x] 存在选中文本时（支持多光标区域选中）仅在选中区域内删除/注释/解注释（默认启用）
 - [x] 除了单引号/双引号，加入反引号(`)的支持
+- [x] 不选中文本时生成判断数据流向的语句及删除/注释/解注释的行为
 
 ### 未发布功能（feature-sider分支尚未合并）
 - [ ] 可以在插件设置中自行设置是否启用侧边栏，侧边栏显示当前打开文件的所有打印表达式（默认启用）
@@ -43,7 +44,7 @@
 ### 感谢列表
 - 由igor.pavlenko提出PSI JS类型强制转换问题的bug
 - 由yan.wt提出新的功能：支持在格式化字符串中添加文件名和行号
-
+- 由JiGewusuoweiju提出新的功能：期望未选中文本的时候，依然可以打印默认信息
 
 > 灵感来源于vscode插件 [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)  
 > 有新的主意可以在[github](https://github.com/Littledogdudu/ConsoleLog)上fork或提出[issue](https://github.com/Littledogdudu/ConsoleLog/issues)或者发送到我的邮箱2378459785@qq.com哦  
@@ -90,6 +91,7 @@ Default keymap as following:
 - [x] You can set whether the string is included in double or single quotes in the plugin settings (double quotes are enabled by default)
 - [x] When selecting Chinese book, delete annotation only in the selected area (enabled by default)
 - [x] In addition to single and double quotation marks, support for backticks (') has been added
+- [x] When the variable is undefined near the cursor, a statement that determines the direction of data flow is generated, and the act of deleting/commenting/uncommenting is generated
 
 Unreleased features
 - [ ] You can set whether to enable the sidebar in the plug-in settings, and the sidebar displays all print expressions of the currently open file (enabled by default)
@@ -105,6 +107,7 @@ You can use the plugin on html code, but be careful: the statement is not remove
 ### Thanks List
 - Bug report on PSI JS type coercion issue by igor.pavlenko
 - New feature proposed by yan.wt: support for adding file names and line numbers in formatted strings
+- New feature proposed by JiGewusuoweiju: When the variable is undefined near the cursor, a statement that determines the direction of data flow is generated, and the act of deleting/commenting/uncommenting is generated
 
 > The idea from vscode plugin [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)
 
