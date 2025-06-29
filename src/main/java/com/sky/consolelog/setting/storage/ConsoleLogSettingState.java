@@ -62,7 +62,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     /**
      * 当没有可打印变量时生成默认插入语句内容
      */
-    public Boolean enableDefaultConsoleLogMsg = true;
+    public Boolean enableDefaultConsoleLogMsg = false;
     /**
      * 当没有可打印变量时需要生成的默认插入语句内容
      */

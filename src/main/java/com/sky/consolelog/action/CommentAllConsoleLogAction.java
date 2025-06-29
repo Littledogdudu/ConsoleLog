@@ -19,6 +19,7 @@ import com.sky.consolelog.utils.TextRangeHandle;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +54,14 @@ public class CommentAllConsoleLogAction extends AnAction {
         }
         Pattern pattern = Pattern.compile(regexConsoleLogMsg);
 
+        // 没有可打印变量时默认插入语句正则对象
+        Pattern patternDefault = null;
+        if (settings.enableDefaultConsoleLogMsg) {
+            String defaultRegexConsoleLogMsg = ConsoleLogMsgUtil.buildRegexDefaultConsoleLogMsg(settings);
+            patternDefault = Pattern.compile(defaultRegexConsoleLogMsg);
+        }
+        Pattern patternDefaultRegex = patternDefault;
+
         Document document = editor.getDocument();
         TreeMap<TextRange, List<Integer>> consoleLogLineNumberMap = ConsoleLogPsiUtil.detectAllButSkipComment(psiFile, document);
 
@@ -67,17 +76,17 @@ public class CommentAllConsoleLogAction extends AnAction {
                     List<Integer> lineNumberList = map.getValue();
                     TextRange newRange = new TextRange(range.getStartOffset() + insertCommentSignalSize, range.getEndOffset() + insertCommentSignalSize);
                     String text = document.getText(newRange);
+                    
                     Matcher matcher = pattern.matcher(text);
-                    while (matcher.find()) {
-                        int firstLineStartOffset = document.getLineStartOffset(lineNumberList.get(0));
-                        // 取最大的偏移，保证不会注释到console.log前面的代码（怪异代码的感觉+1）
-                        document.insertString(Math.max(newRange.getStartOffset(), firstLineStartOffset), "// ");
-                        insertCommentSignalSize += SettingConstant.COMMENT_SIGNAL_LENGTH;
-                        for (int i = 1; i < lineNumberList.size(); ++i) {
-                            int lineStartOffset = document.getLineStartOffset(lineNumberList.get(i));
-                            document.insertString(lineStartOffset, "// ");
-                            insertCommentSignalSize += SettingConstant.COMMENT_SIGNAL_LENGTH;
-                            // 万一结尾还有非console.log的代码呢？应该没有人写这么怪异的代码，，，吧？
+                    if (matcher.find()) {
+                        insertCommentSignalSize += insertCommentSignalBeforeConsoleLogMsg(document, lineNumberList, newRange);
+                        continue;
+                    }
+
+                    if (Objects.nonNull(patternDefaultRegex)) {
+                        Matcher matcherDefault = patternDefaultRegex.matcher(text);
+                        if (matcherDefault.find()) {
+                            insertCommentSignalSize += insertCommentSignalBeforeConsoleLogMsg(document, lineNumberList, newRange);
                         }
                     }
                 }
@@ -85,5 +94,24 @@ public class CommentAllConsoleLogAction extends AnAction {
 //            FileDocumentManager.getInstance().saveAllDocuments();
             });
         }
+    }
+
+    /**
+     * 注释console.log表达式
+     */
+    private static int insertCommentSignalBeforeConsoleLogMsg(Document document, List<Integer> lineNumberList, TextRange newRange) {
+        int insertCommentSignalSize = 0;
+
+        int firstLineStartOffset = document.getLineStartOffset(lineNumberList.get(0));
+        // 取最大的偏移，保证不会注释到console.log前面的代码（怪异代码的感觉+1）
+        document.insertString(Math.max(newRange.getStartOffset(), firstLineStartOffset), "// ");
+        insertCommentSignalSize += SettingConstant.COMMENT_SIGNAL_LENGTH;
+        for (int i = 1; i < lineNumberList.size(); ++i) {
+            int lineStartOffset = document.getLineStartOffset(lineNumberList.get(i));
+            document.insertString(lineStartOffset, "// ");
+            insertCommentSignalSize += SettingConstant.COMMENT_SIGNAL_LENGTH;
+            // 万一结尾还有非console.log的代码呢？应该没有人写这么怪异的代码，，，吧？
+        }
+        return insertCommentSignalSize;
     }
 }

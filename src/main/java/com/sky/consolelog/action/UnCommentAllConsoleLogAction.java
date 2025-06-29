@@ -19,6 +19,7 @@ import com.sky.consolelog.utils.TextRangeHandle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +53,14 @@ public class UnCommentAllConsoleLogAction extends AnAction {
         }
         Pattern pattern = Pattern.compile(regexConsoleLogMsg);
 
+        // 没有可打印变量时默认插入语句正则对象
+        Pattern patternDefault = null;
+        if (settings.enableDefaultConsoleLogMsg) {
+            String defaultRegexConsoleLogMsg = ConsoleLogMsgUtil.buildRegexDefaultConsoleLogMsg(settings);
+            patternDefault = Pattern.compile(defaultRegexConsoleLogMsg);
+        }
+        Pattern patternDefaultRegex = patternDefault;
+
         Document document = editor.getDocument();
         List<TextRange> consoleLogRangeList = ConsoleLogPsiUtil.detectAllOnlyComment(psiFile);
 
@@ -65,17 +74,32 @@ public class UnCommentAllConsoleLogAction extends AnAction {
                 String text = document.getText(newRange);
                 Matcher matcher = pattern.matcher(text);
 
-                while (matcher.find()) {
-                    // 删除符合插件规范的console.log表达式语句
-                    int startOffset = newRange.getStartOffset() - SettingConstant.COMMENT_SIGNAL_LENGTH;
-                    int endOffset = newRange.getStartOffset();
-                    deleteStringSize += SettingConstant.COMMENT_SIGNAL_LENGTH;
+                if (matcher.find()) {
+                    deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(newRange, document);
+                    continue;
+                }
 
-                    // 删除匹配的内容
-                    document.deleteString(startOffset, endOffset);
+                if (Objects.nonNull(patternDefaultRegex)) {
+                    Matcher matcherDefault = patternDefaultRegex.matcher(text);
+                    if (matcherDefault.find()) {
+                        deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(newRange, document);
+                    }
                 }
             }
 //            FileDocumentManager.getInstance().saveAllDocuments();
         });
+    }
+
+    /**
+     * 删除注释符
+     */
+    private static int deleteCommentSignalBeforeConsoleLogMsg(TextRange newRange, Document document) {
+        // 解注释符合插件规范的console.log表达式语句
+        int startOffset = newRange.getStartOffset() - SettingConstant.COMMENT_SIGNAL_LENGTH;
+        int endOffset = newRange.getStartOffset();
+
+        // 解注释匹配的内容
+        document.deleteString(startOffset, endOffset);
+        return SettingConstant.COMMENT_SIGNAL_LENGTH;
     }
 }

@@ -18,6 +18,7 @@ import com.sky.consolelog.utils.TextRangeHandle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +50,16 @@ public class DeleteAllConsoleLogAction extends AnAction {
         if (regexConsoleLogMsg == null || regexConsoleLogMsg.isEmpty()) {
             return;
         }
-        Pattern pattern = Pattern.compile(regexConsoleLogMsg, Pattern.DOTALL);
+
+        Pattern pattern = Pattern.compile(regexConsoleLogMsg);
+
+        // 没有可打印变量时默认插入语句正则对象
+        Pattern patternDefault = null;
+        if (settings.enableDefaultConsoleLogMsg) {
+            String defaultRegexConsoleLogMsg = ConsoleLogMsgUtil.buildRegexDefaultConsoleLogMsg(settings);
+            patternDefault = Pattern.compile(defaultRegexConsoleLogMsg);
+        }
+        Pattern patternDefaultRegex = patternDefault;
 
         // 以后考虑一下当前所在文件代码行数过多导致的性能问题吗？
         Document document = editor.getDocument();
@@ -65,17 +75,32 @@ public class DeleteAllConsoleLogAction extends AnAction {
                 String text = document.getText(newRange);
                 Matcher matcher = pattern.matcher(text);
 
-                while (matcher.find()) {
-                    // 删除符合插件规范的console.log表达式语句
-                    int startOffset = newRange.getStartOffset();
-                    int endOffset = newRange.getEndOffset();
-                    deleteStringSize += endOffset - startOffset;
+                if (matcher.find()) {
+                    deleteStringSize += deleteConsoleLogMsg(newRange, document);
+                    continue;
+                }
 
-                    // 删除匹配的内容
-                    document.deleteString(startOffset, endOffset);
+                if (Objects.nonNull(patternDefaultRegex)) {
+                    Matcher matcherDefault = patternDefaultRegex.matcher(text);
+                    if (matcherDefault.find()) {
+                        deleteStringSize += deleteConsoleLogMsg(newRange, document);
+                    }
                 }
             }
 //            FileDocumentManager.getInstance().saveAllDocuments();
         });
+    }
+
+    /**
+     * 删除符合插件规范的console.log表达式语句
+     */
+    private static int deleteConsoleLogMsg(TextRange newRange, Document document) {
+        // 删除符合插件规范的console.log表达式语句
+        int startOffset = newRange.getStartOffset();
+        int endOffset = newRange.getEndOffset();
+
+        // 删除匹配的内容
+        document.deleteString(startOffset, endOffset);
+        return endOffset - startOffset;
     }
 }
