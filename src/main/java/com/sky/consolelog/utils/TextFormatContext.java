@@ -7,6 +7,7 @@ import com.sky.consolelog.utils.strategy.text.DoubleQuoteTextFormatStrategy;
 import com.sky.consolelog.utils.strategy.text.SingleQuoteTextFormatStrategy;
 import com.sky.consolelog.utils.strategy.text.TextFormatStrategy;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -56,9 +57,16 @@ public enum TextFormatContext {
     }
 
     public String getCustomHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
-        if (textFormatStrategy == null) {
+        if (Objects.isNull(textFormatStrategy)) {
             throw new RuntimeException("I am so sorry, 策略为空");
         }
         return textFormatStrategy.getCustomHandleConsoleLogMsg(consoleLogMsg, consoleLogSettingVo);
+    }
+
+    public String getDefaultHandleConsoleLogMsg(String defaultConsoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        if (Objects.isNull(textFormatStrategy)) {
+            throw new RuntimeException("I am so sorry, 策略为空");
+        }
+        return textFormatStrategy.getDefaultHandleConsoleLogMsg(defaultConsoleLogMsg, consoleLogSettingVo);
     }
 }

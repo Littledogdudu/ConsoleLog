@@ -26,6 +26,10 @@ public interface SettingConstant {
      */
     String DEFAULT_CONSOLE_LOG_MSG = "🚀 ~ " + VariableAlias.METHOD_COMMAND.getKey()
             + " ~ " + VariableAlias.VARIABLE_COMMAND.getKey() + ": ";
+    /**
+     * 默认的无变量console打印信息
+     */
+    String DEFAULT_CONSOLE_LOG_MSG_WITHOUT_VARIABLE = "➤➤➤ ~ " + VariableAlias.FILE_NAME_COMMAND.getKey() + " ~ L" + VariableAlias.LINE_NUMBER_COMMAND.getKey();
 
     enum VariableAlias {
         /**

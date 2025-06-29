@@ -48,6 +48,21 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
     }
 
     /**
+     * 格式化console.log表达式的文本（光标处位处于任何变量时的默认行为）
+     * @param defaultConsoleLogMsg 默认的console.log表达式
+     * @param consoleLogSettingVo 打印参数
+     * @return 需要插入到编辑器中的文本
+     */
+    @Override
+    public @NotNull String getDefaultHandleConsoleLogMsg(String defaultConsoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
+        return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
+                defaultConsoleLogMsg + this.getFormSignal() + ", " + consoleLogSettingVo.getVariableName() + ");";
+    }
+
+    /**
      * 用于转义可能存在的双引号以防止出现<br/>
      * console.log("arr["1"]: ", arr["1"])<br/>
      * 的报错问题

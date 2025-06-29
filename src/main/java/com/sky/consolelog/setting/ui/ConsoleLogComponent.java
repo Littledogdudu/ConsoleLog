@@ -31,14 +31,23 @@ public class ConsoleLogComponent implements Disposable {
     private JRadioButton singleQuoteRadioButton;
     private JRadioButton doubleQuoteRadioButton;
     private JRadioButton backTickRadioButton;
+    private JCheckBox enableDefaultConsoleLogMsg;
+    private JTextField defaultConsoleLogMsg;
+    private JButton resetButton2;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = event -> {
         setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
     };
 
+    /** 重置按钮监听器 */
+    private final ActionListener resetButtonActionListener2 = event -> {
+        setConsoleLogMsg2(SettingConstant.DEFAULT_CONSOLE_LOG_MSG_WITHOUT_VARIABLE);
+    };
+
     public ConsoleLogComponent() {
         resetButton.addActionListener(resetButtonActionListener);
+        resetButton2.addActionListener(resetButtonActionListener2);
         ButtonGroup signalRadioGroup = new ButtonGroup();
         signalRadioGroup.add(singleQuoteRadioButton);
         signalRadioGroup.add(doubleQuoteRadioButton);
@@ -55,6 +64,10 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setConsoleLogMsg(String msg) {
         consoleLogMsgInput.setText(msg);
+    }
+
+    public void setConsoleLogMsg2(String msg) {
+        defaultConsoleLogMsg.setText(msg);
     }
 
     public Boolean getAutoFollowEndCheckBox() {
@@ -129,8 +142,25 @@ public class ConsoleLogComponent implements Disposable {
         this.fileSuffixCheckBox.setSelected(checked);
     }
 
+    public Boolean getEnableDefaultConsoleLogMsg() {
+        return enableDefaultConsoleLogMsg.isSelected();
+    }
+
+    public void setEnableDefaultConsoleLogMsg(Boolean checked) {
+        this.enableDefaultConsoleLogMsg.setSelected(checked);
+    }
+
+    public String getDefaultConsoleLogMsg() {
+        return defaultConsoleLogMsg.getText();
+    }
+
+    public void setDefaultConsoleLogMsg(String msg) {
+        this.defaultConsoleLogMsg.setText(msg);
+    }
+
     @Override
     public void dispose() {
         resetButton.removeActionListener(resetButtonActionListener);
+        resetButton2.removeActionListener(resetButtonActionListener2);
     }
 }

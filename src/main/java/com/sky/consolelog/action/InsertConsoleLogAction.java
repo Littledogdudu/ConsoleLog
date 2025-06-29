@@ -11,9 +11,11 @@ import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -23,6 +25,7 @@ import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.PsiPositionUtil;
 import com.sky.consolelog.utils.PsiVariableUtil;
 import com.sky.consolelog.utils.TextFormatContext;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -60,13 +63,39 @@ public class InsertConsoleLogAction extends AnAction {
             return;
         }
 
-        // 找到最近的作用域块
-        ScopeOffset scopeOffset = findScopeOffset(elementAtCaret);
-
         ConsoleLogSettingVo consoleLogSettingVo = new ConsoleLogSettingVo();
         // 检查是否有选中的文本
         boolean hasSelectedText = getVariableName(editor, psiFile, consoleLogSettingVo);
-        if (!hasSelectedText) return;
+        if (!hasSelectedText) {
+            if (settings.enableDefaultConsoleLogMsg) {
+                // 没有选中的文本，则打印不带变量值的默认插入语句
+                ScopeOffset scopeOffset = PsiPositionUtil.getUndefinedDefault(caret);
+                buildCommonPlaceHolder(caret, psiFile, consoleLogSettingVo, editor, scopeOffset);
+                String consoleLogMsg = TextFormatContext.INSTANCE.getDefaultHandleConsoleLogMsg(settings.defaultConsoleLogMsg, consoleLogSettingVo);
+                insertDefaultConsoleLogMsg(project, editor, psiFile, caret, scopeOffset, consoleLogMsg);
+            }
+            return;
+        }
+
+        // 找到最近的作用域块
+        ScopeOffset scopeOffset = findScopeOffset(elementAtCaret);
+
+        buildCommonPlaceHolder(caret, psiFile, consoleLogSettingVo, editor, scopeOffset);
+        // 构建 console.log
+        String consoleLogMsg = TextFormatContext.INSTANCE.getCustomHandleConsoleLogMsg(settings.consoleLogMsg, consoleLogSettingVo);
+
+        insertConsoleLogMsg(project, editor, psiFile, caret, scopeOffset, consoleLogMsg);
+    }
+
+    /**
+     * 获取占位符的值
+     * @param caret 光标对象
+     * @param psiFile PSI文件树
+     * @param consoleLogSettingVo 参数
+     * @param editor 编辑器对象
+     * @param scopeOffset 偏移量信息
+     */
+    private void buildCommonPlaceHolder(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo, Editor editor, ScopeOffset scopeOffset) {
         getMethodName(caret, psiFile, consoleLogSettingVo);
         if (settings.variableLineNumber) {
             getLineNumber(caret, editor, consoleLogSettingVo);
@@ -74,12 +103,6 @@ public class InsertConsoleLogAction extends AnAction {
             getLineNumber(scopeOffset, editor, consoleLogSettingVo);
         }
         getFileName(psiFile, settings, consoleLogSettingVo);
-
-        // 构建 console.log
-        // 获取文本格式上下文单例的同时更新策略
-        String consoleLogMsg = TextFormatContext.INSTANCE.getCustomHandleConsoleLogMsg(settings.consoleLogMsg, consoleLogSettingVo);
-
-        insertConsoleLogMsg(project, editor, psiFile, caret, scopeOffset, consoleLogMsg);
     }
 
     /**
@@ -192,8 +215,9 @@ public class InsertConsoleLogAction extends AnAction {
     private void insertConsoleLogMsg(Project project, Editor editor, PsiFile psiFile, Caret caret, ScopeOffset scopeOffset, String consoleLogMsg) {
         Document document = editor.getDocument();
         // 找到光标所在行的结束位置
-        int lineStartOffset = document.getLineStartOffset(document.getLineNumber(scopeOffset.getInsertEndOffset()));
-        int lineEndOffset = document.getLineEndOffset(document.getLineNumber(scopeOffset.getInsertEndOffset()));
+        int lineNumber = document.getLineNumber(scopeOffset.getInsertEndOffset());
+        int lineStartOffset = document.getLineStartOffset(lineNumber);
+        int lineEndOffset = document.getLineEndOffset(lineNumber);
         // 获取光标所在行的内容，并计算缩进
         String currentLine = document.getText().substring(lineStartOffset, lineEndOffset);
         String indentation = currentLine.replace(currentLine.trim(), "");
@@ -220,21 +244,24 @@ public class InsertConsoleLogAction extends AnAction {
             });
         } else {
             WriteCommandAction.runWriteCommandAction(project, () -> {
+                StringBuilder sentence = new StringBuilder();
                 if (scopeOffset.getNeedBegLine()) {
-                    document.insertString(scopeOffset.getInsertEndOffset(), "\n" + indentedCode);
+                    sentence.append("\n").append(indentedCode);
                     offset.put("offset", scopeOffset.getInsertEndOffset() + 1 + indentedCode.length());
                 } else {
-                    document.insertString(scopeOffset.getInsertEndOffset(), " ".repeat(tabSize) + consoleLogMsg);
+                    sentence.append(" ".repeat(tabSize)).append(consoleLogMsg);
                     offset.put("offset", scopeOffset.getInsertEndOffset() + tabSize + consoleLogMsg.length());
                 }
 
                 if (scopeOffset.getNeedEndLine()) {
-                    String ch = document.getText().substring((int) offset.get("offset"), (int) offset.get("offset") + 1);
-                    if (!"\n".equals(ch)) {
-                        document.insertString((int) offset.get("offset"), "\n");
-                        document.insertString((int) offset.get("offset") + 1, (String) offset.get("indentation"));
+                    String ch = document.getText(new TextRange(scopeOffset.getInsertEndOffset(), scopeOffset.getInsertEndOffset() + 1));
+                    if (!("\n".equals(ch))) {
+                        // 插入的语句后面不是换行符，包含了代码，那么就在插入语句后面换行
+                        sentence.append("\n").append((String) offset.get("indentation"));
                     }
                 }
+
+                document.insertString(scopeOffset.getInsertEndOffset(), sentence.toString());
             });
         }
 
@@ -242,7 +269,66 @@ public class InsertConsoleLogAction extends AnAction {
         PsiDocumentManager.getInstance(project).commitDocument(document);
         // 将光标移动到新插入的 console.log 语句后
         if (settings.autoFollowEnd) {
-            caret.moveToOffset((int) offset.get("offset"));
+            caret.moveToOffset((Integer) offset.get("offset"));
+        }
+    }
+
+    /**
+     * 插入console.log表达式信息
+     */
+    private void insertDefaultConsoleLogMsg(Project project, Editor editor, PsiFile psiFile, Caret caret, ScopeOffset scopeOffset, String consoleLogMsg) {
+        Document document = editor.getDocument();
+        // 检测光标所在行前后没有没有代码以决定是否添加换行符进行换行
+        int lineNumber = document.getLineNumber(scopeOffset.getInsertEndOffset());
+        int lineStartOffset = document.getLineStartOffset(lineNumber);
+        int lineEndOffset = document.getLineEndOffset(lineNumber);
+        String prevText = document.getText(new TextRange(lineStartOffset, scopeOffset.getInsertEndOffset()));
+        String nextText = document.getText(new TextRange(scopeOffset.getInsertEndOffset(), lineEndOffset));
+        if (StringUtils.isAllBlank(prevText)) {
+            scopeOffset.setNeedBegLine(false);
+        } else {
+            scopeOffset.setNeedBegLine(true);
+        }
+        if (StringUtils.isAllBlank(nextText)) {
+            scopeOffset.setNeedEndLine(false);
+        } else {
+            scopeOffset.setNeedEndLine(true);
+        }
+
+        // 获取光标所在行的内容，并计算缩进
+        String currentLine = document.getText().substring(lineStartOffset, lineEndOffset);
+        String indentation = currentLine.replace(currentLine.trim(), "");
+
+        // 在光标所在行的结束位置插入 console.log 语句
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            StringBuilder sentence = new StringBuilder();
+            int offset;
+            if (scopeOffset.getNeedBegLine()) {
+                sentence.append("\n").append(consoleLogMsg);
+                offset = 1 + scopeOffset.getInsertEndOffset() + consoleLogMsg.length();
+            } else {
+                sentence.append(consoleLogMsg);
+                offset = scopeOffset.getInsertEndOffset() + consoleLogMsg.length();
+            }
+
+            if (scopeOffset.getNeedEndLine()) {
+                String ch = document.getText().substring(scopeOffset.getInsertEndOffset(), scopeOffset.getInsertEndOffset() + 1);
+                if (!("\n".equals(ch))) {
+                    sentence.append("\n").append(indentation);
+                }
+            }
+
+            document.insertString(scopeOffset.getInsertEndOffset(), sentence.toString());
+            // 格式化
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(project);
+            codeStyleManager.reformatText(psiFile, scopeOffset.getInsertEndOffset(), offset);
+        });
+
+        // 更新 PSI 树以反映文档变化
+        PsiDocumentManager.getInstance(project).commitDocument(document);
+        // 将光标移动到新插入的 console.log 语句后
+        if (settings.autoFollowEnd) {
+            caret.moveToOffset(document.getLineEndOffset(scopeOffset.getNeedBegLine() ? lineNumber + 1 : lineNumber));
         }
     }
 }

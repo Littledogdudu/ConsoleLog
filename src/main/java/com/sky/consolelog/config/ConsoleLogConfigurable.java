@@ -42,7 +42,10 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getCommentInSelectionCheckBox().equals(this.settings.commentInSelection)
                 || !component.getUnCommentSelectionCheckBox().equals(this.settings.unCommentSelection)
                 || !component.getVariableLineNumberCheckBox().equals(this.settings.variableLineNumber)
-                || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix);
+                || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix)
+                || !component.getEnableDefaultConsoleLogMsg().equals(this.settings.enableDefaultConsoleLogMsg)
+                || !component.getDefaultConsoleLogMsg().equals(this.settings.defaultConsoleLogMsg)
+                ;
     }
 
     /**
@@ -60,6 +63,8 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.unCommentSelection = component.getUnCommentSelectionCheckBox();
         this.settings.variableLineNumber = component.getVariableLineNumberCheckBox();
         this.settings.fileSuffix = component.getFileSuffixCheckBox();
+        this.settings.enableDefaultConsoleLogMsg = component.getEnableDefaultConsoleLogMsg();
+        this.settings.defaultConsoleLogMsg = component.getDefaultConsoleLogMsg();
 
         finalSetting(settings, component);
     }
@@ -79,6 +84,8 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setUnCommentSelectionCheckBox(this.settings.unCommentSelection);
         component.setVariableLineNumberCheckBox(this.settings.variableLineNumber);
         component.setFileSuffixCheckBox(this.settings.fileSuffix);
+        component.setEnableDefaultConsoleLogMsg(this.settings.enableDefaultConsoleLogMsg);
+        component.setDefaultConsoleLogMsg(this.settings.defaultConsoleLogMsg);
 
         finalSetting(settings, component);
     }

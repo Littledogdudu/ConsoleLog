@@ -1,6 +1,7 @@
 package com.sky.consolelog.utils;
 
 import com.intellij.lang.javascript.psi.JSFunctionExpression;
+import com.intellij.openapi.editor.Caret;
 import com.intellij.psi.PsiElement;
 import com.sky.consolelog.constant.PsiPosition;
 import com.sky.consolelog.entities.ScopeOffset;
@@ -168,6 +169,17 @@ public class PsiPositionUtil {
         offset.setInsertEndOffset(element.getTextRange().getEndOffset());
         offset.setNeedTab(false);
         offset.setDefault(true);
+        return offset;
+    }
+
+    /**
+     * 默认行为：换行且不需要额外的制表符对齐
+     */
+    public static ScopeOffset getUndefinedDefault(Caret caret) {
+        ScopeOffset offset = new ScopeOffset();
+        offset.setInsertEndOffset(caret.getOffset());
+        offset.setNeedTab(false);
+        offset.setDefault(false);
         return offset;
     }
 }

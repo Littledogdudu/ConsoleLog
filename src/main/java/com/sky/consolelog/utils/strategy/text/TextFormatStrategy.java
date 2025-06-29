@@ -45,4 +45,12 @@ public interface TextFormatStrategy {
      * @return 需要插入到编辑器中的文本
      */
     @NotNull String getCustomHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo);
+
+    /**
+     * 格式化console.log表达式的文本（光标处位处于任何变量时的默认行为）
+     * @param defaultConsoleLogMsg 默认的console.log表达式
+     * @param consoleLogSettingVo 打印参数
+     * @return 需要插入到编辑器中的文本
+     */
+    @NotNull String getDefaultHandleConsoleLogMsg(String defaultConsoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo);
 }
