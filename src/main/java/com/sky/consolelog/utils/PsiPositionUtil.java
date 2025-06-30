@@ -33,6 +33,7 @@ public class PsiPositionUtil {
                  PsiPosition.Loop.JS_FOR_STATEMENT,
                  PsiPosition.Loop.JS_FOR_IN_STATEMENT,
                  PsiPosition.Expression.JS_FUNCTION_PROPERTY,
+                 PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_PROPERTY,
                  PsiPosition.Expression.JS_FUNCTION_EXPRESSION,
                  PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_EXPRESSION,
                  PsiPosition.Expression.JS_FUNCTION,
