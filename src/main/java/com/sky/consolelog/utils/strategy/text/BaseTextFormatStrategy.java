@@ -59,7 +59,7 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
         defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
         defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
         return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
-                defaultConsoleLogMsg + this.getFormSignal() + ", " + consoleLogSettingVo.getVariableName() + ");";
+                defaultConsoleLogMsg + this.getFormSignal() + ");";
     }
 
     /**
