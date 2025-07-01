@@ -9,6 +9,7 @@ import com.sky.consolelog.utils.TextFormatContext;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Objects;
 
 /**
  * 插件配置
@@ -45,6 +46,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix)
                 || !component.getEnableDefaultConsoleLogMsg().equals(this.settings.enableDefaultConsoleLogMsg)
                 || !component.getDefaultConsoleLogMsg().equals(this.settings.defaultConsoleLogMsg)
+                || !component.getDefaultAutoFollowEndCheckBox().equals(this.settings.defaultAutoFollowEnd)
                 ;
     }
 
@@ -65,6 +67,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.fileSuffix = component.getFileSuffixCheckBox();
         this.settings.enableDefaultConsoleLogMsg = component.getEnableDefaultConsoleLogMsg();
         this.settings.defaultConsoleLogMsg = component.getDefaultConsoleLogMsg();
+        this.settings.defaultAutoFollowEnd = component.getDefaultAutoFollowEndCheckBox();
 
         finalSetting(settings, component);
     }
@@ -86,14 +89,18 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setFileSuffixCheckBox(this.settings.fileSuffix);
         component.setEnableDefaultConsoleLogMsg(this.settings.enableDefaultConsoleLogMsg);
         component.setDefaultConsoleLogMsg(this.settings.defaultConsoleLogMsg);
+        component.setDefaultAutoFollowEndCheckBox(this.settings.defaultAutoFollowEnd);
 
         finalSetting(settings, component);
     }
 
     public static void finalSetting(ConsoleLogSettingState settings, ConsoleLogComponent component) {
-        if (settings != null) {
+        if (Objects.nonNull(settings)) {
             // 更新TextFormatContext的CONSOLE常量
             TextFormatContext.INSTANCE.setTextFormatStrategyByProjectSetting(settings);
+        }
+        if (Objects.nonNull(component)) {
+            component.enableDefaultConsoleLogMsgEvent();
         }
     }
 }

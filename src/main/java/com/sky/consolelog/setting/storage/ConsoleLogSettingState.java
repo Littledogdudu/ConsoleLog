@@ -67,6 +67,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      * 当没有可打印变量时需要生成的默认插入语句内容
      */
     public String defaultConsoleLogMsg = SettingConstant.DEFAULT_CONSOLE_LOG_MSG_WITHOUT_VARIABLE;
+    /** 无变量插入打印语句插入后是否跟随到语句末尾 */
+    public Boolean defaultAutoFollowEnd = false;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -84,6 +86,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.fileSuffix = this.fileSuffix;
         state.enableDefaultConsoleLogMsg = this.enableDefaultConsoleLogMsg;
         state.defaultConsoleLogMsg = Base64Util.encode(this.defaultConsoleLogMsg);
+        state.defaultAutoFollowEnd = this.defaultAutoFollowEnd;
         return state;
     }
 
@@ -106,6 +109,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.fileSuffix = state.fileSuffix;
         this.enableDefaultConsoleLogMsg = state.enableDefaultConsoleLogMsg;
         this.defaultConsoleLogMsg = Base64Util.decode(state.defaultConsoleLogMsg);
+        this.defaultAutoFollowEnd = state.defaultAutoFollowEnd;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }

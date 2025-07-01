@@ -74,7 +74,7 @@ public class InsertConsoleLogAction extends AnAction {
 
                 buildDefaultCommonPlaceHolder(caret, psiFile, consoleLogSettingVo, editor, scopeOffset);
                 String consoleLogMsg = TextFormatContext.INSTANCE.getDefaultHandleConsoleLogMsg(settings.defaultConsoleLogMsg, consoleLogSettingVo);
-                writerCoroutineUtils.insertDefaultWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, settings.autoFollowEnd);
+                writerCoroutineUtils.insertDefaultWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, settings.defaultAutoFollowEnd);
             }
             return;
         }
