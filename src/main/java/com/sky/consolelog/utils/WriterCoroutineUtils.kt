@@ -13,10 +13,15 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
+import com.sky.consolelog.action.UnCommentAllConsoleLogAction
+import com.sky.consolelog.constant.SettingConstant
 import com.sky.consolelog.entities.ScopeOffset
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
+import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * 文本写入协程工具类
@@ -84,7 +89,8 @@ class WriterCoroutineUtils(
                 }
 
                 if (scopeOffset.needEndLine) {
-                    val ch: String = document.getText(TextRange(scopeOffset.insertEndOffset, scopeOffset.insertEndOffset + 1));
+                    val ch: String =
+                        document.getText(TextRange(scopeOffset.insertEndOffset, scopeOffset.insertEndOffset + 1));
                     if ("\n" != ch) {
                         // 插入的语句后面不是换行符，包含了代码，那么就在插入语句后面换行
                         sentence.append("\n").append(indentation);
@@ -161,5 +167,172 @@ class WriterCoroutineUtils(
                 }
             }
         }
+    }
+
+    /**
+     * 删除 console.log 语句
+     */
+    fun deleteWriter(
+        project: Project,
+        editor: Editor,
+        consoleLogNewRangeList: List<TextRange>,
+        pattern: Pattern,
+        patternDefaultRegex: Pattern?
+    ) {
+        cs.launch {
+            WriteCommandAction.runWriteCommandAction(project) {
+                var deleteStringSize = 0;
+
+                val document = editor.document;
+                for (range in consoleLogNewRangeList) {
+                    val newRange = TextRange(
+                        range.startOffset - deleteStringSize,
+                        range.endOffset - deleteStringSize
+                    );
+                    val text = document.getText(newRange);
+                    val matcher = pattern.matcher(text);
+
+                    if (matcher.find()) {
+                        deleteStringSize += deleteConsoleLogMsg(newRange, document);
+                        continue;
+                    }
+
+                    val matchDefault = patternDefaultRegex?.matcher(text);
+                    if (matchDefault?.find() ?: false) {
+                        deleteStringSize += deleteConsoleLogMsg(newRange, document);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 删除符合插件规范的console.log表达式语句
+     */
+    private fun deleteConsoleLogMsg(newRange: TextRange, document: Document): Int {
+        // 删除符合插件规范的console.log表达式语句
+        val startOffset: Int = newRange.startOffset;
+        val endOffset: Int = newRange.endOffset;
+
+        // 删除匹配的内容
+        document.deleteString(startOffset, endOffset);
+        return endOffset - startOffset;
+    }
+
+    /**
+     * 注释console.log表达式
+     */
+    fun commentWriter(
+        project: Project,
+        editor: Editor,
+        consoleLogNewLineNumberMap: Map<TextRange, List<Int>>,
+        pattern: Pattern,
+        patternDefaultRegex: Pattern?
+    ) {
+        cs.launch {
+            WriteCommandAction.runWriteCommandAction(project) {
+                var insertCommentSignalSize = 0;
+
+                val document = editor.document;
+                for ((range, lineNumberList) in consoleLogNewLineNumberMap) {
+                    val newRange = TextRange(
+                        range.startOffset + insertCommentSignalSize,
+                        range.endOffset + insertCommentSignalSize
+                    );
+                    val text = document.getText(newRange);
+
+                    val matcher = pattern.matcher(text);
+                    if (matcher.find()) {
+                        insertCommentSignalSize += insertCommentSignalBeforeConsoleLogMsg(
+                            document,
+                            lineNumberList,
+                            newRange
+                        );
+                        continue;
+                    }
+
+                    val matchDefault = patternDefaultRegex?.matcher(text);
+                    if (matchDefault?.find() ?: false) {
+                        insertCommentSignalSize += insertCommentSignalBeforeConsoleLogMsg(
+                            document,
+                            lineNumberList,
+                            newRange
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 注释console.log表达式
+     */
+    private fun insertCommentSignalBeforeConsoleLogMsg(
+        document: Document,
+        lineNumberList: List<Int>,
+        newRange: TextRange
+    ): Int {
+        var insertCommentSignalSize = 0;
+
+        val firstLineStartOffset = document.getLineStartOffset(lineNumberList[0]);
+        // 取最大的偏移，保证不会注释到console.log前面的代码（怪异代码的感觉+1）
+        document.insertString(newRange.startOffset.coerceAtLeast(firstLineStartOffset), SettingConstant.COMMENT_SIGNAL);
+        insertCommentSignalSize += SettingConstant.COMMENT_SIGNAL_LENGTH;
+
+        for (i in 1 until lineNumberList.size) {
+            val lineStartOffset = document.getLineStartOffset(lineNumberList[i]);
+            document.insertString(lineStartOffset, SettingConstant.COMMENT_SIGNAL);
+            insertCommentSignalSize += SettingConstant.COMMENT_SIGNAL_LENGTH;
+            // 万一结尾还有非console.log的代码呢？应该没有人写这么怪异的代码，，，吧？
+        }
+
+        return insertCommentSignalSize;
+    }
+
+    /**
+     * 解注释console.log表达式
+     */
+    fun unCommentWriter(
+        project: Project,
+        editor: Editor,
+        consoleLogNewRangeList: List<TextRange>,
+        pattern: Pattern,
+        patternDefaultRegex: Pattern?
+    ) {
+        cs.launch {
+            WriteCommandAction.runWriteCommandAction(project, Runnable {
+                var deleteStringSize = 0;
+
+                val document = editor.document;
+                for (range in consoleLogNewRangeList) {
+                    val newRange = TextRange(range.startOffset - deleteStringSize, range.endOffset - deleteStringSize);
+                    val text = document.getText(newRange);
+                    val matcher: Matcher = pattern.matcher(text);
+
+                    if (matcher.find()) {
+                        deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(document, newRange);
+                        continue;
+                    }
+
+                    val matcherDefault = patternDefaultRegex?.matcher(text);
+                    if (matcherDefault?.find() ?: false) {
+                        deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(document, newRange);
+                    }
+                }
+            })
+        }
+    }
+
+    /**
+     * 解注释符合插件规范的console.log表达式语句
+     */
+    private fun deleteCommentSignalBeforeConsoleLogMsg(document: Document, newRange: TextRange): Int {
+
+        val startOffset: Int = newRange.startOffset - SettingConstant.COMMENT_SIGNAL_LENGTH;
+        val endOffset: Int = newRange.startOffset;
+
+        // 解注释匹配的内容
+        document.deleteString(startOffset, endOffset);
+        return SettingConstant.COMMENT_SIGNAL_LENGTH;
     }
 }

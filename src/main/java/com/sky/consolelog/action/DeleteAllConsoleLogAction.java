@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -15,11 +14,10 @@ import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.TextRangeHandle;
+import com.sky.consolelog.utils.WriterCoroutineUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -31,6 +29,7 @@ import java.util.regex.Pattern;
 public class DeleteAllConsoleLogAction extends AnAction {
 
     private final ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
+    private final WriterCoroutineUtils writerCoroutineUtils = ApplicationManager.getApplication().getService(WriterCoroutineUtils.class);
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -54,12 +53,11 @@ public class DeleteAllConsoleLogAction extends AnAction {
         Pattern pattern = Pattern.compile(regexConsoleLogMsg);
 
         // 没有可打印变量时默认插入语句正则对象
-        Pattern patternDefault = null;
+        Pattern patternDefaultRegex = null;
         if (settings.enableDefaultConsoleLogMsg) {
             String defaultRegexConsoleLogMsg = ConsoleLogMsgUtil.buildRegexDefaultConsoleLogMsg(settings);
-            patternDefault = Pattern.compile(defaultRegexConsoleLogMsg);
+            patternDefaultRegex = Pattern.compile(defaultRegexConsoleLogMsg);
         }
-        Pattern patternDefaultRegex = patternDefault;
 
         // 以后考虑一下当前所在文件代码行数过多导致的性能问题吗？
         Document document = editor.getDocument();
@@ -68,39 +66,6 @@ public class DeleteAllConsoleLogAction extends AnAction {
         // 处理选中区域和console.log表达式
         List<TextRange> consoleLogNewRangeList = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogRangeList, settings.deleteInSelection);
 
-        WriteCommandAction.runWriteCommandAction(project, () -> {
-            int deleteStringSize = 0;
-            for (TextRange range : consoleLogNewRangeList) {
-                TextRange newRange = new TextRange(range.getStartOffset() - deleteStringSize, range.getEndOffset() - deleteStringSize);
-                String text = document.getText(newRange);
-                Matcher matcher = pattern.matcher(text);
-
-                if (matcher.find()) {
-                    deleteStringSize += deleteConsoleLogMsg(newRange, document);
-                    continue;
-                }
-
-                if (Objects.nonNull(patternDefaultRegex)) {
-                    Matcher matcherDefault = patternDefaultRegex.matcher(text);
-                    if (matcherDefault.find()) {
-                        deleteStringSize += deleteConsoleLogMsg(newRange, document);
-                    }
-                }
-            }
-//            FileDocumentManager.getInstance().saveAllDocuments();
-        });
-    }
-
-    /**
-     * 删除符合插件规范的console.log表达式语句
-     */
-    private static int deleteConsoleLogMsg(TextRange newRange, Document document) {
-        // 删除符合插件规范的console.log表达式语句
-        int startOffset = newRange.getStartOffset();
-        int endOffset = newRange.getEndOffset();
-
-        // 删除匹配的内容
-        document.deleteString(startOffset, endOffset);
-        return endOffset - startOffset;
+        writerCoroutineUtils.deleteWriter(project, editor, consoleLogNewRangeList, pattern, patternDefaultRegex);
     }
 }

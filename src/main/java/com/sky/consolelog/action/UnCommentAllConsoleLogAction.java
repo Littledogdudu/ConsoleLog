@@ -4,23 +4,19 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
-import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.TextRangeHandle;
+import com.sky.consolelog.utils.WriterCoroutineUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -32,6 +28,7 @@ import java.util.regex.Pattern;
 public class UnCommentAllConsoleLogAction extends AnAction {
 
     private final ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
+    private final WriterCoroutineUtils writerCoroutineUtils = ApplicationManager.getApplication().getService(WriterCoroutineUtils.class);
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -61,45 +58,11 @@ public class UnCommentAllConsoleLogAction extends AnAction {
         }
         Pattern patternDefaultRegex = patternDefault;
 
-        Document document = editor.getDocument();
         List<TextRange> consoleLogRangeList = ConsoleLogPsiUtil.detectAllOnlyComment(psiFile);
 
         // 处理选中区域和console.log表达式
         List<TextRange> consoleLogNewRangeList = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogRangeList, settings.unCommentSelection);
 
-        WriteCommandAction.runWriteCommandAction(project, () -> {
-            int deleteStringSize = 0;
-            for (TextRange range : consoleLogNewRangeList) {
-                TextRange newRange = new TextRange(range.getStartOffset() - deleteStringSize, range.getEndOffset() - deleteStringSize);
-                String text = document.getText(newRange);
-                Matcher matcher = pattern.matcher(text);
-
-                if (matcher.find()) {
-                    deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(newRange, document);
-                    continue;
-                }
-
-                if (Objects.nonNull(patternDefaultRegex)) {
-                    Matcher matcherDefault = patternDefaultRegex.matcher(text);
-                    if (matcherDefault.find()) {
-                        deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(newRange, document);
-                    }
-                }
-            }
-//            FileDocumentManager.getInstance().saveAllDocuments();
-        });
-    }
-
-    /**
-     * 删除注释符
-     */
-    private static int deleteCommentSignalBeforeConsoleLogMsg(TextRange newRange, Document document) {
-        // 解注释符合插件规范的console.log表达式语句
-        int startOffset = newRange.getStartOffset() - SettingConstant.COMMENT_SIGNAL_LENGTH;
-        int endOffset = newRange.getStartOffset();
-
-        // 解注释匹配的内容
-        document.deleteString(startOffset, endOffset);
-        return SettingConstant.COMMENT_SIGNAL_LENGTH;
+        writerCoroutineUtils.unCommentWriter(project, editor, consoleLogNewRangeList, pattern, patternDefaultRegex);
     }
 }
