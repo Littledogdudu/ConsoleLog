@@ -31,6 +31,16 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
         return Pattern.quote(this.getFormSignal()) + SettingConstant.CONSOLE_LOG_END_REGEX;
     }
 
+    @Override
+    public @NotNull String getEndNoVariableRegexText() {
+        return Pattern.quote(this.getFormSignal()) + SettingConstant.CONSOLE_LOG_END_NO_VARIABLE_REGEX;
+    }
+
+    @Override
+    public @NotNull String getEndCompositeNoVariableRegexText() {
+        return Pattern.quote(this.getFormSignal()) + SettingConstant.CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX;
+    }
+
     /**
      * 获取需要插入的console.log表达式语句
      *

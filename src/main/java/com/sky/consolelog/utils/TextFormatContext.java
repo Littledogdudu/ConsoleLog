@@ -30,7 +30,7 @@ public enum TextFormatContext {
     public static String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\\s*" + FORM_SIGNAL);
     public static String CONSOLE_LOG_END_REGEX = FORM_SIGNAL + "\\s*" + Pattern.quote(",") + ".*" + Pattern.quote(")") + "\\s*" + ";?";
     public static String CONSOLE_LOG_END_NO_VARIABLE_REGEX = FORM_SIGNAL + "\\s*" + Pattern.quote(")") + "\\s*" + ";?";
-    public static String CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX = FORM_SIGNAL + "\\s*" + "(" + Pattern.quote(",") + ".*" + ")?" + Pattern.quote(")") + "\\s*" + ";?";
+    public static String CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX = FORM_SIGNAL + "\\s*" + "(?:,.*)?" + Pattern.quote(")") + "\\s*" + ";?";
     public static String CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = "console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\\s*") + FORM_SIGNAL;
 
     public void setTextFormatStrategyByProjectSetting(ConsoleLogSettingState settings) {
@@ -48,6 +48,8 @@ public enum TextFormatContext {
         CONSOLE_LOG_COMMAND = textFormatStrategy.getBeginText();
         CONSOLE_LOG_BEGIN_REGEX = textFormatStrategy.getBeginRegexText();
         CONSOLE_LOG_END_REGEX = textFormatStrategy.getEndRegexText();
+        CONSOLE_LOG_END_NO_VARIABLE_REGEX = textFormatStrategy.getEndNoVariableRegexText();
+        CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX = textFormatStrategy.getEndCompositeNoVariableRegexText();
         CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = textFormatStrategy.getBeginRegexText().replaceFirst("\\\\s\\*", "");
     }
 

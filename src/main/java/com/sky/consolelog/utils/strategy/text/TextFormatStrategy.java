@@ -39,9 +39,23 @@ public interface TextFormatStrategy {
      */
     String getEndRegexText();
 
+
+    /**
+     * 获取console.log表达式的正则表达式结束文本(无打印变量)
+     * @return
+     */
+    @NotNull String getEndNoVariableRegexText();
+
+    /**
+     * 获取console.log表达式的正则表达式结束文本(有打印变量与无打印变量的组合正则)
+     * @return
+     */
+    @NotNull String getEndCompositeNoVariableRegexText();
+
     /**
      * 格式化console.log表达式的文本
-     *
+     * @param consoleLogMsg console.log表达式
+     * @param consoleLogSettingVo 打印参数
      * @return 需要插入到编辑器中的文本
      */
     @NotNull String getCustomHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo);
