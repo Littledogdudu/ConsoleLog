@@ -36,8 +36,8 @@
 
 > 可在[github](https://github.com/Littledogdudu/ConsoleLog/releases)或者[jetbrain marketplace](https://plugins.jetbrains.com/plugin/26574-console-log/versions)上下载对应心仪版本  
 > 1.0.6版本是插件最主要功能的最佳版本，是没有加入多光标支持、选中区域删除/注释/解注释和侧边栏的版本  
-> 1.1.3版本是当前加入多光标支持和选中区域删除/注释/解注释功能的最佳版本（推荐）  
-> 1.2.0版本是当前加入侧边栏的支持的最佳版本
+> 1.1.5版本是当前加入多光标支持和选中区域删除/注释/解注释功能的最佳版本（推荐）  
+> 1.2.1版本是当前加入侧边栏的支持的最佳版本
 
 运行这个插件需要把这个local方法的参数修改为你的WebStorm文件路径哦
 ![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)
@@ -95,6 +95,11 @@
 
 默认启用：\${fileName}占位符将会被替换为生成的console.log所在的文件名，且包含后缀名  
 禁用后：\${fileName}占位符将会被替换为生成的console.log所在的文件名，但不在包含后缀名
+
+#### 是否开启插入自动修复行号
+
+默认不启用：\${lineNumber}占位符不会自动更新，需手动更新  
+启用后：\${lineNumber}占位符会在插入console.log语句时自动更新为正确行号
 
 ### 提升选中文本时的可操作性
 
@@ -183,7 +188,7 @@ After activation: When there are no printable variables at the cursor, the inser
 
 The same as the insert statement, but only when the \[Generates default insert statement content when there are no printable variables\] button above is enabled and the current cursor has no printable variables
 
-#### When there are no printable variables, the cursor automatically follows to the end of the log expression after insertion
+#### when there are no printable variables, the cursor automatically follows to the end of the log expression after insertion
 
 Default not enabled (recommended): When there are no printable variables, the inserted print statement will automatically follow to the end of the generated console.log  
 After activation: Inserted print statements are automatically followed to the end of the generated console.log
@@ -192,7 +197,7 @@ After activation: Inserted print statements are automatically followed to the en
 
 ### Placeholder settings
 
-#### Whether to use the line number where the print variable is located
+#### whether to use the line number where the print variable is located
 
 Default not enabled: The \${lineNumber} placeholder will be replaced with the line number where the generated console.log is located  
 After activation, the \${lineNumber} placeholder will be replaced with the line number of the variable that needs to be printed
@@ -201,6 +206,11 @@ After activation, the \${lineNumber} placeholder will be replaced with the line 
 
 Default enabled: The \${fileName} placeholder will be replaced with the file name of the generated console.log, including the suffix  
 After disabling: The \${fileName} placeholder will be replaced with the file name of the generated console.log, but it will not include the suffix
+
+#### whether to enable the insertion of auto-repair line numbers
+
+Default not enabled: The \${lineNumber} placeholder will not be automatically updated and needs to be updated manually
+After activation: The \${lineNumber} placeholder is automatically updated to the correct line number when the console.log statement is inserted
 
 ### Improve the operability when selecting code
 

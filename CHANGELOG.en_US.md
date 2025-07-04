@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+## [1.1.5] - 2025-07-04
+- Automatically repairs line numbers when inserted
+- You can use shortcut keys to repair line numbers (you don't need to set the default shortcut keys, you need to set them by yourself)
+- When the variable is undefined near the cursor, a statement that determines the direction of data flow is generated, and the act of deleting/commenting/uncommenting is generated
+
 ## [1.1.4] - 2025-06-30
 
 ### Feature
