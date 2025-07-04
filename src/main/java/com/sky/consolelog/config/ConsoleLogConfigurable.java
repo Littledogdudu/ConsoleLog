@@ -47,6 +47,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getEnableDefaultConsoleLogMsg().equals(this.settings.enableDefaultConsoleLogMsg)
                 || !component.getDefaultConsoleLogMsg().equals(this.settings.defaultConsoleLogMsg)
                 || !component.getDefaultAutoFollowEndCheckBox().equals(this.settings.defaultAutoFollowEnd)
+                || !component.getEnableAutoFixLineNumber().equals(this.settings.enableAutoFixLineNumber)
                 ;
     }
 
@@ -68,6 +69,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.enableDefaultConsoleLogMsg = component.getEnableDefaultConsoleLogMsg();
         this.settings.defaultConsoleLogMsg = component.getDefaultConsoleLogMsg();
         this.settings.defaultAutoFollowEnd = component.getDefaultAutoFollowEndCheckBox();
+        this.settings.enableAutoFixLineNumber = component.getEnableAutoFixLineNumber();
 
         finalSetting(settings, component);
     }
@@ -90,6 +92,7 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setEnableDefaultConsoleLogMsg(this.settings.enableDefaultConsoleLogMsg);
         component.setDefaultConsoleLogMsg(this.settings.defaultConsoleLogMsg);
         component.setDefaultAutoFollowEndCheckBox(this.settings.defaultAutoFollowEnd);
+        component.setEnableAutoFixLineNumber(this.settings.enableAutoFixLineNumber);
 
         finalSetting(settings, component);
     }

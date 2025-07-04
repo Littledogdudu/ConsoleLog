@@ -15,6 +15,7 @@ import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.TextRangeHandle;
 import com.sky.consolelog.utils.WriterCoroutineUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -56,7 +57,9 @@ public class DeleteAllConsoleLogAction extends AnAction {
         Pattern patternDefaultRegex = null;
         if (settings.enableDefaultConsoleLogMsg) {
             String defaultRegexConsoleLogMsg = ConsoleLogMsgUtil.buildRegexDefaultConsoleLogMsg(settings);
-            patternDefaultRegex = Pattern.compile(defaultRegexConsoleLogMsg);
+            if (StringUtils.isNotEmpty(defaultRegexConsoleLogMsg)) {
+                patternDefaultRegex = Pattern.compile(defaultRegexConsoleLogMsg);
+            }
         }
 
         // 以后考虑一下当前所在文件代码行数过多导致的性能问题吗？

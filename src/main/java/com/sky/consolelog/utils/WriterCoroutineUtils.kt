@@ -1,25 +1,28 @@
 package com.sky.consolelog.utils
 
 import com.intellij.application.options.CodeStyle
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
-import com.sky.consolelog.action.UnCommentAllConsoleLogAction
 import com.sky.consolelog.constant.SettingConstant
 import com.sky.consolelog.entities.ScopeOffset
+import com.sky.consolelog.entities.UpdateEntity
+import com.sky.consolelog.setting.storage.ConsoleLogSettingState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
-import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -33,6 +36,13 @@ import java.util.regex.Pattern
 class WriterCoroutineUtils(
     private val cs: CoroutineScope
 ) {
+
+    private var insertJob: Job? = null;
+    private var defaultInsertJob: Job? = null;
+    private var deleteJob: Job? = null;
+    private var commentJob: Job? = null;
+    private var uncommentJob: Job? = null;
+
     /**
      * 插入console.log表达式信息
      */
@@ -45,7 +55,7 @@ class WriterCoroutineUtils(
         consoleLogMsg: String,
         autoFollowEnd: Boolean
     ) {
-        cs.launch {
+        insertJob = cs.launch {
             val document: Document = editor.document;
 
             // 找到光标所在行的结束位置
@@ -121,7 +131,7 @@ class WriterCoroutineUtils(
         consoleLogMsg: String,
         autoFollowEnd: Boolean
     ) {
-        cs.launch {
+        defaultInsertJob = cs.launch {
             val document: Document = editor.document;
 
             // 找到光标所在行的结束位置
@@ -179,7 +189,7 @@ class WriterCoroutineUtils(
         pattern: Pattern,
         patternDefaultRegex: Pattern?
     ) {
-        cs.launch {
+        deleteJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project) {
                 var deleteStringSize = 0;
 
@@ -229,7 +239,7 @@ class WriterCoroutineUtils(
         pattern: Pattern,
         patternDefaultRegex: Pattern?
     ) {
-        cs.launch {
+        commentJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project) {
                 var insertCommentSignalSize = 0;
 
@@ -299,7 +309,7 @@ class WriterCoroutineUtils(
         pattern: Pattern,
         patternDefaultRegex: Pattern?
     ) {
-        cs.launch {
+        uncommentJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project, Runnable {
                 var deleteStringSize = 0;
 
@@ -334,5 +344,92 @@ class WriterCoroutineUtils(
         // 解注释匹配的内容
         document.deleteString(startOffset, endOffset);
         return SettingConstant.COMMENT_SIGNAL_LENGTH;
+    }
+
+    /**
+     * 更新行号
+     */
+    fun updateLineNumber(settings: ConsoleLogSettingState, project: Project, editor: Editor, psiFile: PsiFile) {
+        cs.launch {
+            val compositeConsoleLogMsgRegex: String = ConsoleLogMsgUtil.buildFindLineNumberConsoleLogMsgRegex(settings);
+            val pattern:  Pattern = Pattern.compile(compositeConsoleLogMsgRegex);
+
+            insertJob?.join();
+            defaultInsertJob?.join();
+            deleteJob?.join();
+            commentJob?.join();
+            uncommentJob?.join();
+
+            val document = editor.document;
+
+            val consoleLogRangeList: List<TextRange> = runReadAction<List<TextRange>> {
+                ConsoleLogPsiUtil.detectAll(psiFile, document);
+            }
+
+            var updateStringSize = 0;
+            val updateEntityList: MutableList<UpdateEntity> = mutableListOf();
+            for (range in consoleLogRangeList) {
+                val newRange = TextRange(range.startOffset - updateStringSize, range.endOffset - updateStringSize);
+                val text = document.getText(newRange);
+                val matcher: Matcher = pattern.matcher(text);
+
+                if (matcher.find()) {
+                    updateStringSize += updateLineNumberBeforeConsoleLogMsg(document, newRange, matcher, updateEntityList);
+                }
+            }
+
+            WriteCommandAction.runWriteCommandAction(project) {
+                for (updateEntity in updateEntityList) {
+                    document.replaceString(
+                        updateEntity.startOffset,
+                        updateEntity.endOffset,
+                        updateEntity.text
+                    );
+                }
+            }
+        }
+    }
+
+    private fun updateLineNumberBeforeConsoleLogMsg(
+        document: Document,
+        newRange: TextRange,
+        matcher: Matcher,
+        updateEntityList: MutableList<UpdateEntity>
+    ): Int {
+        val startOffset: Int = newRange.startOffset;
+        val endOffset: Int = newRange.endOffset;
+        // 正则总组数
+        val groupCount: Int = matcher.groupCount();
+        var updateStringSize = 0;
+
+        // 新行号信息
+        val newLineNumber: String = (document.getLineNumber((startOffset + endOffset) / 2) + 1).toString();
+        val newLineNumberSize: Int = newLineNumber.length;
+
+        for (i in 1..groupCount) {
+            // 旧行号信息
+            val oldLineNumber: String = matcher.group(i) ?: continue;
+            val oldLineNumberSize: Int = oldLineNumber.length;
+            // 相对于newRange范围的偏移量
+            val oldLineNumberStartOffset: Int = matcher.start(i);
+            val oldLineNumberEndOffset: Int = matcher.end(i);
+
+            updateEntityList.add(
+                UpdateEntity(
+                    startOffset + oldLineNumberStartOffset + updateStringSize,
+                    startOffset + oldLineNumberEndOffset + updateStringSize,
+                    newLineNumber
+                    )
+            );
+            updateStringSize += oldLineNumberSize - newLineNumberSize;
+        }
+
+        return updateStringSize;
+    }
+
+    inline fun <T> runReadAction(crossinline block: () -> T): T {
+        return ApplicationManager.getApplication().runReadAction(Computable {
+            block()
+        });
     }
 }

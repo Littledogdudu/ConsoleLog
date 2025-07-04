@@ -35,6 +35,7 @@ public class ConsoleLogComponent implements Disposable {
     private JTextField defaultConsoleLogMsg;
     private JButton resetButton2;
     private JCheckBox defaultAutoFollowEndCheckBox;
+    private JCheckBox enableAutoFixLineNumber;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = event -> {
@@ -181,6 +182,14 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setDefaultAutoFollowEndCheckBox(Boolean checked) {
         this.defaultAutoFollowEndCheckBox.setSelected(checked);
+    }
+
+    public Boolean getEnableAutoFixLineNumber() {
+        return enableAutoFixLineNumber.isSelected();
+    }
+
+    public void setEnableAutoFixLineNumber(Boolean checked) {
+        this.enableAutoFixLineNumber.setSelected(checked);
     }
 
     @Override

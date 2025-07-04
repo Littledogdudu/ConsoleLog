@@ -69,6 +69,10 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public String defaultConsoleLogMsg = SettingConstant.DEFAULT_CONSOLE_LOG_MSG_WITHOUT_VARIABLE;
     /** 无变量插入打印语句插入后是否跟随到语句末尾 */
     public Boolean defaultAutoFollowEnd = false;
+    /**
+     * 是否启用在插入时自动修复行号功能
+     */
+    public Boolean enableAutoFixLineNumber = false;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -87,6 +91,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.enableDefaultConsoleLogMsg = this.enableDefaultConsoleLogMsg;
         state.defaultConsoleLogMsg = Base64Util.encode(this.defaultConsoleLogMsg);
         state.defaultAutoFollowEnd = this.defaultAutoFollowEnd;
+        state.enableAutoFixLineNumber = this.enableAutoFixLineNumber;
         return state;
     }
 
@@ -110,6 +115,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.enableDefaultConsoleLogMsg = state.enableDefaultConsoleLogMsg;
         this.defaultConsoleLogMsg = Base64Util.decode(state.defaultConsoleLogMsg);
         this.defaultAutoFollowEnd = state.defaultAutoFollowEnd;
+        this.enableAutoFixLineNumber = state.enableAutoFixLineNumber;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }

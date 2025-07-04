@@ -75,6 +75,9 @@ public class InsertConsoleLogAction extends AnAction {
                 buildDefaultCommonPlaceHolder(caret, psiFile, consoleLogSettingVo, editor, scopeOffset);
                 String consoleLogMsg = TextFormatContext.INSTANCE.getDefaultHandleConsoleLogMsg(settings.defaultConsoleLogMsg, consoleLogSettingVo);
                 writerCoroutineUtils.insertDefaultWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, settings.defaultAutoFollowEnd);
+                if (settings.enableAutoFixLineNumber) {
+                    writerCoroutineUtils.updateLineNumber(settings, project, editor, psiFile);
+                }
             }
             return;
         }
@@ -87,6 +90,10 @@ public class InsertConsoleLogAction extends AnAction {
         String consoleLogMsg = TextFormatContext.INSTANCE.getCustomHandleConsoleLogMsg(settings.consoleLogMsg, consoleLogSettingVo);
 
         writerCoroutineUtils.insertWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, settings.autoFollowEnd);
+
+        if (settings.enableAutoFixLineNumber) {
+            writerCoroutineUtils.updateLineNumber(settings, project, editor, psiFile);
+        }
     }
 
     /**
