@@ -16,6 +16,8 @@ public class ConsoleLogMsgUtil {
     private static String currentFormSignal = "";
     private static String currentConsoleLogMsg = "";
     private static String consoleLogMsgRegex = "";
+
+    private static String currentDefaultFormSignal = "";
     private static String currentDefaultConsoleLogMsg = "";
     private static String defaultConsoleLogMsgRegex = "";
 
@@ -109,7 +111,7 @@ public class ConsoleLogMsgUtil {
             return null;
         }
 
-        if (consoleLogMsg.equals(currentDefaultConsoleLogMsg) && TextFormatContext.FORM_SIGNAL.equals(currentFormSignal)) {
+        if (consoleLogMsg.equals(currentDefaultConsoleLogMsg) && TextFormatContext.FORM_SIGNAL.equals(currentDefaultFormSignal)) {
             return defaultConsoleLogMsgRegex;
         }
         StringBuilder regexConsoleLogMsg = new StringBuilder();
@@ -153,7 +155,7 @@ public class ConsoleLogMsgUtil {
         }
         regexConsoleLogMsg.append(endRegex);
 
-        currentFormSignal = TextFormatContext.FORM_SIGNAL;
+        currentDefaultFormSignal = TextFormatContext.FORM_SIGNAL;
         currentDefaultConsoleLogMsg = consoleLogMsg;
         defaultConsoleLogMsgRegex = regexConsoleLogMsg.toString();
         return defaultConsoleLogMsgRegex;
