@@ -31,6 +31,16 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
         return Pattern.quote(this.getFormSignal()) + SettingConstant.CONSOLE_LOG_END_REGEX;
     }
 
+    @Override
+    public @NotNull String getEndNoVariableRegexText() {
+        return Pattern.quote(this.getFormSignal()) + SettingConstant.CONSOLE_LOG_END_NO_VARIABLE_REGEX;
+    }
+
+    @Override
+    public @NotNull String getEndCompositeNoVariableRegexText() {
+        return Pattern.quote(this.getFormSignal()) + SettingConstant.CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX;
+    }
+
     /**
      * 获取需要插入的console.log表达式语句
      *
@@ -45,6 +55,21 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
         return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
                 consoleLogMsg + this.getFormSignal() + ", " + consoleLogSettingVo.getVariableName() + ");";
+    }
+
+    /**
+     * 格式化console.log表达式的文本（光标处位处于任何变量时的默认行为）
+     * @param defaultConsoleLogMsg 默认的console.log表达式
+     * @param consoleLogSettingVo 打印参数
+     * @return 需要插入到编辑器中的文本
+     */
+    @Override
+    public @NotNull String getDefaultHandleConsoleLogMsg(String defaultConsoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
+        return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
+                defaultConsoleLogMsg + this.getFormSignal() + ");";
     }
 
     /**

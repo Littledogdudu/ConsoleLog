@@ -12,15 +12,21 @@ public interface SettingConstant {
     String DOUBLE_QUOTE = "\"";
     String SINGLE_QUOTE = "'";
     String BACKTICK = "`";
+
+    String ALL_REGEX = ".*";
+
     String CONSOLE_LOG_COMMAND = "console.log(";
     String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(") + "\\s*";
     String CONSOLE_LOG_END_REGEX = "\\s*" + Pattern.quote(",") + ".*" + Pattern.quote(")") + "\\s*" + ";?";
-    String ALL_REGEX = ".*";
+
+    String CONSOLE_LOG_END_NO_VARIABLE_REGEX = "\\s*" + Pattern.quote(")") + "\\s*" + ";?";
+    String CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX ="\\s*" + "(?:,.*)?" + Pattern.quote(")") + "\\s*" + ";?";
+
     String CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = "console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(") + "\\s*";
     String TAGS_DELIMITER = ";";
 
     /** 注释符号 */
-    String COMMENT_SIGNAL = "//";
+    String COMMENT_SIGNAL = "// ";
     /**
      * 注释符号偏移长度
      */
@@ -31,6 +37,10 @@ public interface SettingConstant {
      */
     String DEFAULT_CONSOLE_LOG_MSG = "🚀 ~ " + VariableAlias.METHOD_COMMAND.getKey()
             + " ~ " + VariableAlias.VARIABLE_COMMAND.getKey() + ": ";
+    /**
+     * 默认的无变量console打印信息
+     */
+    String DEFAULT_CONSOLE_LOG_MSG_WITHOUT_VARIABLE = "➤➤➤ ~ " + VariableAlias.FILE_NAME_COMMAND.getKey() + " ~ L" + VariableAlias.LINE_NUMBER_COMMAND.getKey();
 
     enum VariableAlias {
         /**

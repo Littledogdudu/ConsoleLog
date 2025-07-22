@@ -39,12 +39,11 @@ public interface PsiPosition {
          * 包含then的调用表达式
          */
         String JS_REFERENCE_EXPRESSION_THEN = "JSReferenceExpression:then";
-        /** 参数列表 */
-        String TYPE_SCRIPT_PARAMETER_LIST = "TypeScriptParameterList";
         /** 函数表达式 */
         String JS_FUNCTION_EXPRESSION = "JSFunctionExpression";
         String TYPE_SCRIPT_FUNCTION_EXPRESSION = "TypeScriptFunctionExpression";
         String JS_FUNCTION_PROPERTY = "JSFunctionProperty";
+        String TYPE_SCRIPT_FUNCTION_PROPERTY = "TypeScriptFunctionProperty";
         /**
          * 表达式语句<br/>
          * ElMessage({<br/>

@@ -40,14 +40,16 @@
                 text="Console Log Plugin: Delete All Console Log Message" description="Delete all console.log() in code">
             <keyboard-shortcut keymap="$default" first-keystroke="alt 2"/>
         </action>
-        <action id="comment All Log Messages" class="com.sky.consolelog.action.CommentAllConsoleLogAction"
+        <action id="Comment All Log Messages" class="com.sky.consolelog.action.CommentAllConsoleLogAction"
                 text="Console Log Plugin: Comment All Console Log Message" description="Comment all log messages">
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt 1"/>
         </action>
-        <action id="uncomment All Log Message"
-                class="com.sky.consolelog.action.UnCommentAllConsoleLogAction"
+        <action id="Uncomment All Log Message" class="com.sky.consolelog.action.UnCommentAllConsoleLogAction"
                 text="Console Log Plugin: Uncomment Console Log Message" description="Uncomment all log messages">
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt 2"/>
+        </action>
+        <action id="Fix Console Log LineNumber" class="com.sky.consolelog.action.FixLineNumberConsoleLogAction"
+                text="Console Log Plugin: Fix Console Log LineNumber" description="Fix lineNumber from every console.log express at the same time">
         </action>
     </actions>
 </idea-plugin>

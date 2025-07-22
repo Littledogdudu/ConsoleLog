@@ -201,7 +201,7 @@ public class ConsoleLogPsiUtil {
             return false;
         }
         return str.matches(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
-                + TextFormatContext.CONSOLE_LOG_END_REGEX);
+                + TextFormatContext.CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX);
     }
 
     /**

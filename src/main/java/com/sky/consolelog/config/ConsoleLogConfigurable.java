@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * 插件配置
@@ -45,7 +46,13 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getCommentInSelectionCheckBox().equals(this.settings.commentInSelection)
                 || !component.getUnCommentSelectionCheckBox().equals(this.settings.unCommentSelection)
                 || !component.getVariableLineNumberCheckBox().equals(this.settings.variableLineNumber)
-                || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix)|| !component.getEnableSideWindow().equals(this.settings.enableSideWindow)
+                || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix)
+                || !component.getEnableDefaultConsoleLogMsg().equals(this.settings.enableDefaultConsoleLogMsg)
+                || !component.getDefaultConsoleLogMsg().equals(this.settings.defaultConsoleLogMsg)
+                || !component.getDefaultAutoFollowEndCheckBox().equals(this.settings.defaultAutoFollowEnd)
+                || !component.getEnableAutoFixLineNumber().equals(this.settings.enableAutoFixLineNumber)
+                || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix)
+                || !component.getEnableSideWindow().equals(this.settings.enableSideWindow)
                 || !component.getFileTypeAllInCheckBox().equals(this.settings.fileTypeAllIn)
                 || !component.getVueSideCheckBox().equals(this.settings.vueSide)
                 || !component.getJavaScriptSideCheckBox().equals(this.settings.javaScriptSide)
@@ -72,6 +79,10 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.unCommentSelection = component.getUnCommentSelectionCheckBox();
         this.settings.variableLineNumber = component.getVariableLineNumberCheckBox();
         this.settings.fileSuffix = component.getFileSuffixCheckBox();
+        this.settings.enableDefaultConsoleLogMsg = component.getEnableDefaultConsoleLogMsg();
+        this.settings.defaultConsoleLogMsg = component.getDefaultConsoleLogMsg();
+        this.settings.defaultAutoFollowEnd = component.getDefaultAutoFollowEndCheckBox();
+        this.settings.enableAutoFixLineNumber = component.getEnableAutoFixLineNumber();
         this.settings.enableSideWindow = component.getEnableSideWindow();
         // 是否启用侧边栏（重启生效）
         this.settings.fileTypeAllIn = component.getFileTypeAllInCheckBox();
@@ -102,6 +113,10 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setUnCommentSelectionCheckBox(this.settings.unCommentSelection);
         component.setVariableLineNumberCheckBox(this.settings.variableLineNumber);
         component.setFileSuffixCheckBox(this.settings.fileSuffix);
+        component.setEnableDefaultConsoleLogMsg(this.settings.enableDefaultConsoleLogMsg);
+        component.setDefaultConsoleLogMsg(this.settings.defaultConsoleLogMsg);
+        component.setDefaultAutoFollowEndCheckBox(this.settings.defaultAutoFollowEnd);
+        component.setEnableAutoFixLineNumber(this.settings.enableAutoFixLineNumber);
         component.setEnableSideWindow(this.settings.enableSideWindow);
         component.setFileTypeAllInCheckBox(this.settings.fileTypeAllIn);
         component.setVueSideCheckBox(this.settings.vueSide);
@@ -116,13 +131,14 @@ public class ConsoleLogConfigurable implements Configurable {
     }
 
     public static void finalSetting(ConsoleLogSettingState settings, ConsoleLogComponent component) {
-        if (settings != null) {
+        if (Objects.nonNull(settings)) {
             // 更新TextFormatContext的CONSOLE常量
             TextFormatContext.INSTANCE.setTextFormatStrategyByProjectSetting(settings);
             // 更新允许的文件类型
             FileTypeUtil.setSettingFileTypeList(settings);
         }
-        if (component != null) {
+        if (Objects.nonNull(component)) {
+            component.enableDefaultConsoleLogMsgEvent();
             // 设置禁用关系
             component.setLanguageCheckBoxStatus();
             component.setEnableSideWindowStatus();

@@ -35,6 +35,11 @@ public class ConsoleLogComponent implements Disposable {
     private JRadioButton singleQuoteRadioButton;
     private JRadioButton doubleQuoteRadioButton;
     private JRadioButton backTickRadioButton;
+    private JCheckBox enableDefaultConsoleLogMsg;
+    private JTextField defaultConsoleLogMsg;
+    private JButton resetButton2;
+    private JCheckBox defaultAutoFollowEndCheckBox;
+    private JCheckBox enableAutoFixLineNumber;
     private JPanel basic;
     private JPanel format;
     private JPanel component;
@@ -50,6 +55,12 @@ public class ConsoleLogComponent implements Disposable {
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = e -> setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
+
+    /** 重置按钮监听器 */
+    private final ActionListener resetButtonActionListener2 = event -> setConsoleLogMsg2(SettingConstant.DEFAULT_CONSOLE_LOG_MSG_WITHOUT_VARIABLE);
+    /** 是否禁用光标处无可打印变量时的标记打印功能 */
+    private final ActionListener enableDefaultConsoleLogMsgEventListener = event -> enableDefaultConsoleLogMsgEvent();
+
     /** 是否启用侧边栏按钮监听器 */
     private final ActionListener enableSideWindowActionListener = e -> setEnableSideWindowStatus();
     /** 侧边栏查找不限定语言类型按钮监听器 */
@@ -59,16 +70,29 @@ public class ConsoleLogComponent implements Disposable {
         resetButton.addActionListener(resetButtonActionListener);
 
         // 字符串引号单选选项组
+        resetButton2.addActionListener(resetButtonActionListener2);
         ButtonGroup signalRadioGroup = new ButtonGroup();
         signalRadioGroup.add(singleQuoteRadioButton);
         signalRadioGroup.add(doubleQuoteRadioButton);
         signalRadioGroup.add(backTickRadioButton);
 
+        enableDefaultConsoleLogMsg.addActionListener(enableDefaultConsoleLogMsgEventListener);
+
         enableSideWindow.addActionListener(enableSideWindowActionListener);
         fileTypeAllInCheckBox.addActionListener(fileTypeAllInCheckBoxActionListener);
-        
+
         setSideFontSizeOptions();
         setDefaultSideFontSize();
+    }
+
+    public void enableDefaultConsoleLogMsgEvent() {
+        if (getEnableDefaultConsoleLogMsg()) {
+            defaultConsoleLogMsg.setEnabled(true);
+            defaultAutoFollowEndCheckBox.setEnabled(true);
+        } else {
+            defaultConsoleLogMsg.setEnabled(false);
+            defaultAutoFollowEndCheckBox.setEnabled(false);
+        }
     }
 
     /**
@@ -136,6 +160,10 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setConsoleLogMsg(String msg) {
         consoleLogMsgInput.setText(msg);
+    }
+
+    public void setConsoleLogMsg2(String msg) {
+        defaultConsoleLogMsg.setText(msg);
     }
 
     public Boolean getAutoFollowEndCheckBox() {
@@ -208,6 +236,38 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setFileSuffixCheckBox(Boolean checked) {
         this.fileSuffixCheckBox.setSelected(checked);
+    }
+
+    public Boolean getEnableDefaultConsoleLogMsg() {
+        return enableDefaultConsoleLogMsg.isSelected();
+    }
+
+    public void setEnableDefaultConsoleLogMsg(Boolean checked) {
+        this.enableDefaultConsoleLogMsg.setSelected(checked);
+    }
+
+    public String getDefaultConsoleLogMsg() {
+        return defaultConsoleLogMsg.getText();
+    }
+
+    public void setDefaultConsoleLogMsg(String msg) {
+        this.defaultConsoleLogMsg.setText(msg);
+    }
+
+    public Boolean getDefaultAutoFollowEndCheckBox() {
+        return defaultAutoFollowEndCheckBox.isSelected();
+    }
+
+    public void setDefaultAutoFollowEndCheckBox(Boolean checked) {
+        this.defaultAutoFollowEndCheckBox.setSelected(checked);
+    }
+
+    public Boolean getEnableAutoFixLineNumber() {
+        return enableAutoFixLineNumber.isSelected();
+    }
+
+    public void setEnableAutoFixLineNumber(Boolean checked) {
+        this.enableAutoFixLineNumber.setSelected(checked);
     }
 
     public Boolean getEnableSideWindow() {
@@ -288,6 +348,8 @@ public class ConsoleLogComponent implements Disposable {
     @Override
     public void dispose() {
         resetButton.removeActionListener(resetButtonActionListener);
+        resetButton2.removeActionListener(resetButtonActionListener2);
+        enableDefaultConsoleLogMsg.removeActionListener(enableDefaultConsoleLogMsgEventListener);
         enableSideWindow.removeActionListener(enableSideWindowActionListener);
         fileTypeAllInCheckBox.removeActionListener(fileTypeAllInCheckBoxActionListener);
     }

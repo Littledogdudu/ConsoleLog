@@ -63,6 +63,20 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public Boolean variableLineNumber = false;
     /** 打印的文件名是否需要后缀名 */
     public Boolean fileSuffix = true;
+    /**
+     * 当没有可打印变量时生成默认插入语句内容
+     */
+    public Boolean enableDefaultConsoleLogMsg = false;
+    /**
+     * 当没有可打印变量时需要生成的默认插入语句内容
+     */
+    public String defaultConsoleLogMsg = SettingConstant.DEFAULT_CONSOLE_LOG_MSG_WITHOUT_VARIABLE;
+    /** 无变量插入打印语句插入后是否跟随到语句末尾 */
+    public Boolean defaultAutoFollowEnd = false;
+    /**
+     * 是否启用在插入时自动修复行号功能
+     */
+    public Boolean enableAutoFixLineNumber = false;
 
     /**
      * 是否启用侧边栏（重启生效）
@@ -115,6 +129,10 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.unCommentSelection = this.unCommentSelection;
         state.variableLineNumber = this.variableLineNumber;
         state.fileSuffix = this.fileSuffix;
+        state.enableDefaultConsoleLogMsg = this.enableDefaultConsoleLogMsg;
+        state.defaultConsoleLogMsg = Base64Util.encode(this.defaultConsoleLogMsg);
+        state.defaultAutoFollowEnd = this.defaultAutoFollowEnd;
+        state.enableAutoFixLineNumber = this.enableAutoFixLineNumber;
         state.enableSideWindow = this.enableSideWindow;
         state.fileTypeAllIn = this.fileTypeAllIn;
         state.vueSide = this.vueSide;
@@ -144,6 +162,10 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.unCommentSelection = state.unCommentSelection;
         this.variableLineNumber = state.variableLineNumber;
         this.fileSuffix = state.fileSuffix;
+        this.enableDefaultConsoleLogMsg = state.enableDefaultConsoleLogMsg;
+        this.defaultConsoleLogMsg = Base64Util.decode(state.defaultConsoleLogMsg);
+        this.defaultAutoFollowEnd = state.defaultAutoFollowEnd;
+        this.enableAutoFixLineNumber = state.enableAutoFixLineNumber;
         this.enableSideWindow = state.enableSideWindow;
         this.fileTypeAllIn = state.fileTypeAllIn;
         this.vueSide = state.vueSide;
