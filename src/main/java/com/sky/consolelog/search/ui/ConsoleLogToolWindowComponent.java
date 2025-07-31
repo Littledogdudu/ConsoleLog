@@ -23,7 +23,6 @@ import com.sky.consolelog.entities.ConsoleLogSearchInfo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.MessageUtils;
-import com.sky.consolelog.utils.TextFormatContext;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -255,7 +254,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         StringBuilder regexBuilder = new StringBuilder("(");
         if (enableSpec) {
             // 启用只查找插件指定格式的表达式
-            String consoleLogMsgRegex = ConsoleLogMsgUtil.buildRegexConsoleLogMsg(settings, TextFormatContext.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE, TextFormatContext.CONSOLE_LOG_END_REGEX);
+            String consoleLogMsgRegex = ConsoleLogMsgUtil.buildWithoutStartSpaceRegexConsoleLogMsg(settings);
             if (consoleLogMsgRegex == null) {
                 return;
             }
