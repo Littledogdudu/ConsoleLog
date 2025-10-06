@@ -28,7 +28,7 @@
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Console Log" icon="/META-INF/toolWindowIcon.png" anchor="right" factoryClass="com.sky.consolelog.search.ConsoleLogToolWindowFactory"/>
+        <toolWindow id="Console Log" icon="ConsoleLogIcons.ToolWindowIcon" anchor="right" factoryClass="com.sky.consolelog.search.ConsoleLogToolWindowFactory"/>
     </extensions>
 
     <actions>

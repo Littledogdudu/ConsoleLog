@@ -37,6 +37,7 @@ public class PsiPositionUtil {
                  PsiPosition.Expression.JS_FUNCTION_EXPRESSION,
                  PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_EXPRESSION,
                  PsiPosition.Expression.JS_FUNCTION,
+                 PsiPosition.Expression.TYPE_SCRIPT_FUNCTION,
                  PsiPosition.Exception.JS_CATCH_BLOCK -> getMiddleBlockStatement(element);
             case PsiPosition.Condition.JS_CASE_CLAUSE -> getAfterColon(element);
             case PsiPosition.Loop.JS_DO_WHILE_STATEMENT -> getMiddleBlockStatementBeforeEnd(element);

@@ -1,6 +1,9 @@
 # Console Log README
 
-![Build](https://github.com/Littledogdudu/ConsoleLog/workflows/Build/badge.svg)
+[![JDK](https://img.shields.io/badge/JDK-17-blue.svg)](https://bell-sw.com/pages/downloads/#jdk-17-lts)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Commit](https://img.shields.io/github/last-commit/Littledogdudu/ConsoleLog?color=green)]()
+[![Version](https://img.shields.io/github/release/Littledogdudu/ConsoleLog.svg?style=flat-square&maxAge=600)](https://github.com/Littledogdudu/ConsoleLog/releases)
 
 **ConsoleLog**能够通过光标所在位置快速打印console.log语句，并在结束调试后一键删除  
 更适用于WebStorm和IDEA的前端开发插件
@@ -41,12 +44,15 @@
 > 1.1.5版本是当前加入多光标支持和选中区域删除/注释/解注释功能的最佳版本（推荐）  
 > 1.2.1版本是当前加入侧边栏的支持的最佳版本
 
+### 开发者
+环境配置：JDK17和Gradle8.10  
 运行这个插件需要把这个local方法的参数修改为你的WebStorm文件路径哦
-![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)
+![modifyLocal](https://github.com/Littledogdudu/ConsoleLog/blob/master/.github/readme/buildModifyLocal.png)  
+在一些网络下，gradle下载依赖可能出现失败的情况，
 
-抱歉，暂时不完全支持jsp项目（注释和解注释无法使用），该插件插入时可能只能插入在下一行，在没有语法错误的情况下，删除理论可以使用
+抱歉，暂时**不完全**支持jsp项目（注释和解注释无法使用），该插件插入时可能只能插入在下一行，在没有语法错误的情况下，删除理论可以使用
 
-### 感谢列表
+### 鸣谢
 - 由igor.pavlenko提出PSI JS类型强制转换问题的bug
 - 由yan.wt提出新的功能：支持在格式化字符串中添加文件名和行号
 - 由JiGewusuoweiju提出新的功能：期望未选中文本的时候，依然可以打印默认信息
@@ -144,26 +150,40 @@
 启用后：根据设置中设置的标签项继续查找，标签项为1级，表达式为2级（缩进2字符）  
 禁用后：禁用标签查找
 
-### 是否启用侧边栏（重启生效）
+### 侧边栏基础设置
 
-默认启用：启用侧边栏
-禁用后：禁用侧边栏
+#### 是否启用侧边栏（重启生效）
 
-### 侧边栏查找不限定文件类型
+默认启用：启用侧边栏  
+禁用后：禁用侧边栏  
+此功能仅在设置应用后重启才会生效
 
-默认启用：对当前打开的任何文件类型的文件都会启用侧边栏查找打印表达式
+#### 侧边栏字体大小
+
+修改侧边栏搜索出来的每行表达式的字体大小
+
+### 文件类型生效设置
+
+#### 侧边栏查找不限定文件类型
+
+默认启用：对当前打开的任何文件类型的文件都会启用侧边栏查找打印表达式  
 禁用后：仅对当前打开的文件为选中文件类型的文件才会执行查找并显示在侧边栏
 
-### 侧边栏字体大小
+#### 侧边栏查找限定文件类型
 
-用来自定义设置侧边栏字体大小
+该四个文件类型选项仅在【侧边栏查找不限定文件类型】选项禁用时可选，可选中多个文件类型  
+选中Vue后，检查当前文件类型为Vue的文件则会查询该文件所有console.log语句  
+选中JavaScript后，检查当前文件类型为JavaScript的文件则会查询该文件所有console.log语句  
+选中TypeScript后，检查当前文件类型为TypeScript的文件则会查询该文件所有console.log语句  
+选中Text后，检查当前文件为普通文本则会查询该文件所有console.log语句  
 
-### 首次启动侧边栏时是否默认启用标签查找
+### 标签设置
+#### 首次启动侧边栏时是否默认启用标签查找
 
-启用后：每次打开IDE时，侧边栏将默认启用侧边栏标签查找（标签项在下面的设置项可以进行设置）
+启用后：每次打开IDE时，侧边栏将默认启用侧边栏标签查找（标签项在下面的设置项可以进行设置）  
 默认禁用：侧边栏不会默认启用标签查找（也可通过侧边栏顶部的【启用标签查找】临时更改）
 
-### 侧边栏自定义标签查询项
+#### 侧边栏自定义标签查询项
 
 自定义侧边栏查找的标签项，使用分号分割每个标签项，支持正则表达式
 
@@ -299,27 +319,42 @@ Disabled by default: The sidebar will query all console.log expressions
 Enabled: Continue to search according to the label items set in the settings, the label item is level 1, and the expression is level 2 (indented 2 characters)  
 Disabled: Disables tag lookup
 
-### whether to enable the sidebar (restart takes effect)
+### Sidebar Basic Settings
 
-Enabled by default: Enables the sidebar  
-After disabled: Disable the sidebar
+#### Enable Sidebar (Requires Restart)
 
-### sidebar lookup is not limited to file types
+Default Enabled: Enable Sidebar  
+Disabled: Disable Sidebar  
+This feature only takes effect after restarting the application after the settings are applied.
 
-Enabled by default: Enables sidebar lookup for print expressions for any file type that is currently open  
-After disabled: Only files that are currently open and of the Chinese file type are searched and displayed in the sidebar
+#### Sidebar Font SizeChange
 
-### sidebar font size
+the font size of each line expression retrieved in the sidebar search.
 
-Used to customize the sidebar font size
+### File Type Effect Settings
 
-### label lookup is enabled by default when you first launch the sidebar
+#### Sidebar Search Unrestricted by File Type
 
-Enabled: Every time you open the IDE, the sidebar will enable sidebar label lookup by default (the label items can be set in the settings below items)  
-Disabled by default: The sidebar does not enable tag lookup by default (it can also be temporarily changed via Enable Tag Lookup at the top of the sidebar)
+Default Enabled: The sidebar search will print expressions for any type of file currently opened.  
+Disabled: The search will only execute and display in the sidebar for files of the selected file type currently opened.
 
-### sidebar custom label query items
+#### Sidebar Search Restricted by File Type
 
-Customize the tag items found in the sidebar, use semicolons to split each tag item, and support regular expressions
+The four file type options can only be selected when the "Sidebar Search Unrestricted by File Type" option is disabled. Multiple file types can be selected.  
+Select Vue: If the current file type is Vue, it will query all console.log statements in that file.  
+Select JavaScript: If the current file type is JavaScript, it will query all console.log statements in that file.  
+Select TypeScript: If the current file type is TypeScript, it will query all console.log statements in that file.  
+Select Text: If the current file is plain text, it will query all console.log statements in that file.
+
+### Tag Settings
+
+#### Default Enable Tag Search When Sidebar is Launched for the First Time
+
+When enabled: Each time the IDE is opened, the sidebar will default to enabling tag search (the tag items can be set in the options below).  
+Default Disabled: The sidebar will not default to enabling tag search (can also be temporarily changed by using "Enable Tag Search" at the top of the sidebar).
+
+#### Custom Sidebar Tag Query Items
+
+Customize the tag items for the sidebar search, separating each tag item with a semicolon. Regular expressions are supported.
 
 <!-- Plugin description end -->

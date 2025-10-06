@@ -53,6 +53,7 @@ public interface PsiPosition {
          */
         String JS_EXPRESSION_STATEMENT = "JSExpressionStatement";
         String JS_FUNCTION = "JSFunction";
+        String TYPE_SCRIPT_FUNCTION = "TypeScriptFunction";
     }
 
     /**

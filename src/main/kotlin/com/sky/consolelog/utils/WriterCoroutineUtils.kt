@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.collections.iterator
 
 /**
  * 文本写入协程工具类
@@ -352,7 +353,7 @@ class WriterCoroutineUtils(
     fun updateLineNumber(settings: ConsoleLogSettingState, project: Project, editor: Editor, psiFile: PsiFile) {
         cs.launch {
             val compositeConsoleLogMsgRegex: String = ConsoleLogMsgUtil.buildFindLineNumberConsoleLogMsgRegex(settings);
-            val pattern:  Pattern = Pattern.compile(compositeConsoleLogMsgRegex);
+            val pattern: Pattern = Pattern.compile(compositeConsoleLogMsgRegex);
 
             insertJob?.join();
             defaultInsertJob?.join();
@@ -419,7 +420,7 @@ class WriterCoroutineUtils(
                     startOffset + oldLineNumberStartOffset + updateStringSize,
                     startOffset + oldLineNumberEndOffset + updateStringSize,
                     newLineNumber
-                    )
+                )
             );
             updateStringSize += oldLineNumberSize - newLineNumberSize;
         }
