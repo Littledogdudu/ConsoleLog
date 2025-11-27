@@ -10,9 +10,11 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.entities.ScopeOffset;
 import com.sky.consolelog.setting.ConsoleLogSettingVo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
@@ -23,7 +25,10 @@ import com.sky.consolelog.utils.WriterCoroutineUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 按下Alt+1快捷键生成console.log调用表达式
@@ -108,6 +113,7 @@ public class InsertConsoleLogAction extends AnAction {
         getMethodName(caret, psiFile, consoleLogSettingVo);
         getLineNumber(scopeOffset, editor, consoleLogSettingVo);
         getFileName(psiFile, settings, consoleLogSettingVo);
+        getFilePath(psiFile, settings, consoleLogSettingVo);
     }
 
     /**
@@ -126,6 +132,7 @@ public class InsertConsoleLogAction extends AnAction {
             getLineNumber(scopeOffset, editor, consoleLogSettingVo);
         }
         getFileName(psiFile, settings, consoleLogSettingVo);
+        getFilePath(psiFile, settings, consoleLogSettingVo);
     }
 
     /**
@@ -209,6 +216,58 @@ public class InsertConsoleLogAction extends AnAction {
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
         }
         consoleLogSettingVo.setFileName(fileName);
+    }
+
+    private static void getFilePath(PsiFile psiFile, ConsoleLogSettingState settings, ConsoleLogSettingVo consoleLogSettingVo) {
+        final List<String> customCutPathList = new ArrayList<>();
+        final List<String> sysCutPathList = new ArrayList<>(2);
+        sysCutPathList.add(SettingConstant.CUT_PATH);
+        // 把当前项目名称加入到待截取路径列表中
+        sysCutPathList.add(psiFile.getProject().getName());
+        if (settings.enableFilePathCut && StringUtils.isNotEmpty(settings.filePathBaseFolderName)) {
+            customCutPathList.add(String.join(",", settings.filePathBaseFolderName).trim());
+        }
+
+        String fileSeparator = Optional.ofNullable(settings.filePathPlaceholderSeparator).orElse("");
+        StringBuilder pathBuilder = new StringBuilder();
+        PsiDirectory directory = psiFile.getParent();
+
+        String BaseFolderName = "";
+        while (directory != null) {
+            String dirName = directory.getName();
+            if (customCutPathList.contains(dirName)) {
+                // 用户自定义截断
+                BaseFolderName = dirName;
+                break;
+            }
+
+            if (StringUtils.isNotEmpty(pathBuilder)) {
+                pathBuilder.insert(0, fileSeparator);
+            }
+
+            if (!".".equals(dirName) && !"..".equals(dirName)) {
+                pathBuilder.insert(0, dirName);
+            }
+
+            if (sysCutPathList.contains(dirName)) {
+                // 系统相关截断
+                BaseFolderName = dirName;
+                break;
+            }
+            directory = directory.getParent();
+        }
+
+        // 如果相对路径为空，则不添加路径即可
+        if (pathBuilder.isEmpty()) {
+            consoleLogSettingVo.setFilePath("");
+            return;
+        }
+
+        // 针对是否包含基准文件夹名称的处理
+        if (settings.filePathIncludeBaseFolder && settings.filePathBaseFolderName.equals(BaseFolderName)) {
+            pathBuilder.insert(0, settings.filePathBaseFolderName + fileSeparator);
+        }
+        consoleLogSettingVo.setFilePath(pathBuilder.toString());
     }
 
     /**

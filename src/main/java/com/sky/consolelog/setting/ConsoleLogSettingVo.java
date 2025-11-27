@@ -11,6 +11,7 @@ public class ConsoleLogSettingVo {
     private String methodName;
     private Integer lineNumber;
     private String fileName;
+    private String filePath;
 
     public ConsoleLogSettingVo() {
         this.variableName = "";
@@ -47,5 +48,13 @@ public class ConsoleLogSettingVo {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

@@ -36,6 +36,10 @@ public class ConsoleLogComponent implements Disposable {
     private JButton resetButton2;
     private JCheckBox defaultAutoFollowEndCheckBox;
     private JCheckBox enableAutoFixLineNumber;
+    private JCheckBox enableFilePathCut;
+    private JTextField filePathBaseFolderName;
+    private JCheckBox filePathIncludeBaseFolder;
+    private JTextField filePathPlaceholderSeparator;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = event -> {
@@ -52,6 +56,11 @@ public class ConsoleLogComponent implements Disposable {
         enableDefaultConsoleLogMsgEvent();
     };
 
+    /** 禁用/启用 文件所在路径是否根据基准文件名称截断 同步禁用/启用 组内配置 */
+    private final ActionListener enableFilePathCutEventListener = event -> {
+        enablePathCutEvent();
+    };
+
     public ConsoleLogComponent() {
         resetButton.addActionListener(resetButtonActionListener);
         resetButton2.addActionListener(resetButtonActionListener2);
@@ -60,6 +69,7 @@ public class ConsoleLogComponent implements Disposable {
         signalRadioGroup.add(doubleQuoteRadioButton);
         signalRadioGroup.add(backTickRadioButton);
         enableDefaultConsoleLogMsg.addActionListener(enableDefaultConsoleLogMsgEventListener);
+        enableFilePathCut.addActionListener(enableFilePathCutEventListener);
     }
 
     public void enableDefaultConsoleLogMsgEvent() {
@@ -69,6 +79,16 @@ public class ConsoleLogComponent implements Disposable {
         } else {
             defaultConsoleLogMsg.setEnabled(false);
             defaultAutoFollowEndCheckBox.setEnabled(false);
+        }
+    }
+
+    public void enablePathCutEvent() {
+        if (getEnableFilePathCut()) {
+            filePathBaseFolderName.setEnabled(true);
+            filePathIncludeBaseFolder.setEnabled(true);
+        } else {
+            filePathBaseFolderName.setEnabled(false);
+            filePathIncludeBaseFolder.setEnabled(false);
         }
     }
 
@@ -192,10 +212,43 @@ public class ConsoleLogComponent implements Disposable {
         this.enableAutoFixLineNumber.setSelected(checked);
     }
 
+    public Boolean getEnableFilePathCut() {
+        return enableFilePathCut.isSelected();
+    }
+
+    public void setEnableFilePathCut(Boolean checked) {
+        enableFilePathCut.setSelected(checked);
+    }
+
+    public String getFilePathBaseFolderName() {
+        return filePathBaseFolderName.getText();
+    }
+
+    public void setFilePathBaseFolderName(String baseFolderName) {
+        filePathBaseFolderName.setText(baseFolderName);
+    }
+
+    public Boolean getFilePathIncludeBaseFolder() {
+        return filePathIncludeBaseFolder.isSelected();
+    }
+
+    public void getFilePathIncludeBaseFolder(Boolean isSelected) {
+        filePathIncludeBaseFolder.setSelected(isSelected);
+    }
+
+    public String getFilePathPlaceholderSeparator() {
+        return filePathPlaceholderSeparator.getText();
+    }
+
+    public void setFilePathPlaceholderSeparator(String separator) {
+        filePathPlaceholderSeparator.setText(separator);
+    }
+
     @Override
     public void dispose() {
         resetButton.removeActionListener(resetButtonActionListener);
         resetButton2.removeActionListener(resetButtonActionListener2);
         enableDefaultConsoleLogMsg.removeActionListener(enableDefaultConsoleLogMsgEventListener);
+        enableFilePathCut.removeActionListener(enableFilePathCutEventListener);
     }
 }

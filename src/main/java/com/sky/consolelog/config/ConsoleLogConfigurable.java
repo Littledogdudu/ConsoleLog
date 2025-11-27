@@ -48,6 +48,10 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getDefaultConsoleLogMsg().equals(this.settings.defaultConsoleLogMsg)
                 || !component.getDefaultAutoFollowEndCheckBox().equals(this.settings.defaultAutoFollowEnd)
                 || !component.getEnableAutoFixLineNumber().equals(this.settings.enableAutoFixLineNumber)
+                || !component.getEnableFilePathCut().equals(this.settings.enableFilePathCut)
+                || !component.getFilePathBaseFolderName().equals(this.settings.filePathBaseFolderName)
+                || !component.getFilePathIncludeBaseFolder().equals(this.settings.filePathIncludeBaseFolder)
+                || !component.getFilePathPlaceholderSeparator().equals(fileSeparatorUnEscapeHandle(this.settings.filePathPlaceholderSeparator))
                 ;
     }
 
@@ -70,6 +74,10 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.defaultConsoleLogMsg = component.getDefaultConsoleLogMsg();
         this.settings.defaultAutoFollowEnd = component.getDefaultAutoFollowEndCheckBox();
         this.settings.enableAutoFixLineNumber = component.getEnableAutoFixLineNumber();
+        this.settings.enableFilePathCut = component.getEnableFilePathCut();
+        this.settings.filePathBaseFolderName = component.getFilePathBaseFolderName();
+        this.settings.filePathIncludeBaseFolder = component.getFilePathIncludeBaseFolder();
+        this.settings.filePathPlaceholderSeparator = fileSeparatorEscapeHandle(component.getFilePathPlaceholderSeparator());
 
         finalSetting(settings, component);
     }
@@ -93,6 +101,10 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setDefaultConsoleLogMsg(this.settings.defaultConsoleLogMsg);
         component.setDefaultAutoFollowEndCheckBox(this.settings.defaultAutoFollowEnd);
         component.setEnableAutoFixLineNumber(this.settings.enableAutoFixLineNumber);
+        component.setEnableFilePathCut(this.settings.enableFilePathCut);
+        component.setFilePathBaseFolderName(this.settings.filePathBaseFolderName);
+        component.getFilePathIncludeBaseFolder(this.settings.filePathIncludeBaseFolder);
+        component.setFilePathPlaceholderSeparator(fileSeparatorUnEscapeHandle(this.settings.filePathPlaceholderSeparator));
 
         finalSetting(settings, component);
     }
@@ -104,6 +116,23 @@ public class ConsoleLogConfigurable implements Configurable {
         }
         if (Objects.nonNull(component)) {
             component.enableDefaultConsoleLogMsgEvent();
+            component.enablePathCutEvent();
         }
+    }
+
+    public static String fileSeparatorEscapeHandle(String fileSeparator) {
+        if (fileSeparator.contains("\\")) {
+            // 转义字符额外处理
+            return fileSeparator.replaceAll("\\\\", "\\\\\\\\\\\\\\\\");
+        }
+        return fileSeparator;
+    }
+
+    public static String fileSeparatorUnEscapeHandle(String fileSeparator) {
+        if (fileSeparator.contains("\\")) {
+            // 转义字符额外处理
+            return fileSeparator.replaceAll("\\\\\\\\\\\\\\\\", "\\\\");
+        }
+        return fileSeparator;
     }
 }

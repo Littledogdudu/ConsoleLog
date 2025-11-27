@@ -73,6 +73,23 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      * 是否启用在插入时自动修复行号功能
      */
     public Boolean enableAutoFixLineNumber = false;
+    /**
+     * 文件所在路径(${filePath})是否根据基准文件名称截断
+     */
+    public Boolean enableFilePathCut = true;
+    /**
+     * 文件所在路径(${filePath})截断的基准文件夹名称
+     */
+    public String filePathBaseFolderName = "views";
+    /**
+     * 文件所在路径(${filePath})是否包含基准文件夹名称
+     */
+    public Boolean filePathIncludeBaseFolder = false;
+
+    /**
+     * 文件所在路径(${filePath})分隔符
+     */
+    public String filePathPlaceholderSeparator = "/";
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -92,6 +109,10 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.defaultConsoleLogMsg = Base64Util.encode(this.defaultConsoleLogMsg);
         state.defaultAutoFollowEnd = this.defaultAutoFollowEnd;
         state.enableAutoFixLineNumber = this.enableAutoFixLineNumber;
+        state.enableFilePathCut = this.enableFilePathCut;
+        state.filePathBaseFolderName = this.filePathBaseFolderName;
+        state.filePathIncludeBaseFolder = this.filePathIncludeBaseFolder;
+        state.filePathPlaceholderSeparator = this.filePathPlaceholderSeparator;
         return state;
     }
 
@@ -116,6 +137,10 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.defaultConsoleLogMsg = Base64Util.decode(state.defaultConsoleLogMsg);
         this.defaultAutoFollowEnd = state.defaultAutoFollowEnd;
         this.enableAutoFixLineNumber = state.enableAutoFixLineNumber;
+        this.enableFilePathCut = state.enableFilePathCut;
+        this.filePathBaseFolderName = state.filePathBaseFolderName;
+        this.filePathIncludeBaseFolder = state.filePathIncludeBaseFolder;
+        this.filePathPlaceholderSeparator = state.filePathPlaceholderSeparator;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }
