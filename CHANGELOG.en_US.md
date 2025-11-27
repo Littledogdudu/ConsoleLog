@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+## [1.1.6] - 2025-11-27
+
+- add ${filePath} placeholder(relative file path)(propose by 1327947094)
+
 ## [1.1.5] - 2025-07-04
 - Automatically repairs line numbers when inserted
 - You can use shortcut keys to repair line numbers (you don't need to set the default shortcut keys, you need to set them by yourself)

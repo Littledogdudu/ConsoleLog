@@ -34,11 +34,6 @@
 - [x] 插入后自动修复行号（为避免过分的性能开销，后续也不会再扩展，比如删除时，代码变更时）
 - [x] 提供修复行号功能（不默认设置快捷键，需要自行设置）
 
-#### 侧边栏功能
-- [x] 可以在插件设置中自行设置是否启用侧边栏，侧边栏显示当前打开文件的所有打印表达式（默认启用）
-- [x] 侧边栏支持点击定位到对应行的打印语句
-- [x] 侧边栏支持查询 所有打印表达式/不包含注释的打印表达式/仅符合插件规范格式的打印表达式
-
 > 可在[github](https://github.com/Littledogdudu/ConsoleLog/releases)或者[jetbrain marketplace](https://plugins.jetbrains.com/plugin/26574-console-log/versions)上下载对应心仪版本  
 > 1.0.6版本是插件最主要功能的最佳版本，是没有加入多光标支持、选中区域删除/注释/解注释和侧边栏的版本  
 > 1.1.5版本是当前加入多光标支持和选中区域删除/注释/解注释功能的最佳版本（推荐）  
@@ -56,6 +51,7 @@
 - 由igor.pavlenko提出PSI JS类型强制转换问题的bug
 - 由yan.wt提出新的功能：支持在格式化字符串中添加文件名和行号
 - 由JiGewusuoweiju提出新的功能：期望未选中文本的时候，依然可以打印默认信息
+- 由1327947094提出新的功能：文件相对路径占位
 
 > 灵感来源于vscode插件 [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)  
 > 有新的主意可以在[github](https://github.com/Littledogdudu/ConsoleLog)上fork或提出[issue](https://github.com/Littledogdudu/ConsoleLog/issues)或者发送到我的邮箱2378459785@qq.com哦  
@@ -193,6 +189,7 @@ You can use the plugin on html code, but be careful: the statement is not remove
 - Bug report on PSI JS type coercion issue by igor.pavlenko
 - New feature proposed by yan.wt: support for adding file names and line numbers in formatted strings
 - New feature proposed by JiGewusuoweiju: When the variable is undefined near the cursor, a statement that determines the direction of data flow is generated, and the act of deleting/commenting/uncommenting is generated
+- New feature proposed by 1327947094: placeholder for file relative path
 
 > The idea from vscode plugin [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)
 
