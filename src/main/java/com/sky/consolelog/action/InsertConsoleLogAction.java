@@ -258,7 +258,7 @@ public class InsertConsoleLogAction extends AnAction {
         }
 
         // 如果相对路径为空，则不添加路径即可
-        if (StringUtils.isNotEmpty(pathBuilder)) {
+        if (StringUtils.isEmpty(pathBuilder)) {
             consoleLogSettingVo.setFilePath("");
             return;
         }
