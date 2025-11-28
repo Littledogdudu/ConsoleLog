@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+## [1.1.7] - 2025-11-28
+
+- fixed ${filePath} placeholder（relative file path）bug
+
 ## [1.1.6] - 2025-11-27
 
 - add ${filePath} placeholder(relative file path)(propose by 1327947094)
