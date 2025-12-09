@@ -51,6 +51,10 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getDefaultConsoleLogMsg().equals(this.settings.defaultConsoleLogMsg)
                 || !component.getDefaultAutoFollowEndCheckBox().equals(this.settings.defaultAutoFollowEnd)
                 || !component.getEnableAutoFixLineNumber().equals(this.settings.enableAutoFixLineNumber)
+                || !component.getEnableFilePathCut().equals(this.settings.enableFilePathCut)
+                || !component.getFilePathBaseFolderName().equals(this.settings.filePathBaseFolderName)
+                || !component.getFilePathIncludeBaseFolder().equals(this.settings.filePathIncludeBaseFolder)
+                || !component.getFilePathPlaceholderSeparator().equals(fileSeparatorUnEscapeHandle(this.settings.filePathPlaceholderSeparator))
                 || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix)
                 || !component.getEnableSideWindow().equals(this.settings.enableSideWindow)
                 || !component.getFileTypeAllInCheckBox().equals(this.settings.fileTypeAllIn)
@@ -83,6 +87,10 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.defaultConsoleLogMsg = component.getDefaultConsoleLogMsg();
         this.settings.defaultAutoFollowEnd = component.getDefaultAutoFollowEndCheckBox();
         this.settings.enableAutoFixLineNumber = component.getEnableAutoFixLineNumber();
+        this.settings.enableFilePathCut = component.getEnableFilePathCut();
+        this.settings.filePathBaseFolderName = component.getFilePathBaseFolderName();
+        this.settings.filePathIncludeBaseFolder = component.getFilePathIncludeBaseFolder();
+        this.settings.filePathPlaceholderSeparator = fileSeparatorEscapeHandle(component.getFilePathPlaceholderSeparator());
         this.settings.enableSideWindow = component.getEnableSideWindow();
         // 是否启用侧边栏（重启生效）
         this.settings.fileTypeAllIn = component.getFileTypeAllInCheckBox();
@@ -117,6 +125,10 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setDefaultConsoleLogMsg(this.settings.defaultConsoleLogMsg);
         component.setDefaultAutoFollowEndCheckBox(this.settings.defaultAutoFollowEnd);
         component.setEnableAutoFixLineNumber(this.settings.enableAutoFixLineNumber);
+        component.setEnableFilePathCut(this.settings.enableFilePathCut);
+        component.setFilePathBaseFolderName(this.settings.filePathBaseFolderName);
+        component.getFilePathIncludeBaseFolder(this.settings.filePathIncludeBaseFolder);
+        component.setFilePathPlaceholderSeparator(fileSeparatorUnEscapeHandle(this.settings.filePathPlaceholderSeparator));
         component.setEnableSideWindow(this.settings.enableSideWindow);
         component.setFileTypeAllInCheckBox(this.settings.fileTypeAllIn);
         component.setVueSideCheckBox(this.settings.vueSide);
@@ -139,11 +151,28 @@ public class ConsoleLogConfigurable implements Configurable {
         }
         if (Objects.nonNull(component)) {
             component.enableDefaultConsoleLogMsgEvent();
+            component.enablePathCutEvent();
             // 设置禁用关系
             component.setLanguageCheckBoxStatus();
             component.setEnableSideWindowStatus();
             // 如果没有配置字体大小，则设置默认
             component.setDefaultSideFontSize();
         }
+    }
+
+    public static String fileSeparatorEscapeHandle(String fileSeparator) {
+        if (fileSeparator.contains("\\")) {
+            // 转义字符额外处理
+            return fileSeparator.replaceAll("\\\\", "\\\\\\\\\\\\\\\\");
+        }
+        return fileSeparator;
+    }
+
+    public static String fileSeparatorUnEscapeHandle(String fileSeparator) {
+        if (fileSeparator.contains("\\")) {
+            // 转义字符额外处理
+            return fileSeparator.replaceAll("\\\\\\\\\\\\\\\\", "\\\\");
+        }
+        return fileSeparator;
     }
 }

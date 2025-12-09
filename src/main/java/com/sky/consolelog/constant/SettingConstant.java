@@ -31,6 +31,7 @@ public interface SettingConstant {
      * 注释符号偏移长度
      */
     Integer COMMENT_SIGNAL_LENGTH = 3;
+    String CUT_PATH = "src";
 
     /**
      * 默认的console打印信息
@@ -54,7 +55,9 @@ public interface SettingConstant {
         /** 设置别名：行数 */
         LINE_NUMBER_COMMAND("${lineNumber}"),
         /** 设置别名：文件名 */
-        FILE_NAME_COMMAND("${fileName}");
+        FILE_NAME_COMMAND("${fileName}"),
+        /** 设置别名：所在文件相对路径 */
+        FILE_PATH_COMMAND("${filePath}");
 
         final String key;
 
@@ -79,7 +82,9 @@ public interface SettingConstant {
         /** 设置别名：用于正则匹配的行数 */
         LINE_NUMBER_REGEX(Pattern.quote("${lineNumber}")),
         /** 设置别名：用于正则匹配的文件名 */
-        FILE_NAME_REGEX(Pattern.quote("${fileName}"));
+        FILE_NAME_REGEX(Pattern.quote("${fileName}")),
+        /** 设置别名：用于正则匹配的所在文件相对路径 */
+        FILE_PATH_REGEX(Pattern.quote("${filePath}"));
 
         final String key;
 

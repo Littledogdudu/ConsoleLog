@@ -53,6 +53,7 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.FILE_PATH_REGEX, consoleLogSettingVo.getFilePath());
         return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
                 consoleLogMsg + this.getFormSignal() + ", " + consoleLogSettingVo.getVariableName() + ");";
     }
@@ -68,6 +69,7 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
         defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
         defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
         defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.FILE_PATH_REGEX, consoleLogSettingVo.getFilePath());
         return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
                 defaultConsoleLogMsg + this.getFormSignal() + ");";
     }

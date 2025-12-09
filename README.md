@@ -1,7 +1,7 @@
 # Console Log README
 
 [![JDK](https://img.shields.io/badge/JDK-17-blue.svg)](https://bell-sw.com/pages/downloads/#jdk-17-lts)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache-blue.svg)](LICENSE)
 [![Commit](https://img.shields.io/github/last-commit/Littledogdudu/ConsoleLog?color=green)]()
 [![Version](https://img.shields.io/github/release/Littledogdudu/ConsoleLog.svg?style=flat-square&maxAge=600)](https://github.com/Littledogdudu/ConsoleLog/releases)
 
@@ -56,6 +56,7 @@
 - 由igor.pavlenko提出PSI JS类型强制转换问题的bug
 - 由yan.wt提出新的功能：支持在格式化字符串中添加文件名和行号
 - 由JiGewusuoweiju提出新的功能：期望未选中文本的时候，依然可以打印默认信息
+- 由1327947094提出新的功能：文件相对路径占位
 
 > 灵感来源于vscode插件 [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)  
 > 有新的主意可以在[github](https://github.com/Littledogdudu/ConsoleLog)上fork或提出[issue](https://github.com/Littledogdudu/ConsoleLog/issues)或者发送到我的邮箱2378459785@qq.com哦  
@@ -72,7 +73,7 @@
 
 你可以通过输入下面【符号】列对应的占位符来实时获取文本中对应的变量名/方法名/行号/文件名  
 例如默认为：🚀 ~ \${methodName} ~ \${variableName}:&nbsp;  
-你可以修改为：🚀 ~ \${fileName} ~ L(\${lineNumber}) ~ \${methodName} ~ \${variableName}:&nbsp;
+你可以修改为：🚀 ~ \${filePath}/${fileName} ~ L(\${lineNumber}) ~ \${methodName} ~ \${variableName}:&nbsp;
 
 ### 未选中变量时的默认行为（默认关闭行为：什么也不做）
 
@@ -94,17 +95,40 @@
 
 ### 占位符设置
 
-#### 是否使用打印变量所在行号
-
-默认不启用：\${lineNumber}占位符将会被替换为生成的console.log所在的行号  
-启用后：\${lineNumber}占位符会被替换为需要打印的变量所在的行号
+#### ${fileName}
 
 #### 打印的文件名是否需要后缀名
 
 默认启用：\${fileName}占位符将会被替换为生成的console.log所在的文件名，且包含后缀名  
 禁用后：\${fileName}占位符将会被替换为生成的console.log所在的文件名，但不在包含后缀名
 
-#### 是否开启插入自动修复行号
+#### ${filePath}
+
+##### 文件所在路径是否根据基准文件名称截断
+
+默认启用：\${filePath}占位符将会被替换为生成的console.log所在文件的相对路径，且根据【文件所在路径基准文件夹名称】截断
+禁用后：\${filePath}占位符将会被替换为生成的console.log所在文件相对路径
+
+##### 文件所在路径基准文件夹名称
+
+默认为views：即\${filePath}占位符将会根据填写内容截断  
+例如：当前所在相对路径为 src/views/blog/index.vue，则根据views截断后获得：blog/index.vue
+
+多个文件夹名称可通过逗号分隔
+
+##### 文件所在路径是否包含基准文件夹名称
+
+默认启用：当前所在相对路径为 src/views/blog/index.vue，则根据views截断后获得：views/blog/index.vue
+禁用后：当前所在相对路径为 src/views/blog/index.vue，则根据views截断后获得：blog/index.vue
+
+#### ${lineNumber}
+
+##### 是否使用打印变量所在行号
+
+默认不启用：\${lineNumber}占位符将会被替换为生成的console.log所在的行号  
+启用后：\${lineNumber}占位符会被替换为需要打印的变量所在的行号
+
+##### 是否开启插入自动修复行号
 
 默认不启用：\${lineNumber}占位符不会自动更新，需手动更新  
 启用后：\${lineNumber}占位符会在插入console.log语句时自动更新为正确行号
@@ -228,6 +252,7 @@ You can use the plugin on html code, but be careful: the statement is not remove
 - Bug report on PSI JS type coercion issue by igor.pavlenko
 - New feature proposed by yan.wt: support for adding file names and line numbers in formatted strings
 - New feature proposed by JiGewusuoweiju: When the variable is undefined near the cursor, a statement that determines the direction of data flow is generated, and the act of deleting/commenting/uncommenting is generated
+- New feature proposed by 1327947094: placeholder for file relative path
 
 > The idea from vscode plugin [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)
 
@@ -241,7 +266,7 @@ You can use the plugin on html code, but be careful: the statement is not remove
 #### Insert Sentence
 You can obtain the corresponding variable name/method name/line number/file name in real-time in the text by entering the placeholder corresponding to the symbol column below  
 For example, the default is: 🚀 ~ \$ {methodName} ~ \${variableName}:&nbsp;  
-You can modify it to: 🚀 ~ \$ {fileName} ~ L(\${lineNumber}) ~ \${methodName} ~ \${variableName}:&nbsp;
+You can modify it to: 🚀 ~ \${filePath}/${fileName} ~ L(\${lineNumber}) ~ \${methodName} ~ \${variableName}:&nbsp;
 
 ### Default behavior when variable is unchecked (default off behavior: do nothing)
 
@@ -263,17 +288,40 @@ After activation: Inserted print statements are automatically followed to the en
 
 ### Placeholder settings
 
-#### whether to use the line number where the print variable is located
+#### ${fileName}
 
-Default not enabled: The \${lineNumber} placeholder will be replaced with the line number where the generated console.log is located  
-After activation, the \${lineNumber} placeholder will be replaced with the line number of the variable that needs to be printed
-
-#### whether the file name of the print needs a suffix
+##### whether the file name of the print needs a suffix
 
 Default enabled: The \${fileName} placeholder will be replaced with the file name of the generated console.log, including the suffix  
 After disabling: The \${fileName} placeholder will be replaced with the file name of the generated console.log, but it will not include the suffix
 
-#### whether to enable the insertion of auto-repair line numbers
+#### ${filePath}
+
+##### Should the file path be truncated based on the reference file name
+
+Default enabled: The ${filePath} placeholder will be replaced with the relative path of the file where the generated console.log is located, truncated according to the [Reference Folder Name for File Path]
+If disabled: The ${filePath} placeholder will be replaced with the relative path of the file where the generated console.log is located
+
+##### Reference folder name for file path
+
+Default is 'views': The ${filePath} placeholder will be truncated based on the provided content
+For example: If the current relative path is src/views/blog/index.vue, truncating based on 'views' will result in: blog/index.vue
+
+Multiple folder names can be separated by commas
+
+##### Should the file path include the reference folder name
+
+Default enabled: If the current relative path is src/views/blog/index.vue, truncating based on 'views' will result in: views/blog/index.vue
+If disabled: If the current relative path is src/views/blog/index.vue, truncating based on 'views' will result in: blog/index.vue
+
+#### ${lineNumber}
+
+##### whether to use the line number where the print variable is located
+
+Default not enabled: The \${lineNumber} placeholder will be replaced with the line number where the generated console.log is located  
+After activation, the \${lineNumber} placeholder will be replaced with the line number of the variable that needs to be printed
+
+##### whether to enable the insertion of auto-repair line numbers
 
 Default not enabled: The \${lineNumber} placeholder will not be automatically updated and needs to be updated manually
 After activation: The \${lineNumber} placeholder is automatically updated to the correct line number when the console.log statement is inserted

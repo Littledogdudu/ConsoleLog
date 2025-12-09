@@ -40,6 +40,10 @@ public class ConsoleLogComponent implements Disposable {
     private JButton resetButton2;
     private JCheckBox defaultAutoFollowEndCheckBox;
     private JCheckBox enableAutoFixLineNumber;
+    private JCheckBox enableFilePathCut;
+    private JTextField filePathBaseFolderName;
+    private JCheckBox filePathIncludeBaseFolder;
+    private JTextField filePathPlaceholderSeparator;
     private JPanel basic;
     private JPanel format;
     private JPanel component;
@@ -66,6 +70,11 @@ public class ConsoleLogComponent implements Disposable {
     /** 侧边栏查找不限定语言类型按钮监听器 */
     private final ActionListener fileTypeAllInCheckBoxActionListener = e -> setLanguageCheckBoxStatus();
 
+    /** 禁用/启用 文件所在路径是否根据基准文件名称截断 同步禁用/启用 组内配置 */
+    private final ActionListener enableFilePathCutEventListener = event -> {
+        enablePathCutEvent();
+    };
+
     public ConsoleLogComponent() {
         resetButton.addActionListener(resetButtonActionListener);
 
@@ -77,6 +86,7 @@ public class ConsoleLogComponent implements Disposable {
         signalRadioGroup.add(backTickRadioButton);
 
         enableDefaultConsoleLogMsg.addActionListener(enableDefaultConsoleLogMsgEventListener);
+        enableFilePathCut.addActionListener(enableFilePathCutEventListener);
 
         enableSideWindow.addActionListener(enableSideWindowActionListener);
         fileTypeAllInCheckBox.addActionListener(fileTypeAllInCheckBoxActionListener);
@@ -92,6 +102,16 @@ public class ConsoleLogComponent implements Disposable {
         } else {
             defaultConsoleLogMsg.setEnabled(false);
             defaultAutoFollowEndCheckBox.setEnabled(false);
+        }
+    }
+
+    public void enablePathCutEvent() {
+        if (getEnableFilePathCut()) {
+            filePathBaseFolderName.setEnabled(true);
+            filePathIncludeBaseFolder.setEnabled(true);
+        } else {
+            filePathBaseFolderName.setEnabled(false);
+            filePathIncludeBaseFolder.setEnabled(false);
         }
     }
 
@@ -270,6 +290,38 @@ public class ConsoleLogComponent implements Disposable {
         this.enableAutoFixLineNumber.setSelected(checked);
     }
 
+    public Boolean getEnableFilePathCut() {
+        return enableFilePathCut.isSelected();
+    }
+
+    public void setEnableFilePathCut(Boolean checked) {
+        enableFilePathCut.setSelected(checked);
+    }
+
+    public String getFilePathBaseFolderName() {
+        return filePathBaseFolderName.getText();
+    }
+
+    public void setFilePathBaseFolderName(String baseFolderName) {
+        filePathBaseFolderName.setText(baseFolderName);
+    }
+
+    public Boolean getFilePathIncludeBaseFolder() {
+        return filePathIncludeBaseFolder.isSelected();
+    }
+
+    public void getFilePathIncludeBaseFolder(Boolean isSelected) {
+        filePathIncludeBaseFolder.setSelected(isSelected);
+    }
+
+    public String getFilePathPlaceholderSeparator() {
+        return filePathPlaceholderSeparator.getText();
+    }
+
+    public void setFilePathPlaceholderSeparator(String separator) {
+        filePathPlaceholderSeparator.setText(separator);
+    }
+
     public Boolean getEnableSideWindow() {
         return enableSideWindow.isSelected();
     }
@@ -350,6 +402,7 @@ public class ConsoleLogComponent implements Disposable {
         resetButton.removeActionListener(resetButtonActionListener);
         resetButton2.removeActionListener(resetButtonActionListener2);
         enableDefaultConsoleLogMsg.removeActionListener(enableDefaultConsoleLogMsgEventListener);
+        enableFilePathCut.removeActionListener(enableFilePathCutEventListener);
         enableSideWindow.removeActionListener(enableSideWindowActionListener);
         fileTypeAllInCheckBox.removeActionListener(fileTypeAllInCheckBoxActionListener);
     }
