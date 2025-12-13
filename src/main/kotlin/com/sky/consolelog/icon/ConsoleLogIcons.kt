@@ -10,10 +10,6 @@ import javax.swing.Icon
  * @Date: 2025/10/6 13:43
  */
 object ConsoleLogIcons {
-
-    @JvmField
-    val ToolWindowIcon: Icon = load("/META-INF/toolWindowIcon.png")
-
     /** Console Log Side Window logos. */
     object ToolWindowIcons {
         @JvmField

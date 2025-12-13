@@ -19,8 +19,8 @@ import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.UIUtil;
 import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.entities.ConsoleLogSearchInfo;
-import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.icon.ConsoleLogIcons;
+import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.MessageUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -293,6 +293,11 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         Pattern pattern = Pattern.compile(regexBuilder.toString());
         matcher = pattern.matcher(context);
 
+        // 对<template>标签进行单独处理
+        boolean hasTemplateTag = false;
+        Integer templateTagIndex = null;
+        ConsoleLogSearchInfo endTemplateTagInfo = null;
+
         while (matcher.find()) {
             // 打印表达式起始位置
             int start = matcher.start();
@@ -314,13 +319,29 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             // 打印表达式所在行末尾位置
             int end = document.getLineEndOffset(lineNumber);
             String searchText = context.substring(start, end).replaceAll("\n", "").trim();
+
             int level = 0;
             if (enableLevel && StringUtils.isNotEmpty(matcher.group(1))) {
                 // 启用级别
                 level = 1;
             }
+
+            //#region 对<template标签进行单独处理
+            if (searchText.contains("<template")) {
+                hasTemplateTag = true;
+            }
+            if (hasTemplateTag && searchText.contains("</template>")) {
+                templateTagIndex = model.size();
+                endTemplateTagInfo = new ConsoleLogSearchInfo(searchText, lineNumber, end, level);
+                continue;
+            }
+            //#endregion
+
             ConsoleLogSearchInfo searchInfo = new ConsoleLogSearchInfo(searchText, lineNumber, end, level);
             model.addElement(searchInfo);
+        }
+        if (endTemplateTagInfo != null) {
+            model.add(templateTagIndex, endTemplateTagInfo);
         }
     }
 
