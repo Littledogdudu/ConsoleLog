@@ -24,26 +24,34 @@ public class PsiPositionUtil {
     }
 
     private static ScopeOffset getScopeOffsetByType(PsiElement element, String name) {
-        return switch (name) {
-            case PsiPosition.Variable.JS_VAR_STATEMENT -> getJSVarStatement(element);
-            case PsiPosition.Variable.JS_ASSIGNMENT_EXPRESSION -> getJSAssignmentExpression(element);
-            case PsiPosition.Condition.JS_IF_STATEMENT,
-                 PsiPosition.Condition.JS_SWITCH_STATEMENT,
-                 PsiPosition.Loop.JS_WHILE_STATEMENT,
-                 PsiPosition.Loop.JS_FOR_STATEMENT,
-                 PsiPosition.Loop.JS_FOR_IN_STATEMENT,
-                 PsiPosition.Expression.JS_FUNCTION_PROPERTY,
-                 PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_PROPERTY,
-                 PsiPosition.Expression.JS_FUNCTION_EXPRESSION,
-                 PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_EXPRESSION,
-                 PsiPosition.Expression.JS_FUNCTION,
-                 PsiPosition.Exception.JS_CATCH_BLOCK -> getMiddleBlockStatement(element);
-            case PsiPosition.Condition.JS_CASE_CLAUSE -> getAfterColon(element);
-            case PsiPosition.Loop.JS_DO_WHILE_STATEMENT -> getMiddleBlockStatementBeforeEnd(element);
-            case PsiPosition.Expression.JS_CALL_EXPRESSION -> getJSCallExpression(element);
-            case PsiPosition.Expression.JS_EXPRESSION_STATEMENT -> getJSExpressionStatement(element);
-            default -> null;
-        };
+        switch (name) {
+            case PsiPosition.Variable.JS_VAR_STATEMENT:
+                return getJSVarStatement(element);
+            case PsiPosition.Variable.JS_ASSIGNMENT_EXPRESSION:
+                return getJSAssignmentExpression(element);
+            case PsiPosition.Condition.JS_IF_STATEMENT:
+            case PsiPosition.Condition.JS_SWITCH_STATEMENT:
+            case PsiPosition.Loop.JS_WHILE_STATEMENT:
+            case PsiPosition.Loop.JS_FOR_STATEMENT:
+            case PsiPosition.Loop.JS_FOR_IN_STATEMENT:
+            case PsiPosition.Expression.JS_FUNCTION_PROPERTY:
+            case PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_PROPERTY:
+            case PsiPosition.Expression.JS_FUNCTION_EXPRESSION:
+            case PsiPosition.Expression.TYPE_SCRIPT_FUNCTION_EXPRESSION:
+            case PsiPosition.Expression.JS_FUNCTION:
+            case PsiPosition.Exception.JS_CATCH_BLOCK:
+                return getMiddleBlockStatement(element);
+            case PsiPosition.Condition.JS_CASE_CLAUSE:
+                return getAfterColon(element);
+            case PsiPosition.Loop.JS_DO_WHILE_STATEMENT:
+                return getMiddleBlockStatementBeforeEnd(element);
+            case PsiPosition.Expression.JS_CALL_EXPRESSION:
+                return getJSCallExpression(element);
+            case PsiPosition.Expression.JS_EXPRESSION_STATEMENT:
+                return getJSExpressionStatement(element);
+            default:
+                return null;
+        }
     }
 
     private static ScopeOffset getJSVarStatement(PsiElement element) {
@@ -86,8 +94,8 @@ public class PsiPositionUtil {
                     }
                 }
                 break;
-            case PsiPosition.Expression.JS_EXPRESSION_STATEMENT,
-                 PsiPosition.Condition.JS_IF_STATEMENT:
+            case PsiPosition.Expression.JS_EXPRESSION_STATEMENT:
+            case PsiPosition.Condition.JS_IF_STATEMENT:
                 return getMiddleBlockStatement(parent);
             default:
                 break;

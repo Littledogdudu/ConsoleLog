@@ -40,17 +40,20 @@ public class ConsoleLogPsiUtil {
             public void visitElement(@NotNull PsiElement element) {
                 super.visitElement(element);
 
-                if (element instanceof JSCallExpression callExpression) {
+                if (element instanceof JSCallExpression) {
+                    JSCallExpression callExpression = (JSCallExpression) element;
                     if (isConsoleLog(callExpression)) {
                         TextRange textRange = getTextRangeWithSemicolonAndPrevWhitespace(callExpression, document);
                         consoleLogRangeList.add(textRange);
                     }
-                } else if (element instanceof PsiComment comment) {
+                } else if (element instanceof PsiComment) {
+                    PsiComment comment = (PsiComment) element;
                     if (isConsoleLog(comment)) {
                         TextRange textRange = getTextRangeWithSemicolonAndPrevWhitespace(comment);
                         consoleLogRangeList.add(textRange);
                     }
-                } else if (element instanceof XmlToken xmlToken) {
+                } else if (element instanceof XmlToken) {
+                    XmlToken xmlToken = (XmlToken) element;
                     int endOffset = getEndOffsetNonContainSpace(xmlToken);
                     if (endOffset != -1) {
                         TextRange textRange = getTextRangeWithSemicolonAndPrevWhitespace(xmlToken, document, endOffset);
@@ -80,13 +83,15 @@ public class ConsoleLogPsiUtil {
             public void visitElement(@NotNull PsiElement element) {
                 super.visitElement(element);
 
-                if (element instanceof JSCallExpression callExpression) {
+                if (element instanceof JSCallExpression) {
+                    JSCallExpression callExpression = (JSCallExpression) element;
                     if (isConsoleLog(callExpression)) {
                         TextRange textRange = getTextRangeWithSemicolonAndPrevWhitespace(callExpression, document);
                         consoleLogRangeList.add(textRange);
                     }
                 }
-                if (element instanceof PsiComment comment) {
+                if (element instanceof PsiComment) {
+                    PsiComment comment = (PsiComment) element;
                     if (isConsoleLog(comment)) {
                         TextRange textRange = getTextRangeWithSemicolonAndPrevWhitespace(comment);
                         consoleLogRangeList.add(textRange);
@@ -113,7 +118,8 @@ public class ConsoleLogPsiUtil {
             public void visitElement(@NotNull PsiElement element) {
                 super.visitElement(element);
 
-                if (element instanceof JSCallExpression callExpression) {
+                if (element instanceof JSCallExpression) {
+                    JSCallExpression callExpression = (JSCallExpression) element;
                     if (isConsoleLog(callExpression)) {
                         TextRange textRange = callExpression.getTextRange();
                         List<Integer> consoleLogLineNumberList = new ArrayList<>();
@@ -143,7 +149,8 @@ public class ConsoleLogPsiUtil {
             public void visitElement(@NotNull PsiElement element) {
                 super.visitElement(element);
 
-                if (element instanceof PsiComment comment) {
+                if (element instanceof PsiComment) {
+                    PsiComment comment = (PsiComment) element;
                     if (isConsoleLog(comment)) {
                         TextRange textRange = getCommentSignalTextRange(comment);
                         if (textRange != null && !textRange.isEmpty()) {
