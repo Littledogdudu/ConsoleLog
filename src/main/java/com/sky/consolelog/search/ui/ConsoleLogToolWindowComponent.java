@@ -134,8 +134,8 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         tip.setForeground(JBColor.GRAY);
 
         ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
-        commentButton.setSelected(false);
-        specButton.setSelected(false);
+        commentButton.setSelected(settings.defaultCommentSearch);
+        specButton.setSelected(settings.defaultSpecSearch);
         levelButton.setSelected(settings.defaultTagSearch);
         jumpOrDeleteButton.setSelected(settings.defaultJumpOrDelete);
 

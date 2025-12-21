@@ -55,9 +55,11 @@ public class ConsoleLogComponent implements Disposable {
     private JCheckBox textSideCheckBox;
     private JComboBox<Integer> sideFontSize;
     private JTextField tagTextField;
-    private JCheckBox defaultTagSearchCheckBox;
-    private JCheckBox sidebarJumpOrDeleteCheckBox;
+    private JCheckBox defaultEnableTagSearchButtonCheckBox;
+    private JCheckBox defaultEnableJumpOrDeleteButtonCheckBox;
     private JCheckBox sidebarDeleteTagCheckBox;
+    private JCheckBox defaultEnableSpecButtonCheckBox;
+    private JCheckBox defaultEnableCommentButtonCheckBox;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = e -> setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
@@ -132,8 +134,10 @@ public class ConsoleLogComponent implements Disposable {
             enableLanguageCheckBoxEvent();
             sideFontSize.setEnabled(true);
             tagTextField.setEnabled(true);
-            defaultTagSearchCheckBox.setEnabled(true);
-            sidebarJumpOrDeleteCheckBox.setEnabled(true);
+            defaultEnableTagSearchButtonCheckBox.setEnabled(true);
+            defaultEnableJumpOrDeleteButtonCheckBox.setEnabled(true);
+            defaultEnableCommentButtonCheckBox.setEnabled(true);
+            defaultEnableSpecButtonCheckBox.setEnabled(true);
             sidebarDeleteTagCheckBox.setEnabled(true);
         } else {
             fileTypeAllInCheckBox.setEnabled(false);
@@ -143,8 +147,10 @@ public class ConsoleLogComponent implements Disposable {
             textSideCheckBox.setEnabled(false);
             sideFontSize.setEnabled(false);
             tagTextField.setEnabled(false);
-            defaultTagSearchCheckBox.setEnabled(false);
-            sidebarJumpOrDeleteCheckBox.setEnabled(false);
+            defaultEnableTagSearchButtonCheckBox.setEnabled(false);
+            defaultEnableJumpOrDeleteButtonCheckBox.setEnabled(false);
+            defaultEnableCommentButtonCheckBox.setEnabled(false);
+            defaultEnableSpecButtonCheckBox.setEnabled(false);
             sidebarDeleteTagCheckBox.setEnabled(false);
         }
     }
@@ -405,20 +411,36 @@ public class ConsoleLogComponent implements Disposable {
         tagTextField.setText(String.join(SettingConstant.TAGS_DELIMITER, tags));
     }
 
-    public Boolean getDefaultTagSearchCheckBox() {
-        return defaultTagSearchCheckBox.isSelected();
+    public Boolean getDefaultEnableCommentButtonCheckBox() {
+        return defaultEnableCommentButtonCheckBox.isSelected();
     }
 
-    public void setDefaultTagSearchCheckBox(Boolean checked) {
-        defaultTagSearchCheckBox.setSelected(checked);
+    public void setDefaultEnableCommentButtonCheckBox(Boolean checked) {
+        defaultEnableCommentButtonCheckBox.setSelected(checked);
     }
 
-    public Boolean getSidebarJumpOrDeleteCheckBox() {
-        return sidebarJumpOrDeleteCheckBox.isSelected();
+    public Boolean getDefaultEnableSpecButtonCheckBox() {
+        return defaultEnableSpecButtonCheckBox.isSelected();
     }
 
-    public void setSidebarJumpOrDeleteCheckBox(Boolean checked) {
-        sidebarJumpOrDeleteCheckBox.setSelected(checked);
+    public void setDefaultEnableSpecButtonCheckBox(Boolean checked) {
+        defaultEnableSpecButtonCheckBox.setSelected(checked);
+    }
+
+    public Boolean getDefaultEnableTagSearchButtonCheckBox() {
+        return defaultEnableTagSearchButtonCheckBox.isSelected();
+    }
+
+    public void setDefaultEnableTagSearchButtonCheckBox(Boolean checked) {
+        defaultEnableTagSearchButtonCheckBox.setSelected(checked);
+    }
+
+    public Boolean getDefaultEnableJumpOrDeleteButtonCheckBox() {
+        return defaultEnableJumpOrDeleteButtonCheckBox.isSelected();
+    }
+
+    public void setDefaultEnableJumpOrDeleteButtonCheckBox(Boolean checked) {
+        defaultEnableJumpOrDeleteButtonCheckBox.setSelected(checked);
     }
 
     public Boolean getSidebarDeleteTagCheckBox() {

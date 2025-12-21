@@ -123,6 +123,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public static List<String> fileTypeList = new ArrayList<>(6);
     /** 侧边栏字体大小 */
     public Integer sideFontSize = UIManager.getFont("Label.font").getSize();
+
     /** 首次启动侧边栏默认启用标签查询 */
     public Boolean defaultTagSearch = false;
     /** 侧边栏标签查找项 */
@@ -131,10 +132,16 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
             "<script.*?>", "</script>",
             "<style.*?>", "</style>"
     );
-    /** 侧边栏点击文本项跳转/删除 */
+
+    /** 首次启动侧边栏点击文本项跳转/删除 */
     public Boolean defaultJumpOrDelete = true;
     /** 侧边栏点击文本项删除是否作用于标签 */
     public Boolean deleteTag = false;
+
+    /** 首次启动侧边栏默认启动查找注释项 */
+    public Boolean defaultCommentSearch = true;
+    /** 首次启动侧边栏默认启动插件生成语句筛选查询 */
+    public Boolean defaultSpecSearch = true;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -168,6 +175,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.tags = this.tags;
         state.defaultTagSearch = this.defaultTagSearch;
         state.defaultJumpOrDelete = this.defaultJumpOrDelete;
+        state.defaultCommentSearch = this.defaultCommentSearch;
+        state.defaultSpecSearch = this.defaultSpecSearch;
         state.deleteTag = this.deleteTag;
         return state;
     }
@@ -208,6 +217,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.defaultTagSearch = state.defaultTagSearch;
         this.defaultJumpOrDelete = state.defaultJumpOrDelete;
         this.deleteTag = state.deleteTag;
+        this.defaultCommentSearch = state.defaultCommentSearch;
+        this.defaultSpecSearch = state.defaultSpecSearch;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }
