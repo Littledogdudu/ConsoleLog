@@ -217,6 +217,18 @@ class WriterCoroutineUtils(
         }
     }
 
+    fun deleteWriterByTextRange(
+        project: Project,
+        editor: Editor,
+        range: TextRange
+    ) {
+        deleteJob = cs.launch {
+            WriteCommandAction.runWriteCommandAction(project) {
+                deleteConsoleLogMsg(range, editor.document);
+            }
+        }
+    }
+
     /**
      * 删除符合插件规范的console.log表达式语句
      */

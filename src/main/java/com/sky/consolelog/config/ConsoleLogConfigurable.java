@@ -65,6 +65,8 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getSideFontSize().equals(this.settings.sideFontSize)
                 || !Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).toList().equals(this.settings.tags)
                 || !component.getDefaultTagSearchCheckBox().equals(this.settings.defaultTagSearch)
+                || !component.getSidebarJumpOrDeleteCheckBox().equals(this.settings.defaultJumpOrDelete)
+                || !component.getSidebarDeleteTagCheckBox().equals(this.settings.deleteTag)
                 ;
     }
 
@@ -102,6 +104,8 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.sideFontSize = component.getSideFontSize();
         this.settings.tags = Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).toList();
         this.settings.defaultTagSearch = component.getDefaultTagSearchCheckBox();
+        this.settings.defaultJumpOrDelete = component.getSidebarJumpOrDeleteCheckBox();
+        this.settings.deleteTag = component.getSidebarDeleteTagCheckBox();
 
         finalSetting(settings, component);
     }
@@ -138,6 +142,8 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setSideFontSize(this.settings.sideFontSize);
         component.setTextTags(this.settings.tags);
         component.setDefaultTagSearchCheckBox(this.settings.defaultTagSearch);
+        component.setSidebarJumpOrDeleteCheckBox(this.settings.defaultJumpOrDelete);
+        component.setSidebarDeleteTagCheckBox(this.settings.deleteTag);
 
         finalSetting(settings, component);
     }
@@ -153,10 +159,10 @@ public class ConsoleLogConfigurable implements Configurable {
             component.enableDefaultConsoleLogMsgEvent();
             component.enablePathCutEvent();
             // 设置禁用关系
-            component.setLanguageCheckBoxStatus();
-            component.setEnableSideWindowStatus();
+            component.enableLanguageCheckBoxEvent();
+            component.enableEnableSideWindowEvent();
             // 如果没有配置字体大小，则设置默认
-            component.setDefaultSideFontSize();
+            component.enableDefaultSideFontSizeEvent();
         }
     }
 

@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="jPanel" layout-manager="GridLayoutManager" row-count="6" column-count="10" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="1422" height="1384"/>
+      <xy x="20" y="20" width="1422" height="1425"/>
     </constraints>
     <properties>
       <toolTipText value=""/>
@@ -797,41 +797,78 @@
                   </hspacer>
                 </children>
               </grid>
-              <grid id="e5c03" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="58bca" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
-                <border type="none" title-resource-bundle="messages/MyBundle" title-key="setting.sidebarTagSetting"/>
+                <border type="none" title-resource-bundle="messages/MyBundle" title-key="setting.sidebarButtonSetting"/>
                 <children>
-                  <component id="b914b" class="javax.swing.JCheckBox" binding="defaultTagSearchCheckBox">
+                  <grid id="e5c03" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                      <text resource-bundle="messages/MyBundle" key="setting.defaultTagSearchCheckBox"/>
-                    </properties>
-                  </component>
-                  <component id="adb29" class="javax.swing.JLabel">
+                    <properties/>
+                    <border type="none" title-resource-bundle="messages/MyBundle" title-key="setting.sidebarTagSetting"/>
+                    <children>
+                      <component id="b914b" class="javax.swing.JCheckBox" binding="defaultTagSearchCheckBox">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text resource-bundle="messages/MyBundle" key="setting.defaultTagSearchCheckBox"/>
+                        </properties>
+                      </component>
+                      <component id="adb29" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text resource-bundle="messages/MyBundle" key="setting.sidebarCustomTagSearchText"/>
+                          <toolTipText resource-bundle="messages/MyBundle" key="setting.sidebarCustomTagSearchText.tooltip"/>
+                        </properties>
+                      </component>
+                      <component id="f9dec" class="javax.swing.JTextField" binding="tagTextField">
+                        <constraints>
+                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <toolTipText resource-bundle="messages/MyBundle" key="setting.sidebarCustomTagSearchText.tooltip"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="bc553" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                      <text resource-bundle="messages/MyBundle" key="setting.sidebarCustomTagSearchText"/>
-                      <toolTipText resource-bundle="messages/MyBundle" key="setting.sidebarCustomTagSearchText.tooltip"/>
-                    </properties>
-                  </component>
-                  <component id="f9dec" class="javax.swing.JTextField" binding="tagTextField">
-                    <constraints>
-                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <toolTipText resource-bundle="messages/MyBundle" key="setting.sidebarCustomTagSearchText.tooltip"/>
-                    </properties>
-                  </component>
+                    <properties/>
+                    <border type="none" title-resource-bundle="messages/MyBundle" title-key="setting.sidebarJumpOrDeleteSetting"/>
+                    <children>
+                      <component id="6af22" class="javax.swing.JCheckBox" binding="sidebarJumpOrDeleteCheckBox">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text resource-bundle="messages/MyBundle" key="setting.sidebarJumpOrDeleteCheckBox"/>
+                        </properties>
+                      </component>
+                      <component id="df9c4" class="javax.swing.JCheckBox" binding="sidebarDeleteTagCheckBox">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="true"/>
+                          <text resource-bundle="messages/MyBundle" key="setting.sidebarDeleteTagCheckBox"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
                 </children>
               </grid>
             </children>

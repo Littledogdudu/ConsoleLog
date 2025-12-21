@@ -131,6 +131,10 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
             "<script.*?>", "</script>",
             "<style.*?>", "</style>"
     );
+    /** 侧边栏点击文本项跳转/删除 */
+    public Boolean defaultJumpOrDelete = true;
+    /** 侧边栏点击文本项删除是否作用于标签 */
+    public Boolean deleteTag = false;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -163,6 +167,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.sideFontSize = this.sideFontSize;
         state.tags = this.tags;
         state.defaultTagSearch = this.defaultTagSearch;
+        state.defaultJumpOrDelete = this.defaultJumpOrDelete;
+        state.deleteTag = this.deleteTag;
         return state;
     }
 
@@ -200,6 +206,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.sideFontSize = state.sideFontSize;
         this.tags = state.tags;
         this.defaultTagSearch = state.defaultTagSearch;
+        this.defaultJumpOrDelete = state.defaultJumpOrDelete;
+        this.deleteTag = state.deleteTag;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }

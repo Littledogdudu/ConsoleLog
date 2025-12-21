@@ -22,7 +22,9 @@ import com.sky.consolelog.entities.ConsoleLogSearchInfo;
 import com.sky.consolelog.icon.ConsoleLogIcons;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
+import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.MessageUtils;
+import com.sky.consolelog.utils.WriterCoroutineUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,11 +47,14 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     private final JPanel panel;
     private final JLabel tip;
     /** 显示注释项 */
-    private final JButton commentCheckBox;
+    private final JButton commentButton;
     /** 启用针对性查找 */
-    private final JButton specCheckBox;
+    private final JButton specButton;
     /** 开启标签查找 */
-    private final JButton levelCheckBox;
+    private final JButton levelButton;
+    /** 单击查找项 跳转/删除 */
+    private final JButton jumpOrDeleteButton;
+
     private static JBList<ConsoleLogSearchInfo> logList;
     private final DefaultListModel<ConsoleLogSearchInfo> model;
     private final Project project;
@@ -75,13 +80,17 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         updateLogListEntries();
     };
 
+    private final ActionListener jumpOrDeleteActionListener = event -> {
+        updateJumpOrDeleteButtonIcon();
+        updateJumpOrDeleteTipToolText();
+    };
+
     private final MouseAdapter buttonHoverAdapter = new MouseAdapter() {
         @Override
         public void mouseEntered(MouseEvent e) {
             JButton button = (JButton) e.getSource();
             // 设置悬停时的背景色
             button.setBackground(UIUtil.getPanelBackground().brighter());
-
         }
 
         @Override
@@ -97,7 +106,14 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         public void mousePressed(MouseEvent e) {
             ConsoleLogSearchInfo selectInfo = logList.getSelectedValue();
             if (selectInfo != null) {
-                navigateToConsoleLog(selectInfo);
+                if (jumpOrDeleteButton.isSelected()) {
+                    // 跳转
+                    navigateToConsoleLog(selectInfo);
+                } else {
+                    // 删除
+                    deleteFromConsoleLog(selectInfo);
+                    updateLogListEntries();
+                }
             }
         }
     };
@@ -106,9 +122,10 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         this.project = project;
         panel = new JPanel(new BorderLayout());
         tip = new JLabel("");
-        commentCheckBox = new JButton();
-        specCheckBox = new JButton();
-        levelCheckBox = new JButton();
+        commentButton = new JButton();
+        specButton = new JButton();
+        levelButton = new JButton();
+        jumpOrDeleteButton = new JButton();
         model = new DefaultListModel<>();
         logList = new JBList<>(model);
 
@@ -117,32 +134,46 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         tip.setForeground(JBColor.GRAY);
 
         ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
-        commentCheckBox.setSelected(false);
-        specCheckBox.setSelected(false);
-        levelCheckBox.setSelected(settings.defaultTagSearch);
+        commentButton.setSelected(false);
+        specButton.setSelected(false);
+        levelButton.setSelected(settings.defaultTagSearch);
+        jumpOrDeleteButton.setSelected(settings.defaultJumpOrDelete);
 
-        setIconButtonStyle(commentCheckBox, ConsoleLogIcons.ToolWindowIcons.UnComment, ConsoleLogIcons.ToolWindowIcons.Comment);
-        setIconButtonStyle(specCheckBox, ConsoleLogIcons.ToolWindowIcons.UnSpec, ConsoleLogIcons.ToolWindowIcons.Spec);
-        setIconButtonStyle(levelCheckBox, ConsoleLogIcons.ToolWindowIcons.UnLevel, ConsoleLogIcons.ToolWindowIcons.Level);
+        setIconButtonStyle(commentButton, ConsoleLogIcons.ToolWindowIcons.UnComment, ConsoleLogIcons.ToolWindowIcons.Comment);
+        setIconButtonStyle(specButton, ConsoleLogIcons.ToolWindowIcons.UnSpec, ConsoleLogIcons.ToolWindowIcons.Spec);
+        setIconButtonStyle(levelButton, ConsoleLogIcons.ToolWindowIcons.UnLevel, ConsoleLogIcons.ToolWindowIcons.Level);
+        setIconButtonStyle(jumpOrDeleteButton, ConsoleLogIcons.ToolWindowIcons.Delete, ConsoleLogIcons.ToolWindowIcons.Jump);
         updateCommentTipToolText();
         updateSpecTipToolText();
         updateLevelTipToolText();
+        updateJumpOrDeleteTipToolText();
 
-        Box topBox = Box.createHorizontalBox();
-        topBox.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 0));
-        topBox.add(tip);
-        topBox.add(commentCheckBox);
-        topBox.add(Box.createHorizontalStrut(10));
-        topBox.add(specCheckBox);
-        topBox.add(Box.createHorizontalStrut(10));
-        topBox.add(levelCheckBox);
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 10, 0));
+        topPanel.add(tip);
+        topPanel.add(commentButton);
+        JSeparator checkBoxSeparator1 = new JSeparator(SwingConstants.VERTICAL);
+        checkBoxSeparator1.setPreferredSize(new Dimension(2, 10));
+        // 添加分割线
+        topPanel.add(checkBoxSeparator1);
+        topPanel.add(specButton);
+        // 添加分割线
+        JSeparator checkBoxSeparator2 = new JSeparator(SwingConstants.VERTICAL);
+        checkBoxSeparator2.setPreferredSize(new Dimension(2, 10));
+        topPanel.add(checkBoxSeparator2);
+        topPanel.add(levelButton);
+        // 添加分割线
+        JSeparator checkBoxSeparator3 = new JSeparator(SwingConstants.VERTICAL);
+        checkBoxSeparator3.setPreferredSize(new Dimension(2, 10));
+        topPanel.add(checkBoxSeparator3);
+        topPanel.add(jumpOrDeleteButton);
 
         JSeparator separator = new JSeparator();
 
         // 触发快速查找
         setLogListCellRender(new BeautifulListCellRender());
 
-        panel.add(topBox, BorderLayout.NORTH);
+        panel.add(topPanel, BorderLayout.NORTH);
         panel.add(separator, BorderLayout.CENTER);
         panel.add(new JScrollPane(logList), BorderLayout.CENTER);
 
@@ -155,15 +186,18 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         }
 
         // 监听【是否启用针对性查找】按钮
-        commentCheckBox.addActionListener(commentActionListener);
-        commentCheckBox.addMouseListener(buttonHoverAdapter);
-        specCheckBox.addActionListener(specActionListener);
-        specCheckBox.addMouseListener(buttonHoverAdapter);
-        levelCheckBox.addActionListener(levelActionListener);
-        levelCheckBox.addMouseListener(buttonHoverAdapter);
+        commentButton.addActionListener(commentActionListener);
+        commentButton.addMouseListener(buttonHoverAdapter);
+        specButton.addActionListener(specActionListener);
+        specButton.addMouseListener(buttonHoverAdapter);
+        levelButton.addActionListener(levelActionListener);
+        levelButton.addMouseListener(buttonHoverAdapter);
+        jumpOrDeleteButton.addActionListener(jumpOrDeleteActionListener);
+        jumpOrDeleteButton.addMouseListener(buttonHoverAdapter);
 
         // 监听鼠标点击--到达表达式位置
         logList.addMouseListener(mouseAdapter);
+
         // 添加文件切换监听器
         project.getMessageBus().connect().subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerListener() {
             @Override
@@ -232,19 +266,40 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
     }
 
+    /**
+     * 删除选中表达式
+     */
+    private void deleteFromConsoleLog(ConsoleLogSearchInfo selectInfo) {
+        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
+        // editor 编辑器对象为空 或 是否删除标签设置为不删除且标签为顶级时 不做删除处理
+        if (editor == null || (!settings.deleteTag && levelButton.isSelected() && 0 == selectInfo.getLevel())) {
+            return;
+        }
+
+        int start = selectInfo.getStartOffset();
+        int end = selectInfo.getEndOffset();
+        if (0 != start) {
+            String text = editor.getDocument().getText();
+            start = ConsoleLogPsiUtil.getStartOffsetContainSpace(start, text);
+        }
+        WriterCoroutineUtils writerCoroutineUtils = ApplicationManager.getApplication().getService(WriterCoroutineUtils.class);
+        writerCoroutineUtils.deleteWriterByTextRange(project, editor, new TextRange(start, end));
+    }
+
     private void updateLogListEntries() {
         Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         if (editor == null) return;
         ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
         if (!checkFileType(editor, settings)) {
             model.clear();
-            commentCheckBox.setEnabled(false);
-            specCheckBox.setEnabled(false);
+            commentButton.setEnabled(false);
+            specButton.setEnabled(false);
             tip.setText("当前类型文件不在查询范围内");
             return;
         }
-        commentCheckBox.setEnabled(true);
-        specCheckBox.setEnabled(true);
+        commentButton.setEnabled(true);
+        specButton.setEnabled(true);
         tip.setText("");
 
         setConsoleLogs(editor.getDocument(), settings);
@@ -266,9 +321,9 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     private void setConsoleLogs(Document document, ConsoleLogSettingState settings) {
         model.clear();
 
-        boolean enableSpec = specCheckBox.isSelected();
-        boolean enableComment = commentCheckBox.isSelected();
-        boolean enableLevel = levelCheckBox.isSelected();
+        boolean enableSpec = specButton.isSelected();
+        boolean enableComment = commentButton.isSelected();
+        boolean enableLevel = levelButton.isSelected();
 
         String context = document.getText();
         Matcher matcher = null;
@@ -332,12 +387,12 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             }
             if (hasTemplateTag && searchText.contains("</template>")) {
                 templateTagIndex = model.size();
-                endTemplateTagInfo = new ConsoleLogSearchInfo(searchText, lineNumber, end, level);
+                endTemplateTagInfo = new ConsoleLogSearchInfo(searchText, lineNumber, start, end, level);
                 continue;
             }
             //#endregion
 
-            ConsoleLogSearchInfo searchInfo = new ConsoleLogSearchInfo(searchText, lineNumber, end, level);
+            ConsoleLogSearchInfo searchInfo = new ConsoleLogSearchInfo(searchText, lineNumber, start, end, level);
             model.addElement(searchInfo);
         }
         if (endTemplateTagInfo != null) {
@@ -378,56 +433,73 @@ public class ConsoleLogToolWindowComponent implements Disposable {
      * 更新是否显示注释项按钮图标
      */
     private void updateCommentButtonIcon() {
-        boolean selected = !commentCheckBox.isSelected();
-        commentCheckBox.setSelected(selected);
+        boolean selected = !commentButton.isSelected();
+        commentButton.setSelected(selected);
     }
 
     /**
      * 更新是否启用针对性查找按钮图标
      */
     private void updateSpecButtonIcon() {
-        boolean selected = !specCheckBox.isSelected();
-        specCheckBox.setSelected(selected);
+        boolean selected = !specButton.isSelected();
+        specButton.setSelected(selected);
     }
 
     /**
      * 更新是否启用标签查找按钮图标
      */
     private void updateLevelButtonIcon() {
-        boolean selected = !levelCheckBox.isSelected();
-        levelCheckBox.setSelected(selected);
+        boolean selected = !levelButton.isSelected();
+        levelButton.setSelected(selected);
+    }
+
+    /**
+     * 更新是否启用标签查找按钮图标
+     */
+    private void updateJumpOrDeleteButtonIcon() {
+        boolean selected = !jumpOrDeleteButton.isSelected();
+        jumpOrDeleteButton.setSelected(selected);
     }
 
     /**
      * 更新是否显示注释项按钮提示文本
      */
     private void updateCommentTipToolText() {
-        commentCheckBox.setToolTipText(MessageUtils.message(commentCheckBox.isSelected() ? "sidebar.commentCheckBox" : "sidebar.disableCommentCheckBox"));
+        commentButton.setToolTipText(MessageUtils.message(commentButton.isSelected() ? "sidebar.commentButton" : "sidebar.disableCommentButton"));
     }
 
     /**
      * 更新是否启用针对性查找按钮提示文本
      */
     private void updateSpecTipToolText() {
-        specCheckBox.setToolTipText(MessageUtils.message(specCheckBox.isSelected() ? "sidebar.specCheckBox" : "sidebar.disableSpecCheckBox"));
+        specButton.setToolTipText(MessageUtils.message(specButton.isSelected() ? "sidebar.specButton" : "sidebar.disableSpecButton"));
     }
 
     /**
      * 更新是否启用标签查找按钮提示文本
      */
     private void updateLevelTipToolText() {
-        levelCheckBox.setToolTipText(MessageUtils.message(levelCheckBox.isSelected() ? "sidebar.levelCheckBox" : "sidebar.disableLevelCheckBox"));
+        levelButton.setToolTipText(MessageUtils.message(levelButton.isSelected() ? "sidebar.levelButton" : "sidebar.disableLevelButton"));
+    }
+
+    /**
+     * 更新是否点击文本项是跳转还是删除
+     */
+    private void updateJumpOrDeleteTipToolText() {
+        jumpOrDeleteButton.setToolTipText(MessageUtils.message(jumpOrDeleteButton.isSelected() ? "sidebar.jumpOrDeleteButton" : "sidebar.disableJumpOrDeleteButton"));
     }
 
     @Override
     public void dispose() {
         removeCurrentDocumentListener();
-        specCheckBox.removeActionListener(specActionListener);
-        specCheckBox.removeMouseListener(buttonHoverAdapter);
-        commentCheckBox.removeActionListener(commentActionListener);
-        commentCheckBox.removeMouseListener(buttonHoverAdapter);
-        levelCheckBox.removeActionListener(levelActionListener);
-        levelCheckBox.removeMouseListener(buttonHoverAdapter);
+        specButton.removeActionListener(specActionListener);
+        specButton.removeMouseListener(buttonHoverAdapter);
+        commentButton.removeActionListener(commentActionListener);
+        commentButton.removeMouseListener(buttonHoverAdapter);
+        levelButton.removeActionListener(levelActionListener);
+        levelButton.removeMouseListener(buttonHoverAdapter);
+        jumpOrDeleteButton.removeActionListener(jumpOrDeleteActionListener);
+        jumpOrDeleteButton.removeMouseListener(buttonHoverAdapter);
         logList.removeMouseListener(mouseAdapter);
 
         project.dispose();

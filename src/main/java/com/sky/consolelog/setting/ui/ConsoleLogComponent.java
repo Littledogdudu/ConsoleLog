@@ -56,6 +56,8 @@ public class ConsoleLogComponent implements Disposable {
     private JComboBox<Integer> sideFontSize;
     private JTextField tagTextField;
     private JCheckBox defaultTagSearchCheckBox;
+    private JCheckBox sidebarJumpOrDeleteCheckBox;
+    private JCheckBox sidebarDeleteTagCheckBox;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = e -> setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
@@ -66,9 +68,9 @@ public class ConsoleLogComponent implements Disposable {
     private final ActionListener enableDefaultConsoleLogMsgEventListener = event -> enableDefaultConsoleLogMsgEvent();
 
     /** 是否启用侧边栏按钮监听器 */
-    private final ActionListener enableSideWindowActionListener = e -> setEnableSideWindowStatus();
+    private final ActionListener enableSideWindowActionListener = e -> enableEnableSideWindowEvent();
     /** 侧边栏查找不限定语言类型按钮监听器 */
-    private final ActionListener fileTypeAllInCheckBoxActionListener = e -> setLanguageCheckBoxStatus();
+    private final ActionListener fileTypeAllInCheckBoxActionListener = e -> enableLanguageCheckBoxEvent();
 
     /** 禁用/启用 文件所在路径是否根据基准文件名称截断 同步禁用/启用 组内配置 */
     private final ActionListener enableFilePathCutEventListener = event -> {
@@ -92,9 +94,12 @@ public class ConsoleLogComponent implements Disposable {
         fileTypeAllInCheckBox.addActionListener(fileTypeAllInCheckBoxActionListener);
 
         setSideFontSizeOptions();
-        setDefaultSideFontSize();
+        enableDefaultSideFontSizeEvent();
     }
 
+    /**
+     * 是否启用无变量默认打印设置事件方法
+     */
     public void enableDefaultConsoleLogMsgEvent() {
         if (getEnableDefaultConsoleLogMsg()) {
             defaultConsoleLogMsg.setEnabled(true);
@@ -105,6 +110,9 @@ public class ConsoleLogComponent implements Disposable {
         }
     }
 
+    /**
+     * 【文件所在路径是否根据基准文件名称截断】按钮改变事件方法
+     */
     public void enablePathCutEvent() {
         if (getEnableFilePathCut()) {
             filePathBaseFolderName.setEnabled(true);
@@ -118,11 +126,15 @@ public class ConsoleLogComponent implements Disposable {
     /**
      * 【是否启用侧边栏】按钮改变事件方法
      */
-    public void setEnableSideWindowStatus() {
+    public void enableEnableSideWindowEvent() {
         if (getEnableSideWindow()) {
             fileTypeAllInCheckBox.setEnabled(true);
-            setLanguageCheckBoxStatus();
+            enableLanguageCheckBoxEvent();
             sideFontSize.setEnabled(true);
+            tagTextField.setEnabled(true);
+            defaultTagSearchCheckBox.setEnabled(true);
+            sidebarJumpOrDeleteCheckBox.setEnabled(true);
+            sidebarDeleteTagCheckBox.setEnabled(true);
         } else {
             fileTypeAllInCheckBox.setEnabled(false);
             vueSideCheckBox.setEnabled(false);
@@ -130,14 +142,18 @@ public class ConsoleLogComponent implements Disposable {
             typeScriptSideCheckBox.setEnabled(false);
             textSideCheckBox.setEnabled(false);
             sideFontSize.setEnabled(false);
+            tagTextField.setEnabled(false);
+            defaultTagSearchCheckBox.setEnabled(false);
+            sidebarJumpOrDeleteCheckBox.setEnabled(false);
+            sidebarDeleteTagCheckBox.setEnabled(false);
         }
     }
 
     /**
      * 【文件类型限定】按钮改变事件方法
      */
-    public void setLanguageCheckBoxStatus() {
-        if (fileTypeAllInCheckBox.isSelected()) {
+    public void enableLanguageCheckBoxEvent() {
+        if (getFileTypeAllInCheckBox()) {
             // 开启全文件
             vueSideCheckBox.setEnabled(false);
             javaScriptSideCheckBox.setEnabled(false);
@@ -163,7 +179,7 @@ public class ConsoleLogComponent implements Disposable {
     /**
      * 尝试重新渲染侧边栏字体大小
      */
-    public void setDefaultSideFontSize() {
+    public void enableDefaultSideFontSizeEvent() {
         if (getEnableSideWindow()) {
             // 重新渲染侧边栏样式
             ConsoleLogToolWindowComponent.setLogListCellRender(new BeautifulListCellRender());
@@ -395,6 +411,22 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setDefaultTagSearchCheckBox(Boolean checked) {
         defaultTagSearchCheckBox.setSelected(checked);
+    }
+
+    public Boolean getSidebarJumpOrDeleteCheckBox() {
+        return sidebarJumpOrDeleteCheckBox.isSelected();
+    }
+
+    public void setSidebarJumpOrDeleteCheckBox(Boolean checked) {
+        sidebarJumpOrDeleteCheckBox.setSelected(checked);
+    }
+
+    public Boolean getSidebarDeleteTagCheckBox() {
+        return sidebarDeleteTagCheckBox.isSelected();
+    }
+
+    public void setSidebarDeleteTagCheckBox(Boolean checked) {
+        sidebarDeleteTagCheckBox.setSelected(checked);
     }
 
     @Override

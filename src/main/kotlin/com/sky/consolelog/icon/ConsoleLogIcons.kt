@@ -29,6 +29,12 @@ object ConsoleLogIcons {
 
         @JvmField
         val Level: Icon = load("/icons/bookmark-16-selected.svg")
+
+        @JvmField
+        val Delete: Icon = load("/icons/click-to-delete.svg")
+
+        @JvmField
+        val Jump: Icon = load("/icons/click-to-jump.svg")
     }
 
 

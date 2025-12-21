@@ -278,7 +278,7 @@ public class ConsoleLogPsiUtil {
      * @param text        文本
      * @return 包含空格的开始偏移量
      */
-    private static int getStartOffsetContainSpace(int startOffset, CharSequence text) {
+    public static int getStartOffsetContainSpace(int startOffset, CharSequence text) {
         for (startOffset = startOffset - 1; startOffset >= 0; --startOffset) {
             char c = text.charAt(startOffset);
 
