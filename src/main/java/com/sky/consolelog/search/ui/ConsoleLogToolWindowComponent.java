@@ -25,6 +25,7 @@ import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.MessageUtils;
 import com.sky.consolelog.utils.WriterCoroutineUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +34,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +53,8 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     private final JButton commentButton;
     /** 启用针对性查找 */
     private final JButton specButton;
+    /** 启用无变量针对性查找 */
+    private final JButton nonVarSpecButton;
     /** 开启标签查找 */
     private final JButton levelButton;
     /** 单击查找项 跳转/删除 */
@@ -71,6 +76,12 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     private final ActionListener specActionListener = event -> {
         updateSpecButtonIcon();
         updateSpecTipToolText();
+        updateLogListEntries();
+    };
+
+    private final ActionListener nonVarSpecActionListener = event -> {
+        updateNonVarSpecButtonIcon();
+        updateNonVarSpecTipToolText();
         updateLogListEntries();
     };
 
@@ -124,6 +135,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         tip = new JLabel("");
         commentButton = new JButton();
         specButton = new JButton();
+        nonVarSpecButton = new JButton();
         levelButton = new JButton();
         jumpOrDeleteButton = new JButton();
         model = new DefaultListModel<>();
@@ -136,15 +148,18 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
         commentButton.setSelected(settings.defaultCommentSearch);
         specButton.setSelected(settings.defaultSpecSearch);
+        nonVarSpecButton.setSelected(true);
         levelButton.setSelected(settings.defaultTagSearch);
         jumpOrDeleteButton.setSelected(settings.defaultJumpOrDelete);
 
         setIconButtonStyle(commentButton, ConsoleLogIcons.ToolWindowIcons.UnComment, ConsoleLogIcons.ToolWindowIcons.Comment);
         setIconButtonStyle(specButton, ConsoleLogIcons.ToolWindowIcons.UnSpec, ConsoleLogIcons.ToolWindowIcons.Spec);
+        setIconButtonStyle(nonVarSpecButton, ConsoleLogIcons.ToolWindowIcons.UnSpec, ConsoleLogIcons.ToolWindowIcons.nonVarSpec);
         setIconButtonStyle(levelButton, ConsoleLogIcons.ToolWindowIcons.UnLevel, ConsoleLogIcons.ToolWindowIcons.Level);
         setIconButtonStyle(jumpOrDeleteButton, ConsoleLogIcons.ToolWindowIcons.Delete, ConsoleLogIcons.ToolWindowIcons.Jump);
         updateCommentTipToolText();
         updateSpecTipToolText();
+        updateNonVarSpecTipToolText();
         updateLevelTipToolText();
         updateJumpOrDeleteTipToolText();
 
@@ -157,6 +172,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         // 添加分割线
         topPanel.add(checkBoxSeparator1);
         topPanel.add(specButton);
+        topPanel.add(nonVarSpecButton);
         // 添加分割线
         JSeparator checkBoxSeparator2 = new JSeparator(SwingConstants.VERTICAL);
         checkBoxSeparator2.setPreferredSize(new Dimension(2, 10));
@@ -190,6 +206,8 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         commentButton.addMouseListener(buttonHoverAdapter);
         specButton.addActionListener(specActionListener);
         specButton.addMouseListener(buttonHoverAdapter);
+        nonVarSpecButton.addActionListener(nonVarSpecActionListener);
+        nonVarSpecButton.addMouseListener(buttonHoverAdapter);
         levelButton.addActionListener(levelActionListener);
         levelButton.addMouseListener(buttonHoverAdapter);
         jumpOrDeleteButton.addActionListener(jumpOrDeleteActionListener);
@@ -295,11 +313,13 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             model.clear();
             commentButton.setEnabled(false);
             specButton.setEnabled(false);
+            nonVarSpecButton.setEnabled(false);
             tip.setText("当前类型文件不在查询范围内");
             return;
         }
         commentButton.setEnabled(true);
         specButton.setEnabled(true);
+        nonVarSpecButton.setEnabled(true);
         tip.setText("");
 
         setConsoleLogs(editor.getDocument(), settings);
@@ -322,21 +342,34 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         model.clear();
 
         boolean enableSpec = specButton.isSelected();
+        boolean enableNonVarSpec = nonVarSpecButton.isSelected();
         boolean enableComment = commentButton.isSelected();
         boolean enableLevel = levelButton.isSelected();
 
         String context = document.getText();
         Matcher matcher = null;
         StringBuilder regexBuilder = new StringBuilder("(");
+        List<String> regexList = new ArrayList<>();
         if (enableSpec) {
             // 启用只查找插件指定格式的表达式
             String consoleLogMsgRegex = ConsoleLogMsgUtil.buildWithoutStartSpaceRegexConsoleLogMsg(settings);
             if (consoleLogMsgRegex == null) {
                 return;
             }
-            regexBuilder.append(consoleLogMsgRegex);
+            regexList.add(consoleLogMsgRegex);
+        }
+        if (enableNonVarSpec) {
+            // 启用只查找插件无变量选中时生成指定格式的表达式
+            String consoleLogMsgRegex = ConsoleLogMsgUtil.buildWithoutStartSpaceRegexDefaultConsoleLogMsg(settings);
+            if (consoleLogMsgRegex == null) {
+                return;
+            }
+            regexList.add(consoleLogMsgRegex);
+        }
+
+        if (CollectionUtils.isNotEmpty(regexList)) {
+            regexBuilder.append(String.join("|", regexList));
         } else {
-            // 查找所有控制台打印表达式
             regexBuilder.append(SettingConstant.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE);
         }
 
@@ -446,6 +479,14 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     }
 
     /**
+     * 更新是否启用无变量针对性查找按钮图标
+     */
+    private void updateNonVarSpecButtonIcon() {
+        boolean selected = !nonVarSpecButton.isSelected();
+        nonVarSpecButton.setSelected(selected);
+    }
+
+    /**
      * 更新是否启用标签查找按钮图标
      */
     private void updateLevelButtonIcon() {
@@ -476,6 +517,13 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     }
 
     /**
+     * 更新是否启用无变量针对性查找按钮提示文本
+     */
+    private void updateNonVarSpecTipToolText() {
+        specButton.setToolTipText(MessageUtils.message(nonVarSpecButton.isSelected() ? "sidebar.nonVarSpecButton" : "sidebar.disableNonVarSpecButton"));
+    }
+
+    /**
      * 更新是否启用标签查找按钮提示文本
      */
     private void updateLevelTipToolText() {
@@ -494,6 +542,8 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         removeCurrentDocumentListener();
         specButton.removeActionListener(specActionListener);
         specButton.removeMouseListener(buttonHoverAdapter);
+        nonVarSpecButton.removeActionListener(nonVarSpecActionListener);
+        nonVarSpecButton.removeMouseListener(buttonHoverAdapter);
         commentButton.removeActionListener(commentActionListener);
         commentButton.removeMouseListener(buttonHoverAdapter);
         levelButton.removeActionListener(levelActionListener);

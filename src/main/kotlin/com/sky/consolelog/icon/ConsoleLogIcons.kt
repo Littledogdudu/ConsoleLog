@@ -35,6 +35,9 @@ object ConsoleLogIcons {
 
         @JvmField
         val Jump: Icon = load("/icons/click-to-jump.svg")
+
+        @JvmField
+        val nonVarSpec: Icon = load("/icons/non-var-spec.svg")
     }
 
 

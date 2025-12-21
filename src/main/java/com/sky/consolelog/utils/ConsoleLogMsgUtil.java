@@ -22,11 +22,15 @@ public class ConsoleLogMsgUtil {
 
     private static String currentWithoutStartSpaceFormSignal = "";
     private static String currentWithoutStartSpaceConsoleLogMsg = "";
-    private static String withoutStartSpacConsoleLogMsgRegex = "";
+    private static String withoutStartSpecConsoleLogMsgRegex = "";
 
     private static String currentDefaultFormSignal = "";
     private static String currentDefaultConsoleLogMsg = "";
     private static String defaultConsoleLogMsgRegex = "";
+
+    private static String currentWithoutStartSpaceDefaultFormSignal = "";
+    private static String currentWithoutStartSpaceDefaultConsoleLogMsg = "";
+    private static String withoutStartSpaceDefaultConsoleLogMsgRegex = "";
 
     private static String currentLinNumberFormSignal = "";
     private static String currentLineNumberConsoleLogMsg = "";
@@ -60,9 +64,9 @@ public class ConsoleLogMsgUtil {
     }
 
     /**
-     * 构建consoleLog正则表达式
+     * 构建consoleLog正则表达式（没有起始空格）
      *
-     * @return 返回设置的ConsoleLog语句正则表达式
+     * @return 返回设置的ConsoleLog语句正则表达式（没有起始空格）
      */
     public static String buildWithoutStartSpaceRegexConsoleLogMsg(ConsoleLogSettingState settings) {
         String consoleLogMsg = settings.consoleLogMsg;
@@ -71,7 +75,7 @@ public class ConsoleLogMsgUtil {
         }
 
         if (consoleLogMsg.equals(currentWithoutStartSpaceConsoleLogMsg) && TextFormatContext.FORM_SIGNAL.equals(currentWithoutStartSpaceFormSignal)) {
-            return withoutStartSpacConsoleLogMsgRegex;
+            return withoutStartSpecConsoleLogMsgRegex;
         }
         StringBuilder regexConsoleLogMsg = new StringBuilder();
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE);
@@ -81,8 +85,8 @@ public class ConsoleLogMsgUtil {
 
         currentWithoutStartSpaceFormSignal = TextFormatContext.FORM_SIGNAL;
         currentWithoutStartSpaceConsoleLogMsg = consoleLogMsg;
-        withoutStartSpacConsoleLogMsgRegex = regexConsoleLogMsg.toString();
-        return withoutStartSpacConsoleLogMsgRegex;
+        withoutStartSpecConsoleLogMsgRegex = regexConsoleLogMsg.toString();
+        return withoutStartSpecConsoleLogMsgRegex;
     }
 
     /**
@@ -109,6 +113,32 @@ public class ConsoleLogMsgUtil {
         currentDefaultConsoleLogMsg = consoleLogMsg;
         defaultConsoleLogMsgRegex = regexConsoleLogMsg.toString();
         return defaultConsoleLogMsgRegex;
+    }
+
+    /**
+     * 构建无选中文本时默认生成的consoleLog正则表达式（没有起始空格）
+     *
+     * @return 返回设置的ConsoleLog语句正则表达式（没有起始空格）
+     */
+    public static String buildWithoutStartSpaceRegexDefaultConsoleLogMsg(ConsoleLogSettingState settings) {
+        String consoleLogMsg = settings.defaultConsoleLogMsg;
+        if (StringUtils.isEmpty(consoleLogMsg)) {
+            return null;
+        }
+
+        if (consoleLogMsg.equals(currentWithoutStartSpaceDefaultConsoleLogMsg) && TextFormatContext.FORM_SIGNAL.equals(currentWithoutStartSpaceDefaultFormSignal)) {
+            return withoutStartSpaceDefaultConsoleLogMsgRegex;
+        }
+        StringBuilder regexConsoleLogMsg = new StringBuilder();
+        regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE);
+        // 插件设置console.log内的文字提示指针
+        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg);
+        regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_END_NO_VARIABLE_REGEX);
+
+        currentWithoutStartSpaceDefaultFormSignal = TextFormatContext.FORM_SIGNAL;
+        currentWithoutStartSpaceDefaultConsoleLogMsg = consoleLogMsg;
+        withoutStartSpaceDefaultConsoleLogMsgRegex = regexConsoleLogMsg.toString();
+        return withoutStartSpaceDefaultConsoleLogMsgRegex;
     }
 
     /**
