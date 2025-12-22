@@ -69,6 +69,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getSidebarDeleteTagCheckBox().equals(this.settings.deleteTag)
                 || !component.getDefaultEnableCommentButtonCheckBox().equals(this.settings.defaultCommentSearch)
                 || !component.getDefaultEnableSpecButtonCheckBox().equals(this.settings.defaultSpecSearch)
+                || !component.getDefaultEnableNonVarSpecButtonCheckBox().equals(this.settings.defaultNonVarSpecSearch)
                 ;
     }
 
@@ -110,6 +111,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.deleteTag = component.getSidebarDeleteTagCheckBox();
         this.settings.defaultCommentSearch = component.getDefaultEnableCommentButtonCheckBox();
         this.settings.defaultSpecSearch = component.getDefaultEnableSpecButtonCheckBox();
+        this.settings.defaultNonVarSpecSearch = component.getDefaultEnableNonVarSpecButtonCheckBox();
 
         finalSetting(settings, component);
     }
@@ -150,6 +152,7 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setSidebarDeleteTagCheckBox(this.settings.deleteTag);
         component.setDefaultEnableCommentButtonCheckBox(this.settings.defaultCommentSearch);
         component.setDefaultEnableSpecButtonCheckBox(this.settings.defaultSpecSearch);
+        component.setDefaultEnableNonVarSpecButtonCheckBox(this.settings.defaultNonVarSpecSearch);
 
         finalSetting(settings, component);
     }

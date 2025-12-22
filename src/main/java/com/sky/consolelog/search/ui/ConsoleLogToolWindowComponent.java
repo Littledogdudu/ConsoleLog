@@ -148,7 +148,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
         commentButton.setSelected(settings.defaultCommentSearch);
         specButton.setSelected(settings.defaultSpecSearch);
-        nonVarSpecButton.setSelected(true);
+        nonVarSpecButton.setSelected(settings.defaultNonVarSpecSearch);
         levelButton.setSelected(settings.defaultTagSearch);
         jumpOrDeleteButton.setSelected(settings.defaultJumpOrDelete);
 
@@ -459,7 +459,8 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         button.setPreferredSize(new Dimension(20, 20));
         button.setMinimumSize(new Dimension(20, 20));
         button.setMaximumSize(new Dimension(20, 20));
-        button.setContentAreaFilled(true);
+        button.setContentAreaFilled(false);
+        button.setOpaque(true);
     }
 
     /**
@@ -520,7 +521,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
      * 更新是否启用无变量针对性查找按钮提示文本
      */
     private void updateNonVarSpecTipToolText() {
-        specButton.setToolTipText(MessageUtils.message(nonVarSpecButton.isSelected() ? "sidebar.nonVarSpecButton" : "sidebar.disableNonVarSpecButton"));
+        nonVarSpecButton.setToolTipText(MessageUtils.message(nonVarSpecButton.isSelected() ? "sidebar.nonVarSpecButton" : "sidebar.disableNonVarSpecButton"));
     }
 
     /**

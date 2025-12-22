@@ -60,6 +60,7 @@ public class ConsoleLogComponent implements Disposable {
     private JCheckBox sidebarDeleteTagCheckBox;
     private JCheckBox defaultEnableSpecButtonCheckBox;
     private JCheckBox defaultEnableCommentButtonCheckBox;
+    private JCheckBox defaultEnableNonVarSpecButtonCheckBox;
 
     /** 清空按钮监听器 */
     private final ActionListener resetButtonActionListener = e -> setConsoleLogMsg(SettingConstant.DEFAULT_CONSOLE_LOG_MSG);
@@ -137,6 +138,7 @@ public class ConsoleLogComponent implements Disposable {
             defaultEnableTagSearchButtonCheckBox.setEnabled(true);
             defaultEnableJumpOrDeleteButtonCheckBox.setEnabled(true);
             defaultEnableCommentButtonCheckBox.setEnabled(true);
+            defaultEnableNonVarSpecButtonCheckBox.setEnabled(true);
             defaultEnableSpecButtonCheckBox.setEnabled(true);
             sidebarDeleteTagCheckBox.setEnabled(true);
         } else {
@@ -151,6 +153,7 @@ public class ConsoleLogComponent implements Disposable {
             defaultEnableJumpOrDeleteButtonCheckBox.setEnabled(false);
             defaultEnableCommentButtonCheckBox.setEnabled(false);
             defaultEnableSpecButtonCheckBox.setEnabled(false);
+            defaultEnableNonVarSpecButtonCheckBox.setEnabled(false);
             sidebarDeleteTagCheckBox.setEnabled(false);
         }
     }
@@ -425,6 +428,14 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setDefaultEnableSpecButtonCheckBox(Boolean checked) {
         defaultEnableSpecButtonCheckBox.setSelected(checked);
+    }
+
+    public Boolean getDefaultEnableNonVarSpecButtonCheckBox() {
+        return defaultEnableNonVarSpecButtonCheckBox.isSelected();
+    }
+
+    public void setDefaultEnableNonVarSpecButtonCheckBox(Boolean checked) {
+        defaultEnableNonVarSpecButtonCheckBox.setSelected(checked);
     }
 
     public Boolean getDefaultEnableTagSearchButtonCheckBox() {

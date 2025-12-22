@@ -142,6 +142,8 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public Boolean defaultCommentSearch = true;
     /** 首次启动侧边栏默认启动插件生成语句筛选查询 */
     public Boolean defaultSpecSearch = true;
+    /** 首次启动侧边栏默认启动插件无变量生成语句筛选查询 */
+    public Boolean defaultNonVarSpecSearch = true;
 
     @Override
     public @NotNull ConsoleLogSettingState getState() {
@@ -175,9 +177,11 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.tags = this.tags;
         state.defaultTagSearch = this.defaultTagSearch;
         state.defaultJumpOrDelete = this.defaultJumpOrDelete;
+        state.deleteTag = this.deleteTag;
         state.defaultCommentSearch = this.defaultCommentSearch;
         state.defaultSpecSearch = this.defaultSpecSearch;
-        state.deleteTag = this.deleteTag;
+        state.defaultNonVarSpecSearch = this.defaultNonVarSpecSearch;
+
         return state;
     }
 
@@ -219,6 +223,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.deleteTag = state.deleteTag;
         this.defaultCommentSearch = state.defaultCommentSearch;
         this.defaultSpecSearch = state.defaultSpecSearch;
+        this.defaultNonVarSpecSearch = state.defaultNonVarSpecSearch;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }
