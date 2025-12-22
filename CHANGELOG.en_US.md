@@ -5,6 +5,14 @@
 
 ## [Unreleased]
 
+## [1.2.2] - 2025-12-22
+
+- Add click-to-delete/jump buttons to the sidebar
+- Add a filter button for printing without variables in the sidebar (default activation state configurable in settings)
+- Add default activation state settings for sidebar buttons
+- Optimize sidebar icons
+- Add English description support in the settings interface
+
 ## [1.2.1] - 2025-06-14
 
 ### Contains the initial version of the sidebar feature that was never released
