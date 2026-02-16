@@ -13,7 +13,9 @@ public interface SettingConstant {
     String SINGLE_QUOTE = "'";
     String BACKTICK = "`";
     String CONSOLE_LOG_COMMAND = "console.log(";
+    String CONSOLE_XXX_COMMAND = "console.$METHOD$(";
     String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(") + "\\s*";
+    String CONSOLE_XXX_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + ".*" + Pattern.quote("(") + "\\s*";
     String CONSOLE_LOG_END_REGEX = "\\s*" + Pattern.quote(",") + ".*" + Pattern.quote(")") + "\\s*" + ";?";
     String CONSOLE_LOG_END_NO_VARIABLE_REGEX = "\\s*" + Pattern.quote(")") + "\\s*" + ";?";
     String CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX ="\\s*" + "(?:,.*)?" + Pattern.quote(")") + "\\s*" + ";?";

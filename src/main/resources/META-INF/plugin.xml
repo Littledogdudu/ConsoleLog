@@ -27,6 +27,10 @@
         <applicationConfigurable instance="com.sky.consolelog.config.ConsoleLogConfigurable" displayName="Console Log Plugin"/>
     </extensions>
     <actions>
+        <action id="Insert Template Console Log Message" class="com.sky.consolelog.action.TemplateInsertConsoleLogAction"
+                text="Console Log Plugin: Insert Template Console Log Message" description="Quick Insert console.log() or other command in code">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt 3"/>
+        </action>
         <action id="Insert Console Log Message" class="com.sky.consolelog.action.InsertConsoleLogAction"
                 text="Console Log Plugin: Insert Console Log Message" description="Quick Insert console.log() in code">
             <keyboard-shortcut keymap="$default" first-keystroke="alt 1"/>

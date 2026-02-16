@@ -167,7 +167,7 @@ public class ConsoleLogPsiUtil {
         if (StringUtils.isNotEmpty(callExpressionText) &&
                 callExpressionText.matches(
                         SettingConstant.ALL_REGEX +
-                                SettingConstant.CONSOLE_LOG_BEGIN_REGEX +
+                                SettingConstant.CONSOLE_XXX_BEGIN_REGEX +
                                 SettingConstant.ALL_REGEX
                 )
         ) {

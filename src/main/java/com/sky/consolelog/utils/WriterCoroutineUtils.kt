@@ -1,6 +1,9 @@
 package com.sky.consolelog.utils
 
 import com.intellij.application.options.CodeStyle
+import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.codeInsight.template.TemplateManager
+import com.intellij.codeInsight.template.impl.ConstantNode
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.Service
@@ -55,6 +58,188 @@ class WriterCoroutineUtils(
         consoleLogMsg: String,
         autoFollowEnd: Boolean
     ) {
+        fun writerSentenceCommand(document: Document, sentence: StringBuilder, offset: Int) {
+            WriteCommandAction.runWriteCommandAction(project) {
+                document.insertString(scopeOffset.insertEndOffset, sentence.toString());
+                // 更新 PSI 树以反应文档变化
+                PsiDocumentManager.getInstance(project).commitDocument(document);
+                // 将光标移动到新插入的 console.log 语句后
+                if (autoFollowEnd) {
+                    caret.moveToOffset(offset);
+                }
+            }
+        }
+
+        __insertWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, autoFollowEnd, ::writerSentenceCommand);
+    }
+
+    /**
+     * 未选中文本时默认插入console.log表达式信息
+     */
+    fun insertDefaultWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        caret: Caret,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        autoFollowEnd: Boolean
+    ) {
+        fun writeSentenceCommand(document: Document, sentence: StringBuilder, offset: Int, lineNumber: Int): Unit {
+            WriteCommandAction.runWriteCommandAction(project) {
+                document.insertString(scopeOffset.insertEndOffset, sentence.toString());
+                // 格式化
+                val codeStyleManager: CodeStyleManager = CodeStyleManager.getInstance(project);
+                codeStyleManager.reformatText(psiFile, scopeOffset.insertEndOffset, offset);
+                // 更新 PSI 树以反应文档变化
+                PsiDocumentManager.getInstance(project).commitDocument(document);
+                // 将光标移动到新插入的 console.log 语句后
+                if (autoFollowEnd) {
+                    caret.moveToOffset(document.getLineEndOffset(lineNumber));
+                }
+            }
+        }
+
+        __insertDefaultWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, autoFollowEnd, ::writeSentenceCommand);
+    }
+
+    fun insertTemplateWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        caret: Caret,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        autoFollowEnd: Boolean
+    ) {
+        fun writeTemplateSentenceCommand(document: Document, sentence: StringBuilder, offset: Int): Unit {
+            val templateManager = TemplateManager.getInstance(project)
+
+            // 1. 创建模板对象
+            // $METHOD$ 是我们自定义的占位符，用于选择log/debug/info/warn/error
+            // $END$ 是模板的结束后的光标位置
+            sentence.append("\$END$");
+            val template = templateManager.createTemplate("", "", sentence.toString());
+
+
+            // 2. 设置变量的默认值和可选列表
+            val methodOptions = ConstantNode("log")
+                .withLookupItems(
+                    LookupElementBuilder.create("log"),
+                    LookupElementBuilder.create("table"),
+                    LookupElementBuilder.create("debug"),
+                    LookupElementBuilder.create("error"),
+                    LookupElementBuilder.create("warn"),
+                    LookupElementBuilder.create("trace")
+                );
+
+            template.addVariable("METHOD", methodOptions, true)
+            WriteCommandAction.runWriteCommandAction(project) {
+                caret.moveToOffset(scopeOffset.insertEndOffset);
+                templateManager.startTemplate(editor, template);
+            };
+        }
+
+        __insertWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, autoFollowEnd, ::writeTemplateSentenceCommand);
+    }
+
+    fun insertDefaultTemplateWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        caret: Caret,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        autoFollowEnd: Boolean
+    ) {
+        fun writeTemplateSentenceCommand(document: Document, sentence: StringBuilder, offset: Int, lineNumber: Int): Unit {
+            val templateManager = TemplateManager.getInstance(project)
+
+            // 1. 创建模板对象
+            // $METHOD$ 是我们自定义的占位符，用于选择log/debug/info/warn/error
+            // $END$ 是模板的结束后的光标位置
+            sentence.append("\$END$");
+            val template = templateManager.createTemplate("", "", sentence.toString());
+
+
+            // 2. 设置变量的默认值和可选列表
+            val methodOptions = ConstantNode("log")
+                .withLookupItems(
+                    LookupElementBuilder.create("log"),
+                    LookupElementBuilder.create("table"),
+                    LookupElementBuilder.create("debug"),
+                    LookupElementBuilder.create("error"),
+                    LookupElementBuilder.create("warn"),
+                    LookupElementBuilder.create("trace")
+                );
+
+            template.addVariable("METHOD", methodOptions, true)
+            WriteCommandAction.runWriteCommandAction(project) {
+                caret.moveToOffset(document.getLineEndOffset(lineNumber));
+                templateManager.startTemplate(editor, template)
+            };
+        }
+
+        __insertDefaultWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, autoFollowEnd, ::writeTemplateSentenceCommand);
+    }
+
+    private fun __insertDefaultWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        caret: Caret,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        autoFollowEnd: Boolean,
+        callback: (document: Document, sentence: StringBuilder, offset: Int, lineNumber: Int) -> Unit
+    ) {
+        defaultInsertJob = cs.launch {
+            val document: Document = editor.document;
+
+            // 找到光标所在行的结束位置
+            var lineNumber: Int = document.getLineNumber(scopeOffset.insertEndOffset);
+            val lineStartOffset: Int = document.getLineStartOffset(lineNumber);
+            val lineEndOffset: Int = document.getLineEndOffset(lineNumber);
+
+            val nextText: String = document.getText(TextRange(scopeOffset.insertEndOffset, lineEndOffset));
+            scopeOffset.needEndLine = !StringUtils.isAllBlank(nextText);
+
+            // 获取光标所在行的内容，并计算缩进
+            val currentLine: String = document.text.substring(lineStartOffset, lineEndOffset);
+            val indentation: String = currentLine.replace(currentLine.trim(), "");
+
+            // 在光标所在行的结束位置插入 console.log 语句
+            val sentence = StringBuilder();
+            var offset: Int;
+            if (scopeOffset.needBegLine) {
+                sentence.append("\n").append(consoleLogMsg);
+                offset = 1 + scopeOffset.insertEndOffset + consoleLogMsg.length;
+                ++lineNumber;
+            } else {
+                sentence.append(consoleLogMsg);
+                offset = scopeOffset.insertEndOffset + consoleLogMsg.length;
+            }
+
+            if (scopeOffset.needEndLine) {
+                val ch: String = document.text.substring(scopeOffset.insertEndOffset, scopeOffset.insertEndOffset + 1);
+                if ("\n" != ch) {
+                    sentence.append("\n").append(indentation);
+                }
+            }
+            callback(document, sentence, offset, lineNumber);
+        }
+    }
+
+    private fun __insertWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        caret: Caret,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        autoFollowEnd: Boolean,
+        callback: (document: Document, sentence: StringBuilder, offset: Int) -> Unit
+    ) {
         insertJob = cs.launch {
             val document: Document = editor.document;
 
@@ -106,75 +291,7 @@ class WriterCoroutineUtils(
                         sentence.append("\n").append(indentation);
                     }
                 }
-                WriteCommandAction.runWriteCommandAction(project) {
-                    document.insertString(scopeOffset.insertEndOffset, sentence.toString());
-                    // 更新 PSI 树以反应文档变化
-                    PsiDocumentManager.getInstance(project).commitDocument(document);
-                    // 将光标移动到新插入的 console.log 语句后
-                    if (autoFollowEnd) {
-                        caret.moveToOffset(offset);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * 未选中文本时默认插入console.log表达式信息
-     */
-    fun insertDefaultWriter(
-        project: Project,
-        editor: Editor,
-        psiFile: PsiFile,
-        caret: Caret,
-        scopeOffset: ScopeOffset,
-        consoleLogMsg: String,
-        autoFollowEnd: Boolean
-    ) {
-        defaultInsertJob = cs.launch {
-            val document: Document = editor.document;
-
-            // 找到光标所在行的结束位置
-            var lineNumber: Int = document.getLineNumber(scopeOffset.insertEndOffset);
-            val lineStartOffset: Int = document.getLineStartOffset(lineNumber);
-            val lineEndOffset: Int = document.getLineEndOffset(lineNumber);
-
-            val nextText: String = document.getText(TextRange(scopeOffset.insertEndOffset, lineEndOffset));
-            scopeOffset.needEndLine = !StringUtils.isAllBlank(nextText);
-
-            // 获取光标所在行的内容，并计算缩进
-            val currentLine: String = document.text.substring(lineStartOffset, lineEndOffset);
-            val indentation: String = currentLine.replace(currentLine.trim(), "");
-
-            // 在光标所在行的结束位置插入 console.log 语句
-            val sentence = StringBuilder();
-            var offset: Int;
-            if (scopeOffset.needBegLine) {
-                sentence.append("\n").append(consoleLogMsg);
-                offset = 1 + scopeOffset.insertEndOffset + consoleLogMsg.length;
-                ++lineNumber;
-            } else {
-                sentence.append(consoleLogMsg);
-                offset = scopeOffset.insertEndOffset + consoleLogMsg.length;
-            }
-
-            if (scopeOffset.needEndLine) {
-                val ch: String = document.text.substring(scopeOffset.insertEndOffset, scopeOffset.insertEndOffset + 1);
-                if ("\n" != ch) {
-                    sentence.append("\n").append(indentation);
-                }
-            }
-            WriteCommandAction.runWriteCommandAction(project) {
-                document.insertString(scopeOffset.insertEndOffset, sentence.toString());
-                // 格式化
-                val codeStyleManager: CodeStyleManager = CodeStyleManager.getInstance(project);
-                codeStyleManager.reformatText(psiFile, scopeOffset.insertEndOffset, offset);
-                // 更新 PSI 树以反应文档变化
-                PsiDocumentManager.getInstance(project).commitDocument(document);
-                // 将光标移动到新插入的 console.log 语句后
-                if (autoFollowEnd) {
-                    caret.moveToOffset(document.getLineEndOffset(lineNumber));
-                }
+                callback(document, sentence, offset);
             }
         }
     }
