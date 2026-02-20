@@ -58,19 +58,44 @@ class WriterCoroutineUtils(
         consoleLogMsg: String,
         autoFollowEnd: Boolean
     ) {
-        fun writerSentenceCommand(document: Document, sentence: StringBuilder, offset: Int) {
-            WriteCommandAction.runWriteCommandAction(project) {
-                document.insertString(scopeOffset.insertEndOffset, sentence.toString());
-                // 更新 PSI 树以反应文档变化
-                PsiDocumentManager.getInstance(project).commitDocument(document);
-                // 将光标移动到新插入的 console.log 语句后
-                if (autoFollowEnd) {
-                    caret.moveToOffset(offset);
+        fun writerSentenceCommand(
+            document: Document,
+            sentence: StringBuilder,
+            offset: Int,
+            lineEndOffset: Int,
+        ) {
+            if (scopeOffset.default) {
+                WriteCommandAction.runWriteCommandAction(project) {
+                    document.insertString(lineEndOffset + 1, sentence.toString());
+                    // 将光标移动到新插入的 console.log 语句后
+                    if (autoFollowEnd) {
+                        caret.moveToOffset(offset);
+                    }
+                };
+            } else {
+                WriteCommandAction.runWriteCommandAction(project) {
+                    document.insertString(scopeOffset.insertEndOffset, sentence.toString());
+                    // 更新 PSI 树以反应文档变化
+                    PsiDocumentManager.getInstance(project).commitDocument(document);
+                    // 将光标移动到新插入的 console.log 语句后
+                    if (autoFollowEnd) {
+                        caret.moveToOffset(offset);
+                    }
                 }
             }
         }
 
-        __insertWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, autoFollowEnd, ::writerSentenceCommand);
+        __insertWriter(
+            project,
+            editor,
+            psiFile,
+            caret,
+            scopeOffset,
+            consoleLogMsg,
+            autoFollowEnd,
+            0,
+            ::writerSentenceCommand
+        );
     }
 
     /**
@@ -100,7 +125,16 @@ class WriterCoroutineUtils(
             }
         }
 
-        __insertDefaultWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, autoFollowEnd, ::writeSentenceCommand);
+        __insertDefaultWriter(
+            project,
+            editor,
+            psiFile,
+            caret,
+            scopeOffset,
+            consoleLogMsg,
+            autoFollowEnd,
+            ::writeSentenceCommand
+        );
     }
 
     fun insertTemplateWriter(
@@ -112,7 +146,7 @@ class WriterCoroutineUtils(
         consoleLogMsg: String,
         autoFollowEnd: Boolean
     ) {
-        fun writeTemplateSentenceCommand(document: Document, sentence: StringBuilder, offset: Int): Unit {
+        fun writeTemplateSentenceCommand(document: Document, sentence: StringBuilder, offset: Int, lineEndOffset: Int): Unit {
             val templateManager = TemplateManager.getInstance(project)
 
             // 1. 创建模板对象
@@ -140,7 +174,17 @@ class WriterCoroutineUtils(
             };
         }
 
-        __insertWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, autoFollowEnd, ::writeTemplateSentenceCommand);
+        __insertWriter(
+            project,
+            editor,
+            psiFile,
+            caret,
+            scopeOffset,
+            consoleLogMsg,
+            autoFollowEnd,
+            1,
+            ::writeTemplateSentenceCommand
+        );
     }
 
     fun insertDefaultTemplateWriter(
@@ -152,7 +196,12 @@ class WriterCoroutineUtils(
         consoleLogMsg: String,
         autoFollowEnd: Boolean
     ) {
-        fun writeTemplateSentenceCommand(document: Document, sentence: StringBuilder, offset: Int, lineNumber: Int): Unit {
+        fun writeTemplateSentenceCommand(
+            document: Document,
+            sentence: StringBuilder,
+            offset: Int,
+            lineNumber: Int
+        ): Unit {
             val templateManager = TemplateManager.getInstance(project)
 
             // 1. 创建模板对象
@@ -175,12 +224,20 @@ class WriterCoroutineUtils(
 
             template.addVariable("METHOD", methodOptions, true)
             WriteCommandAction.runWriteCommandAction(project) {
-                caret.moveToOffset(document.getLineEndOffset(lineNumber));
                 templateManager.startTemplate(editor, template)
             };
         }
 
-        __insertDefaultWriter(project, editor, psiFile, caret, scopeOffset, consoleLogMsg, autoFollowEnd, ::writeTemplateSentenceCommand);
+        __insertDefaultWriter(
+            project,
+            editor,
+            psiFile,
+            caret,
+            scopeOffset,
+            consoleLogMsg,
+            autoFollowEnd,
+            ::writeTemplateSentenceCommand
+        );
     }
 
     private fun __insertDefaultWriter(
@@ -238,7 +295,8 @@ class WriterCoroutineUtils(
         scopeOffset: ScopeOffset,
         consoleLogMsg: String,
         autoFollowEnd: Boolean,
-        callback: (document: Document, sentence: StringBuilder, offset: Int) -> Unit
+        type: Int,
+        callback: (document: Document, sentence: StringBuilder, offset: Int, lineEndOffset: Int) -> Unit
     ) {
         insertJob = cs.launch {
             val document: Document = editor.document;
@@ -250,7 +308,8 @@ class WriterCoroutineUtils(
 
             // 获取光标所在行的内容，并计算缩进
             val currentLine: String = document.getText(TextRange(lineStartOffset, lineEndOffset));
-            var indentation: String = currentLine.replace(currentLine.trim(), "");
+            var indentation: String = "";
+            if (type == 0) indentation = currentLine.replace(currentLine.trim(), "");
 
             val currentSettings: CodeStyleSettings = CodeStyle.getSettings(project);
             val languageSettings: CommonCodeStyleSettings = currentSettings.getCommonSettings(psiFile.language);
@@ -263,18 +322,12 @@ class WriterCoroutineUtils(
             val indentedCode = "$indentation$consoleLogMsg";
 
             var offset: Int;
+            val sentence = StringBuilder();
             // 在光标所在行的结束位置插入 console.log 语句
             if (scopeOffset.default) {
+                sentence.append(indentedCode).append("\n");
                 offset = lineEndOffset + 1 + indentedCode.length;
-                WriteCommandAction.runWriteCommandAction(project) {
-                    document.insertString(lineEndOffset + 1, indentedCode + "\n");
-                    // 将光标移动到新插入的 console.log 语句后
-                    if (autoFollowEnd) {
-                        caret.moveToOffset(offset);
-                    }
-                };
             } else {
-                val sentence = StringBuilder();
                 if (scopeOffset.needBegLine) {
                     sentence.append("\n").append(indentedCode);
                     offset = scopeOffset.insertEndOffset + 1 + indentedCode.length;
@@ -291,8 +344,8 @@ class WriterCoroutineUtils(
                         sentence.append("\n").append(indentation);
                     }
                 }
-                callback(document, sentence, offset);
             }
+            callback(document, sentence, offset, lineEndOffset);
         }
     }
 
@@ -469,7 +522,7 @@ class WriterCoroutineUtils(
     fun updateLineNumber(settings: ConsoleLogSettingState, project: Project, editor: Editor, psiFile: PsiFile) {
         cs.launch {
             val compositeConsoleLogMsgRegex: String = ConsoleLogMsgUtil.buildFindLineNumberConsoleLogMsgRegex(settings);
-            val pattern:  Pattern = Pattern.compile(compositeConsoleLogMsgRegex);
+            val pattern: Pattern = Pattern.compile(compositeConsoleLogMsgRegex);
 
             insertJob?.join();
             defaultInsertJob?.join();
@@ -491,7 +544,12 @@ class WriterCoroutineUtils(
                 val matcher: Matcher = pattern.matcher(text);
 
                 if (matcher.find()) {
-                    updateStringSize += updateLineNumberBeforeConsoleLogMsg(document, newRange, matcher, updateEntityList);
+                    updateStringSize += updateLineNumberBeforeConsoleLogMsg(
+                        document,
+                        newRange,
+                        matcher,
+                        updateEntityList
+                    );
                 }
             }
 
@@ -536,7 +594,7 @@ class WriterCoroutineUtils(
                     startOffset + oldLineNumberStartOffset + updateStringSize,
                     startOffset + oldLineNumberEndOffset + updateStringSize,
                     newLineNumber
-                    )
+                )
             );
             updateStringSize += oldLineNumberSize - newLineNumberSize;
         }

@@ -28,7 +28,7 @@ import static com.sky.consolelog.action.InsertConsoleLogAction.*;
  * @author SkySource
  * @Date: 2026/2/15 20:06
  */
-public class TemplateInsertConsoleLogAction extends AnAction {
+public class InsertTemplateConsoleLogAction extends AnAction {
 
     private final ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
     private final WriterCoroutineUtils writerCoroutineUtils = ApplicationManager.getApplication().getService(WriterCoroutineUtils.class);
