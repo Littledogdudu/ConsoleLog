@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+## [1.1.8] - 2026-2-21
+
+- Add console.log, dir, table, and other options (shortcut: Ctrl+Alt+1, use template selection) (proposed by cscsyiku123)
+
 ## [1.1.7] - 2025-11-28
 
 - fixed ${filePath} placeholder（relative file path）bug

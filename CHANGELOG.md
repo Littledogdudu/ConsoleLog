@@ -3,6 +3,10 @@
 
 ## [Unreleased]
 
+## [1.1.8] - 2026-2-21
+
+- 添加 console.log, dir, table和其他选项（快捷键：Ctrl+Alt+1，使用模板选择）(由cscsyiku123提出)
+
 ## [1.1.7] - 2025-11-28
 
 - 修复${filePath}占位符（文件相对路径）错误

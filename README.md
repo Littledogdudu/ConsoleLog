@@ -17,6 +17,7 @@
 键盘映射名称：
 - Alt+1: Console Log Plugin: Insert Console Log Message
 - Alt+2: Console Log Plugin: Delete All Console Log Message
+- Ctrl+Alt+1: Console Log Plugin: Insert Console XXX Template Message
 - Alt+Shift+1: Console Log Plugin: Comment All Console Log Message
 - Alt+Shift+2: Console Log Plugin: Uncomment Console Log Message
 
@@ -52,6 +53,7 @@
 - 由yan.wt提出新的功能：支持在格式化字符串中添加文件名和行号
 - 由JiGewusuoweiju提出新的功能：期望未选中文本的时候，依然可以打印默认信息
 - 由1327947094提出新的功能：文件相对路径占位
+- 由cscsyiku123提出新功能：添加 console.log, dir, table和其他选项（快捷键：Ctrl+Alt+1，使用模板选择）
 
 > 灵感来源于vscode插件 [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)  
 > 有新的主意可以在[github](https://github.com/Littledogdudu/ConsoleLog)上fork或提出[issue](https://github.com/Littledogdudu/ConsoleLog/issues)或者发送到我的邮箱2378459785@qq.com哦  
@@ -156,6 +158,7 @@
 
 Default keymap as following:
 - Alt+1: Console Log Plugin: Insert Console Log Message
+- Ctrl+Alt+1: Console Log Plugin: Insert Console XXX Template Message
 - Alt+2: Console Log Plugin: Delete All Console Log Message
 - Alt+Shift+1: Console Log Plugin: Comment All Console Log Message
 - Alt+Shift+2: Console Log Plugin: Uncomment Console Log Message
@@ -190,6 +193,7 @@ You can use the plugin on html code, but be careful: the statement is not remove
 - New feature proposed by yan.wt: support for adding file names and line numbers in formatted strings
 - New feature proposed by JiGewusuoweiju: When the variable is undefined near the cursor, a statement that determines the direction of data flow is generated, and the act of deleting/commenting/uncommenting is generated
 - New feature proposed by 1327947094: placeholder for file relative path
+- New feature proposed by cscsyiku123：Added console.log, dir, table and other options
 
 > The idea from vscode plugin [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)
 
