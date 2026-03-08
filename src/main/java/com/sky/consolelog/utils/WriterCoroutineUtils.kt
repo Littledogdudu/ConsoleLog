@@ -85,17 +85,7 @@ class WriterCoroutineUtils(
             }
         }
 
-        __insertWriter(
-            project,
-            editor,
-            psiFile,
-            caret,
-            scopeOffset,
-            consoleLogMsg,
-            autoFollowEnd,
-            0,
-            ::writerSentenceCommand
-        );
+        __insertWriter(project, editor, psiFile, scopeOffset, consoleLogMsg, ::writerSentenceCommand);
     }
 
     /**
@@ -125,16 +115,7 @@ class WriterCoroutineUtils(
             }
         }
 
-        __insertDefaultWriter(
-            project,
-            editor,
-            psiFile,
-            caret,
-            scopeOffset,
-            consoleLogMsg,
-            autoFollowEnd,
-            ::writeSentenceCommand
-        );
+        __insertDefaultWriter(editor, scopeOffset, consoleLogMsg, ::writeSentenceCommand);
     }
 
     fun insertTemplateWriter(
@@ -146,7 +127,7 @@ class WriterCoroutineUtils(
         consoleLogMsg: String,
         autoFollowEnd: Boolean
     ) {
-        fun writeTemplateSentenceCommand(document: Document, sentence: StringBuilder, offset: Int, lineEndOffset: Int): Unit {
+        fun writeTemplateSentenceCommand(document: Document, sentence: StringBuilder, lineEndOffset: Int): Unit {
             val templateManager = TemplateManager.getInstance(project)
 
             // 1. 创建模板对象
@@ -167,24 +148,15 @@ class WriterCoroutineUtils(
                     LookupElementBuilder.create("trace")
                 );
 
-            template.addVariable("METHOD", methodOptions, true)
+            template.addVariable("METHOD", methodOptions, true);
+
             WriteCommandAction.runWriteCommandAction(project) {
-                caret.moveToOffset(scopeOffset.insertEndOffset);
+                caret.moveToOffset(lineEndOffset);
                 templateManager.startTemplate(editor, template);
             };
         }
 
-        __insertWriter(
-            project,
-            editor,
-            psiFile,
-            caret,
-            scopeOffset,
-            consoleLogMsg,
-            autoFollowEnd,
-            1,
-            ::writeTemplateSentenceCommand
-        );
+        __insertTemplateWriter(project, editor, psiFile, scopeOffset, consoleLogMsg, ::writeTemplateSentenceCommand);
     }
 
     fun insertDefaultTemplateWriter(
@@ -228,26 +200,13 @@ class WriterCoroutineUtils(
             };
         }
 
-        __insertDefaultWriter(
-            project,
-            editor,
-            psiFile,
-            caret,
-            scopeOffset,
-            consoleLogMsg,
-            autoFollowEnd,
-            ::writeTemplateSentenceCommand
-        );
+        __insertDefaultWriter(editor, scopeOffset, consoleLogMsg, ::writeTemplateSentenceCommand);
     }
 
     private fun __insertDefaultWriter(
-        project: Project,
         editor: Editor,
-        psiFile: PsiFile,
-        caret: Caret,
         scopeOffset: ScopeOffset,
         consoleLogMsg: String,
-        autoFollowEnd: Boolean,
         callback: (document: Document, sentence: StringBuilder, offset: Int, lineNumber: Int) -> Unit
     ) {
         defaultInsertJob = cs.launch {
@@ -291,11 +250,8 @@ class WriterCoroutineUtils(
         project: Project,
         editor: Editor,
         psiFile: PsiFile,
-        caret: Caret,
         scopeOffset: ScopeOffset,
         consoleLogMsg: String,
-        autoFollowEnd: Boolean,
-        type: Int,
         callback: (document: Document, sentence: StringBuilder, offset: Int, lineEndOffset: Int) -> Unit
     ) {
         insertJob = cs.launch {
@@ -309,7 +265,7 @@ class WriterCoroutineUtils(
             // 获取光标所在行的内容，并计算缩进
             val currentLine: String = document.getText(TextRange(lineStartOffset, lineEndOffset));
             var indentation: String = "";
-            if (type == 0) indentation = currentLine.replace(currentLine.trim(), "");
+            indentation = currentLine.replace(currentLine.trim(), "");
 
             val currentSettings: CodeStyleSettings = CodeStyle.getSettings(project);
             val languageSettings: CommonCodeStyleSettings = currentSettings.getCommonSettings(psiFile.language);
@@ -346,6 +302,56 @@ class WriterCoroutineUtils(
                 }
             }
             callback(document, sentence, offset, lineEndOffset);
+        }
+    }
+
+    private fun __insertTemplateWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        callback: (document: Document, sentence: StringBuilder, lineEndOffset: Int) -> Unit
+    ) {
+        insertJob = cs.launch {
+            val document: Document = editor.document;
+
+            // 找到光标所在行的结束位置
+            val lineNumber: Int = document.getLineNumber(scopeOffset.insertEndOffset);
+            val lineEndOffset: Int = document.getLineEndOffset(lineNumber);
+
+            var indentation: String = "";
+            val currentSettings: CodeStyleSettings = CodeStyle.getSettings(project);
+            val languageSettings: CommonCodeStyleSettings = currentSettings.getCommonSettings(psiFile.language);
+            val tabSize: Int = languageSettings.indentOptions?.TAB_SIZE ?: 2;
+
+            // 插入代码前添加适当的缩进
+            if (scopeOffset.needTab) {
+                indentation += " ".repeat(tabSize);
+            }
+            val indentedCode = "$indentation$consoleLogMsg";
+
+            val sentence = StringBuilder();
+            // 在光标所在行的结束位置插入 console.log 语句
+            if (scopeOffset.default) {
+                sentence.append("\n").append(indentedCode);
+            } else {
+                if (scopeOffset.needBegLine) {
+                    sentence.append("\n").append(indentedCode);
+                } else {
+                    sentence.append(indentedCode);
+                }
+
+                if (scopeOffset.needEndLine) {
+                    val ch: String =
+                        document.getText(TextRange(scopeOffset.insertEndOffset, scopeOffset.insertEndOffset + 1));
+                    if ("\n" != ch) {
+                        // 插入的语句后面不是换行符，包含了代码，那么就在插入语句后面换行
+                        sentence.append("\n");
+                    }
+                }
+            }
+            callback(document, sentence, lineEndOffset);
         }
     }
 
