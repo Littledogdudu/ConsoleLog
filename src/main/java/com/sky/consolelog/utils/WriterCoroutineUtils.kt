@@ -2,8 +2,11 @@ package com.sky.consolelog.utils
 
 import com.intellij.application.options.CodeStyle
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.codeInsight.template.Template
+import com.intellij.codeInsight.template.TemplateEditingAdapter
 import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.ConstantNode
+import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.Service
@@ -152,7 +155,31 @@ class WriterCoroutineUtils(
 
             WriteCommandAction.runWriteCommandAction(project) {
                 caret.moveToOffset(lineEndOffset);
-                templateManager.startTemplate(editor, template);
+                templateManager.startTemplate(editor, template, object : TemplateEditingAdapter() {
+                    override fun beforeTemplateFinished(state: TemplateState, template: Template?) {
+                        // 获取当前 METHOD 变量的值
+                        val methodValue = state.getVariableValue("METHOD")?.text;
+
+                        if (methodValue == "table") {
+                            val document = editor.document;
+                            val text = document.getText(TextRange(lineEndOffset, lineEndOffset + sentence.length));
+                            val begCommandText = "console.table(";
+                            val begIndex = text.indexOf(begCommandText);
+                            val startOffset = lineEndOffset + begIndex + begCommandText.length;
+                            val endCommandText = ", ";
+                            val endIndex = text.indexOf(endCommandText);
+                            val endOffset = lineEndOffset + endIndex + endCommandText.length;
+                            if (begIndex >= 0 && endIndex >= 0) {
+                                ApplicationManager.getApplication().runWriteAction {
+                                    // 这里可以根据需求删除第一个参数和逗号
+                                    // 逻辑：删除从 MSG 开始到 VAR 开始之前的逗号部分
+                                    val endWithComma = (endOffset).coerceAtMost(document.textLength);
+                                    document.deleteString(startOffset, endWithComma);
+                                }
+                            }
+                        }
+                    }
+                });
             };
         }
 
@@ -187,7 +214,6 @@ class WriterCoroutineUtils(
             val methodOptions = ConstantNode("log")
                 .withLookupItems(
                     LookupElementBuilder.create("log"),
-                    LookupElementBuilder.create("table"),
                     LookupElementBuilder.create("debug"),
                     LookupElementBuilder.create("error"),
                     LookupElementBuilder.create("warn"),
