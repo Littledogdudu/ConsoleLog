@@ -91,6 +91,11 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
      */
     public String filePathPlaceholderSeparator = "/";
 
+    /**
+     * 一键删除、注释或解注释时同样作用于console.table
+     */
+    public Boolean deleteTable = true;
+
     @Override
     public @NotNull ConsoleLogSettingState getState() {
         ConsoleLogSettingState state = new ConsoleLogSettingState();
@@ -113,6 +118,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.filePathBaseFolderName = this.filePathBaseFolderName;
         state.filePathIncludeBaseFolder = this.filePathIncludeBaseFolder;
         state.filePathPlaceholderSeparator = this.filePathPlaceholderSeparator;
+        state.deleteTable = this.deleteTable;
         return state;
     }
 
@@ -141,6 +147,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.filePathBaseFolderName = state.filePathBaseFolderName;
         this.filePathIncludeBaseFolder = state.filePathIncludeBaseFolder;
         this.filePathPlaceholderSeparator = state.filePathPlaceholderSeparator;
+        this.deleteTable = state.deleteTable;
 
         ConsoleLogConfigurable.finalSetting(this, null);
     }

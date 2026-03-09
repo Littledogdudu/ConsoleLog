@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
@@ -62,6 +63,12 @@ public class DeleteAllConsoleLogAction extends AnAction {
             }
         }
 
+        // console.table特殊情况
+        Pattern patternTableRegex = null;
+        if (settings.deleteTable) {
+            patternTableRegex = Pattern.compile(SettingConstant.CONSOLE_TABLE_REGEX);
+        }
+
         // 以后考虑一下当前所在文件代码行数过多导致的性能问题吗？
         Document document = editor.getDocument();
         List<TextRange> consoleLogRangeList = ConsoleLogPsiUtil.detectAll(psiFile, document);
@@ -69,6 +76,6 @@ public class DeleteAllConsoleLogAction extends AnAction {
         // 处理选中区域和console.log表达式
         List<TextRange> consoleLogNewRangeList = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogRangeList, settings.deleteInSelection);
 
-        writerCoroutineUtils.deleteWriter(project, editor, consoleLogNewRangeList, pattern, patternDefaultRegex);
+        writerCoroutineUtils.deleteWriter(project, editor, consoleLogNewRangeList, pattern, patternDefaultRegex, patternTableRegex);
     }
 }

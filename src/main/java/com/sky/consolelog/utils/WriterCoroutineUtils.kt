@@ -389,7 +389,8 @@ class WriterCoroutineUtils(
         editor: Editor,
         consoleLogNewRangeList: List<TextRange>,
         pattern: Pattern,
-        patternDefaultRegex: Pattern?
+        patternDefaultRegex: Pattern?,
+        patternTableRegex: Pattern?
     ) {
         deleteJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project) {
@@ -411,6 +412,12 @@ class WriterCoroutineUtils(
 
                     val matchDefault = patternDefaultRegex?.matcher(text);
                     if (matchDefault?.find() ?: false) {
+                        deleteStringSize += deleteConsoleLogMsg(newRange, document);
+                        continue;
+                    }
+
+                    val matchTableSpec = patternTableRegex?.matcher(text);
+                    if (matchTableSpec?.find() ?: false) {
                         deleteStringSize += deleteConsoleLogMsg(newRange, document);
                     }
                 }
@@ -439,7 +446,8 @@ class WriterCoroutineUtils(
         editor: Editor,
         consoleLogNewLineNumberMap: Map<TextRange, List<Int>>,
         pattern: Pattern,
-        patternDefaultRegex: Pattern?
+        patternDefaultRegex: Pattern?,
+        patternTableRegex: Pattern?
     ) {
         commentJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project) {
@@ -470,6 +478,16 @@ class WriterCoroutineUtils(
                             lineNumberList,
                             newRange
                         );
+                        continue;
+                    }
+
+                    val matchTableSpec = patternTableRegex?.matcher(text);
+                    if (matchTableSpec?.find() ?: false) {
+                        insertCommentSignalSize += insertCommentSignalBeforeConsoleLogMsg(
+                            document,
+                            lineNumberList,
+                            newRange
+                        )
                     }
                 }
             }
@@ -509,7 +527,8 @@ class WriterCoroutineUtils(
         editor: Editor,
         consoleLogNewRangeList: List<TextRange>,
         pattern: Pattern,
-        patternDefaultRegex: Pattern?
+        patternDefaultRegex: Pattern?,
+        patternTableRegex: Pattern?
     ) {
         uncommentJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project, Runnable {
@@ -528,6 +547,12 @@ class WriterCoroutineUtils(
 
                     val matcherDefault = patternDefaultRegex?.matcher(text);
                     if (matcherDefault?.find() ?: false) {
+                        deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(document, newRange);
+                        continue;
+                    }
+
+                    val matcherTableSpec = patternTableRegex?.matcher(text);
+                    if (matcherTableSpec?.find() ?: false) {
                         deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(document, newRange);
                     }
                 }

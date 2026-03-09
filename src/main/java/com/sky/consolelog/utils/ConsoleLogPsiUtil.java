@@ -200,8 +200,9 @@ public class ConsoleLogPsiUtil {
         if (str == null || str.isEmpty()) {
             return false;
         }
-        return str.matches(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
-                + TextFormatContext.CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX);
+        return (str.matches(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
+                    + TextFormatContext.CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX) ||
+                str.matches(SettingConstant.CONSOLE_TABLE_REGEX));
     }
 
     /**

@@ -52,6 +52,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getFilePathBaseFolderName().equals(this.settings.filePathBaseFolderName)
                 || !component.getFilePathIncludeBaseFolder().equals(this.settings.filePathIncludeBaseFolder)
                 || !component.getFilePathPlaceholderSeparator().equals(fileSeparatorUnEscapeHandle(this.settings.filePathPlaceholderSeparator))
+                || !component.getDeleteTable().equals(this.settings.deleteTable)
                 ;
     }
 
@@ -78,6 +79,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.filePathBaseFolderName = component.getFilePathBaseFolderName();
         this.settings.filePathIncludeBaseFolder = component.getFilePathIncludeBaseFolder();
         this.settings.filePathPlaceholderSeparator = fileSeparatorEscapeHandle(component.getFilePathPlaceholderSeparator());
+        this.settings.deleteTable = component.getDeleteTable();
 
         finalSetting(settings, component);
     }
@@ -105,6 +107,7 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setFilePathBaseFolderName(this.settings.filePathBaseFolderName);
         component.getFilePathIncludeBaseFolder(this.settings.filePathIncludeBaseFolder);
         component.setFilePathPlaceholderSeparator(fileSeparatorUnEscapeHandle(this.settings.filePathPlaceholderSeparator));
+        component.setDeleteTable(this.settings.deleteTable);
 
         finalSetting(settings, component);
     }
