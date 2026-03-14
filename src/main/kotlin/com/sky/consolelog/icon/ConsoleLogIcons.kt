@@ -13,10 +13,10 @@ object ConsoleLogIcons {
     /** Console Log Side Window logos. */
     object ToolWindowIcons {
         @JvmField
-        val UnComment: Icon = load("/icons/eye-closed-16.svg")
+        val UnComment: Icon = load("/icons/comment-unselected.svg")
 
         @JvmField
-        val Comment: Icon = load("/icons/eye-16-selected.svg")
+        val Comment: Icon = load("/icons/comment-selected.svg")
 
         @JvmField
         val UnSpec: Icon = load("/icons/x-circle-16.svg")
