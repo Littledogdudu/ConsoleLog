@@ -5,6 +5,19 @@
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-03-14
+
+- Add sidebar function on the basis of version 1.1.8 (can be turned off by setting)
+- You can set whether to enable the sidebar in the plug-in settings, and the sidebar displays all print expressions of the currently open file (enabled by default)
+- The sidebar supports clicking on the print statement that is located to the corresponding line.
+- Sidebar support for queries All Print Expressions/Print Expressions without Comments/Only Print Expressions that conform to the plug-in's specification format
+- Add click-to-delete/jump buttons to the sidebar
+- Add a filter button for printing without variables in the sidebar (default activation state configurable in settings)
+- Add default activation state settings for sidebar buttons
+- Add English description support in the settings interface(i18n)
+- The sidebar supports custom label queries
+- Project level persistence sidebar button enabled status
+
 ## [1.2.2] - 2025-12-22
 
 - Add click-to-delete/jump buttons to the sidebar

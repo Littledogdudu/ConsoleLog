@@ -43,7 +43,7 @@
 
 > 可在[github](https://github.com/Littledogdudu/ConsoleLog/releases)或者[jetbrain marketplace](https://plugins.jetbrains.com/plugin/26574-console-log/versions)上下载对应心仪版本  
 > 1.1.8版本是插件最主要功能的最佳版本，包括多光标支持、选中区域删除/注释/解注释的版本（未加入侧边栏的版本）   
-> 1.2.2版本是当前加入侧边栏的支持的最佳版本
+> 1.2.3版本是当前加入侧边栏的支持的最佳版本
 
 ### 开发者
 环境配置：JDK17和Gradle8.10；master-Java11分支（尚未加入侧边栏功能）可支持使用JDK11或JDK8开发，使用Gradle7.2
@@ -252,23 +252,23 @@ console.table仅支持data一个入参，因没有额外标识识别，故一键
 默认启用：每次打开IDE时，侧边栏将默认启用无变量针对性查询按钮
 禁用：每次打开IDE时，侧边栏将默认禁用无变量针对性查询按钮
 
-#### 标签设置
-
 ##### 首次启动侧边栏时是否默认启用标签查找
 
 启用后：每次打开IDE时，侧边栏将默认启用侧边栏标签查找（标签项在下面的设置项可以进行设置）  
 默认禁用：侧边栏不会默认启用标签查找（也可通过侧边栏顶部的【启用标签查找】临时更改）
+
+##### 首次启动侧边栏时单击侧边栏默认跳转还是删除（启用则默认跳转，禁用则默认删除）
+
+默认启用：每次打开IDE时，侧边栏将默认启用侧边栏项单击跳转按钮
+禁用：每次打开IDE时，侧边栏将默认启用侧边栏项单击删除按钮
+
+#### 标签设置
 
 ##### 侧边栏自定义标签查询项
 
 自定义侧边栏查找的标签项，使用分号分割每个标签项，支持正则表达式
 
 #### 单击侧边栏项时默认行为
-
-##### 首次启动侧边栏时单击侧边栏默认跳转还是删除（启用则默认跳转，禁用则默认删除）
-
-默认启用：每次打开IDE时，侧边栏将默认启用侧边栏项单击跳转按钮
-禁用：每次打开IDE时，侧边栏将默认启用侧边栏项单击删除按钮
 
 ##### 单击侧边栏是否删除标签
 
@@ -503,23 +503,23 @@ Disabled: Each time the IDE is opened, the sidebar will have the targeted query 
 Enabled by default: Each time the IDE is opened, the sidebar will have the variable-free targeted query button enabled by default.
 Disabled: Each time the IDE is opened, the sidebar will have the variable-free targeted query button disabled by default.
 
-#### Tag Button Setting
-
 ##### Default Enable Tag Search When Sidebar is Launched for the First Time
 
 When enabled: Each time the IDE is opened, the sidebar will default to enabling tag search (the tag items can be set in the options below).  
 Default Disabled: The sidebar will not default to enabling tag search (can also be temporarily changed by using "Enable Tag Search" at the top of the sidebar).
+
+##### sidebar label jump or delete is enabled by default when you first launch the sidebar(enable is jump by default and disable is delete by default)
+
+Default enabled: Each time the IDE is opened, the sidebar will default to enable the jump button for sidebar item clicks.
+Disabled: Each time the IDE is opened, the sidebar will default to enable the delete button for sidebar item clicks.
+
+#### Tag Button Setting
 
 ##### Custom Sidebar Tag Query Items
 
 Customize the tag items for the sidebar search, separating each tag item with a semicolon. Regular expressions are supported.
 
 #### Sidebar Label Jump Or Delete Button Setting
-
-##### sidebar label jump or delete is enabled by default when you first launch the sidebar(enable is jump by default and disable is delete by default)
-
-Default enabled: Each time the IDE is opened, the sidebar will default to enable the jump button for sidebar item clicks.
-Disabled: Each time the IDE is opened, the sidebar will default to enable the delete button for sidebar item clicks.
 
 ##### whether clicking a sidebar item deletes a tag
 
