@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
@@ -58,11 +59,17 @@ public class UnCommentAllConsoleLogAction extends AnAction {
         }
         Pattern patternDefaultRegex = patternDefault;
 
+        // console.table特殊情况
+        Pattern patternTableRegex = null;
+        if (settings.deleteTable) {
+            patternTableRegex = Pattern.compile(SettingConstant.CONSOLE_TABLE_REGEX);
+        }
+
         List<TextRange> consoleLogRangeList = ConsoleLogPsiUtil.detectAllOnlyComment(psiFile);
 
         // 处理选中区域和console.log表达式
         List<TextRange> consoleLogNewRangeList = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogRangeList, settings.unCommentSelection);
 
-        writerCoroutineUtils.unCommentWriter(project, editor, consoleLogNewRangeList, pattern, patternDefaultRegex);
+        writerCoroutineUtils.unCommentWriter(project, editor, consoleLogNewRangeList, pattern, patternDefaultRegex, patternTableRegex);
     }
 }

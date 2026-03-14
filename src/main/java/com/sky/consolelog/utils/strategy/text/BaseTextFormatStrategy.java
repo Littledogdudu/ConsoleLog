@@ -23,7 +23,7 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
 
     @Override
     public String getBeginRegexText() {
-        return SettingConstant.CONSOLE_LOG_BEGIN_REGEX + Pattern.quote(this.getFormSignal());
+        return SettingConstant.CONSOLE_XXX_BEGIN_REGEX + Pattern.quote(this.getFormSignal());
     }
 
     @Override
@@ -49,11 +49,7 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
      */
     @Override
     public @NotNull String getCustomHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
-        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.VARIABLE_REGEX, consoleLogSettingVo.getVariableName());
-        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
-        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
-        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
-        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.FILE_PATH_REGEX, consoleLogSettingVo.getFilePath());
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, consoleLogSettingVo);
         return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
                 consoleLogMsg + this.getFormSignal() + ", " + consoleLogSettingVo.getVariableName() + ");";
     }
@@ -66,12 +62,32 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
      */
     @Override
     public @NotNull String getDefaultHandleConsoleLogMsg(String defaultConsoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
-        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
-        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
-        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
-        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, SettingConstant.AliasRegex.FILE_PATH_REGEX, consoleLogSettingVo.getFilePath());
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, consoleLogSettingVo);
         return SettingConstant.CONSOLE_LOG_COMMAND + this.getFormSignal() +
                 defaultConsoleLogMsg + this.getFormSignal() + ");";
+    }
+
+    @Override
+    public @NotNull String getCustomTemplateHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, consoleLogSettingVo);
+        return SettingConstant.CONSOLE_XXX_COMMAND + this.getFormSignal() +
+                consoleLogMsg + this.getFormSignal() + ", " + consoleLogSettingVo.getVariableName() + ");";
+    }
+
+    @Override
+    public @NotNull String getDefaultTemplateHandleConsoleLogMsg(String defaultConsoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        defaultConsoleLogMsg = replaceConsoleLog(defaultConsoleLogMsg, consoleLogSettingVo);
+        return SettingConstant.CONSOLE_XXX_COMMAND + this.getFormSignal() +
+                defaultConsoleLogMsg + this.getFormSignal() + ");";
+    }
+
+    private String replaceConsoleLog(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.VARIABLE_REGEX, consoleLogSettingVo.getVariableName());
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.FILE_NAME_REGEX, consoleLogSettingVo.getFileName());
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.FILE_PATH_REGEX, consoleLogSettingVo.getFilePath());
+        return consoleLogMsg;
     }
 
     /**

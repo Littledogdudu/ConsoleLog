@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
@@ -59,6 +60,12 @@ public class CommentAllConsoleLogAction extends AnAction {
             patternDefaultRegex = Pattern.compile(defaultRegexConsoleLogMsg);
         }
 
+        // console.table特殊情况
+        Pattern patternTableRegex = null;
+        if (settings.deleteTable) {
+            patternTableRegex = Pattern.compile(SettingConstant.CONSOLE_TABLE_REGEX);
+        }
+
         Document document = editor.getDocument();
         TreeMap<TextRange, List<Integer>> consoleLogLineNumberMap = ConsoleLogPsiUtil.detectAllButSkipComment(psiFile, document);
 
@@ -66,7 +73,7 @@ public class CommentAllConsoleLogAction extends AnAction {
         Map<TextRange, List<Integer>> consoleLogNewLineNumberMap = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogLineNumberMap, settings.commentInSelection);
 
         if (!consoleLogNewLineNumberMap.isEmpty()) {
-            writerCoroutineUtils.commentWriter(project, editor, consoleLogNewLineNumberMap, pattern, patternDefaultRegex);
+            writerCoroutineUtils.commentWriter(project, editor, consoleLogNewLineNumberMap, pattern, patternDefaultRegex, patternTableRegex);
         }
     }
 }

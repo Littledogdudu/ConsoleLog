@@ -1,6 +1,12 @@
 package com.sky.consolelog.utils
 
 import com.intellij.application.options.CodeStyle
+import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.codeInsight.template.Template
+import com.intellij.codeInsight.template.TemplateEditingAdapter
+import com.intellij.codeInsight.template.TemplateManager
+import com.intellij.codeInsight.template.impl.ConstantNode
+import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.Service
@@ -56,57 +62,21 @@ class WriterCoroutineUtils(
         consoleLogMsg: String,
         autoFollowEnd: Boolean
     ) {
-        insertJob = cs.launch {
-            val document: Document = editor.document;
-
-            // 找到光标所在行的结束位置
-            val lineNumber: Int = document.getLineNumber(scopeOffset.insertEndOffset);
-            val lineStartOffset: Int = document.getLineStartOffset(lineNumber);
-            val lineEndOffset: Int = document.getLineEndOffset(lineNumber);
-
-            // 获取光标所在行的内容，并计算缩进
-            val currentLine: String = document.getText(TextRange(lineStartOffset, lineEndOffset));
-            var indentation: String = currentLine.replace(currentLine.trim(), "");
-
-            val currentSettings: CodeStyleSettings = CodeStyle.getSettings(project);
-            val languageSettings: CommonCodeStyleSettings = currentSettings.getCommonSettings(psiFile.language);
-            val tabSize: Int = languageSettings.indentOptions?.TAB_SIZE ?: 2;
-
-            // 插入代码前添加适当的缩进
-            if (scopeOffset.needTab) {
-                indentation += " ".repeat(tabSize);
-            }
-            val indentedCode = "$indentation$consoleLogMsg";
-
-            var offset: Int;
-            // 在光标所在行的结束位置插入 console.log 语句
+        fun writerSentenceCommand(
+            document: Document,
+            sentence: StringBuilder,
+            offset: Int,
+            lineEndOffset: Int,
+        ) {
             if (scopeOffset.default) {
-                offset = lineEndOffset + 1 + indentedCode.length;
                 WriteCommandAction.runWriteCommandAction(project) {
-                    document.insertString(lineEndOffset + 1, indentedCode + "\n");
+                    document.insertString(lineEndOffset + 1, sentence.toString());
                     // 将光标移动到新插入的 console.log 语句后
                     if (autoFollowEnd) {
                         caret.moveToOffset(offset);
                     }
                 };
             } else {
-                val sentence = StringBuilder();
-                if (scopeOffset.needBegLine) {
-                    sentence.append("\n").append(indentedCode);
-                    offset = scopeOffset.insertEndOffset + 1 + indentedCode.length;
-                } else {
-                    sentence.append(" ".repeat(tabSize)).append(consoleLogMsg);
-                    offset = scopeOffset.insertEndOffset + tabSize + consoleLogMsg.length;
-                }
-
-                if (scopeOffset.needEndLine) {
-                    val ch: String =
-                        document.getText(TextRange(scopeOffset.insertEndOffset, scopeOffset.insertEndOffset + 1));
-                    if ("\n" != ch) {
-                        // 插入的语句后面不是换行符，包含了代码，那么就在插入语句后面换行
-                        sentence.append("\n").append(indentation);
-                    }
-                }
                 WriteCommandAction.runWriteCommandAction(project) {
                     document.insertString(scopeOffset.insertEndOffset, sentence.toString());
                     // 更新 PSI 树以反应文档变化
@@ -118,6 +88,8 @@ class WriterCoroutineUtils(
                 }
             }
         }
+
+        __insertWriter(project, editor, psiFile, scopeOffset, consoleLogMsg, ::writerSentenceCommand);
     }
 
     /**
@@ -131,6 +103,138 @@ class WriterCoroutineUtils(
         scopeOffset: ScopeOffset,
         consoleLogMsg: String,
         autoFollowEnd: Boolean
+    ) {
+        fun writeSentenceCommand(document: Document, sentence: StringBuilder, offset: Int, lineNumber: Int): Unit {
+            WriteCommandAction.runWriteCommandAction(project) {
+                document.insertString(scopeOffset.insertEndOffset, sentence.toString());
+                // 格式化
+                val codeStyleManager: CodeStyleManager = CodeStyleManager.getInstance(project);
+                codeStyleManager.reformatText(psiFile, scopeOffset.insertEndOffset, offset);
+                // 更新 PSI 树以反应文档变化
+                PsiDocumentManager.getInstance(project).commitDocument(document);
+                // 将光标移动到新插入的 console.log 语句后
+                if (autoFollowEnd) {
+                    caret.moveToOffset(document.getLineEndOffset(lineNumber));
+                }
+            }
+        }
+
+        __insertDefaultWriter(editor, scopeOffset, consoleLogMsg, ::writeSentenceCommand);
+    }
+
+    fun insertTemplateWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        caret: Caret,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        autoFollowEnd: Boolean
+    ) {
+        fun writeTemplateSentenceCommand(document: Document, sentence: StringBuilder, lineEndOffset: Int): Unit {
+            val templateManager = TemplateManager.getInstance(project)
+
+            // 1. 创建模板对象
+            // $METHOD$ 是我们自定义的占位符，用于选择log/debug/info/warn/error
+            // $END$ 是模板的结束后的光标位置
+            sentence.append("\$END$");
+            val template = templateManager.createTemplate("", "", sentence.toString());
+
+
+            // 2. 设置变量的默认值和可选列表
+            val methodOptions = ConstantNode("log")
+                .withLookupItems(
+                    LookupElementBuilder.create("log"),
+                    LookupElementBuilder.create("table"),
+                    LookupElementBuilder.create("debug"),
+                    LookupElementBuilder.create("error"),
+                    LookupElementBuilder.create("warn"),
+                    LookupElementBuilder.create("trace")
+                );
+
+            template.addVariable("METHOD", methodOptions, true);
+
+            WriteCommandAction.runWriteCommandAction(project) {
+                caret.moveToOffset(lineEndOffset);
+                templateManager.startTemplate(editor, template, object : TemplateEditingAdapter() {
+                    override fun beforeTemplateFinished(state: TemplateState, template: Template?) {
+                        // 获取当前 METHOD 变量的值
+                        val methodValue = state.getVariableValue("METHOD")?.text;
+
+                        if (methodValue == "table") {
+                            val document = editor.document;
+                            val text = document.getText(TextRange(lineEndOffset, lineEndOffset + sentence.length));
+                            val begCommandText = "console.table(";
+                            val begIndex = text.indexOf(begCommandText);
+                            val startOffset = lineEndOffset + begIndex + begCommandText.length;
+                            val endCommandText = ", ";
+                            val endIndex = text.indexOf(endCommandText);
+                            val endOffset = lineEndOffset + endIndex + endCommandText.length;
+                            if (begIndex >= 0 && endIndex >= 0) {
+                                ApplicationManager.getApplication().runWriteAction {
+                                    // 这里可以根据需求删除第一个参数和逗号
+                                    // 逻辑：删除从 MSG 开始到 VAR 开始之前的逗号部分
+                                    val endWithComma = (endOffset).coerceAtMost(document.textLength);
+                                    document.deleteString(startOffset, endWithComma);
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+        }
+
+        __insertTemplateWriter(project, editor, psiFile, scopeOffset, consoleLogMsg, ::writeTemplateSentenceCommand);
+    }
+
+    fun insertDefaultTemplateWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        caret: Caret,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        autoFollowEnd: Boolean
+    ) {
+        fun writeTemplateSentenceCommand(
+            document: Document,
+            sentence: StringBuilder,
+            offset: Int,
+            lineNumber: Int
+        ): Unit {
+            val templateManager = TemplateManager.getInstance(project)
+
+            // 1. 创建模板对象
+            // $METHOD$ 是我们自定义的占位符，用于选择log/debug/info/warn/error
+            // $END$ 是模板的结束后的光标位置
+            sentence.append("\$END$");
+            val template = templateManager.createTemplate("", "", sentence.toString());
+
+
+            // 2. 设置变量的默认值和可选列表
+            val methodOptions = ConstantNode("log")
+                .withLookupItems(
+                    LookupElementBuilder.create("log"),
+                    LookupElementBuilder.create("debug"),
+                    LookupElementBuilder.create("error"),
+                    LookupElementBuilder.create("warn"),
+                    LookupElementBuilder.create("trace")
+                );
+
+            template.addVariable("METHOD", methodOptions, true)
+            WriteCommandAction.runWriteCommandAction(project) {
+                templateManager.startTemplate(editor, template)
+            };
+        }
+
+        __insertDefaultWriter(editor, scopeOffset, consoleLogMsg, ::writeTemplateSentenceCommand);
+    }
+
+    private fun __insertDefaultWriter(
+        editor: Editor,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        callback: (document: Document, sentence: StringBuilder, offset: Int, lineNumber: Int) -> Unit
     ) {
         defaultInsertJob = cs.launch {
             val document: Document = editor.document;
@@ -165,18 +269,116 @@ class WriterCoroutineUtils(
                     sentence.append("\n").append(indentation);
                 }
             }
-            WriteCommandAction.runWriteCommandAction(project) {
-                document.insertString(scopeOffset.insertEndOffset, sentence.toString());
-                // 格式化
-                val codeStyleManager: CodeStyleManager = CodeStyleManager.getInstance(project);
-                codeStyleManager.reformatText(psiFile, scopeOffset.insertEndOffset, offset);
-                // 更新 PSI 树以反应文档变化
-                PsiDocumentManager.getInstance(project).commitDocument(document);
-                // 将光标移动到新插入的 console.log 语句后
-                if (autoFollowEnd) {
-                    caret.moveToOffset(document.getLineEndOffset(lineNumber));
+            callback(document, sentence, offset, lineNumber);
+        }
+    }
+
+    private fun __insertWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        callback: (document: Document, sentence: StringBuilder, offset: Int, lineEndOffset: Int) -> Unit
+    ) {
+        insertJob = cs.launch {
+            val document: Document = editor.document;
+
+            // 找到光标所在行的结束位置
+            val lineNumber: Int = document.getLineNumber(scopeOffset.insertEndOffset);
+            val lineStartOffset: Int = document.getLineStartOffset(lineNumber);
+            val lineEndOffset: Int = document.getLineEndOffset(lineNumber);
+
+            // 获取光标所在行的内容，并计算缩进
+            val currentLine: String = document.getText(TextRange(lineStartOffset, lineEndOffset));
+            var indentation: String = "";
+            indentation = currentLine.replace(currentLine.trim(), "");
+
+            val currentSettings: CodeStyleSettings = CodeStyle.getSettings(project);
+            val languageSettings: CommonCodeStyleSettings = currentSettings.getCommonSettings(psiFile.language);
+            val tabSize: Int = languageSettings.indentOptions?.TAB_SIZE ?: 2;
+
+            // 插入代码前添加适当的缩进
+            if (scopeOffset.needTab) {
+                indentation += " ".repeat(tabSize);
+            }
+            val indentedCode = "$indentation$consoleLogMsg";
+
+            var offset: Int;
+            val sentence = StringBuilder();
+            // 在光标所在行的结束位置插入 console.log 语句
+            if (scopeOffset.default) {
+                sentence.append(indentedCode).append("\n");
+                offset = lineEndOffset + 1 + indentedCode.length;
+            } else {
+                if (scopeOffset.needBegLine) {
+                    sentence.append("\n").append(indentedCode);
+                    offset = scopeOffset.insertEndOffset + 1 + indentedCode.length;
+                } else {
+                    sentence.append(" ".repeat(tabSize)).append(consoleLogMsg);
+                    offset = scopeOffset.insertEndOffset + tabSize + consoleLogMsg.length;
+                }
+
+                if (scopeOffset.needEndLine) {
+                    val ch: String =
+                        document.getText(TextRange(scopeOffset.insertEndOffset, scopeOffset.insertEndOffset + 1));
+                    if ("\n" != ch) {
+                        // 插入的语句后面不是换行符，包含了代码，那么就在插入语句后面换行
+                        sentence.append("\n").append(indentation);
+                    }
                 }
             }
+            callback(document, sentence, offset, lineEndOffset);
+        }
+    }
+
+    private fun __insertTemplateWriter(
+        project: Project,
+        editor: Editor,
+        psiFile: PsiFile,
+        scopeOffset: ScopeOffset,
+        consoleLogMsg: String,
+        callback: (document: Document, sentence: StringBuilder, lineEndOffset: Int) -> Unit
+    ) {
+        insertJob = cs.launch {
+            val document: Document = editor.document;
+
+            // 找到光标所在行的结束位置
+            val lineNumber: Int = document.getLineNumber(scopeOffset.insertEndOffset);
+            val lineEndOffset: Int = document.getLineEndOffset(lineNumber);
+
+            var indentation: String = "";
+            val currentSettings: CodeStyleSettings = CodeStyle.getSettings(project);
+            val languageSettings: CommonCodeStyleSettings = currentSettings.getCommonSettings(psiFile.language);
+            val tabSize: Int = languageSettings.indentOptions?.TAB_SIZE ?: 2;
+
+            // 插入代码前添加适当的缩进
+            if (scopeOffset.needTab) {
+                indentation += " ".repeat(tabSize);
+            }
+            val indentedCode = "$indentation$consoleLogMsg";
+
+            val sentence = StringBuilder();
+            // 在光标所在行的结束位置插入 console.log 语句
+            if (scopeOffset.default) {
+                sentence.append("\n").append(indentedCode);
+            } else {
+                if (scopeOffset.needBegLine) {
+                    sentence.append("\n").append(indentedCode);
+                } else {
+                    sentence.append(indentedCode);
+                }
+
+                if (scopeOffset.needEndLine) {
+                    val ch: String =
+                        document.getText(TextRange(scopeOffset.insertEndOffset, scopeOffset.insertEndOffset + 1));
+                    if ("\n" != ch) {
+                        // 插入的语句后面不是换行符，包含了代码，那么就在插入语句后面换行
+                        sentence.append("\n");
+                    }
+                }
+            }
+            callback(document, sentence, lineEndOffset);
         }
     }
 
@@ -188,7 +390,8 @@ class WriterCoroutineUtils(
         editor: Editor,
         consoleLogNewRangeList: List<TextRange>,
         pattern: Pattern,
-        patternDefaultRegex: Pattern?
+        patternDefaultRegex: Pattern?,
+        patternTableRegex: Pattern?
     ) {
         deleteJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project) {
@@ -210,6 +413,12 @@ class WriterCoroutineUtils(
 
                     val matchDefault = patternDefaultRegex?.matcher(text);
                     if (matchDefault?.find() ?: false) {
+                        deleteStringSize += deleteConsoleLogMsg(newRange, document);
+                        continue;
+                    }
+
+                    val matchTableSpec = patternTableRegex?.matcher(text);
+                    if (matchTableSpec?.find() ?: false) {
                         deleteStringSize += deleteConsoleLogMsg(newRange, document);
                     }
                 }
@@ -250,7 +459,8 @@ class WriterCoroutineUtils(
         editor: Editor,
         consoleLogNewLineNumberMap: Map<TextRange, List<Int>>,
         pattern: Pattern,
-        patternDefaultRegex: Pattern?
+        patternDefaultRegex: Pattern?,
+        patternTableRegex: Pattern?
     ) {
         commentJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project) {
@@ -281,6 +491,16 @@ class WriterCoroutineUtils(
                             lineNumberList,
                             newRange
                         );
+                        continue;
+                    }
+
+                    val matchTableSpec = patternTableRegex?.matcher(text);
+                    if (matchTableSpec?.find() ?: false) {
+                        insertCommentSignalSize += insertCommentSignalBeforeConsoleLogMsg(
+                            document,
+                            lineNumberList,
+                            newRange
+                        )
                     }
                 }
             }
@@ -320,7 +540,8 @@ class WriterCoroutineUtils(
         editor: Editor,
         consoleLogNewRangeList: List<TextRange>,
         pattern: Pattern,
-        patternDefaultRegex: Pattern?
+        patternDefaultRegex: Pattern?,
+        patternTableRegex: Pattern?
     ) {
         uncommentJob = cs.launch {
             WriteCommandAction.runWriteCommandAction(project, Runnable {
@@ -339,6 +560,12 @@ class WriterCoroutineUtils(
 
                     val matcherDefault = patternDefaultRegex?.matcher(text);
                     if (matcherDefault?.find() ?: false) {
+                        deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(document, newRange);
+                        continue;
+                    }
+
+                    val matcherTableSpec = patternTableRegex?.matcher(text);
+                    if (matcherTableSpec?.find() ?: false) {
                         deleteStringSize += deleteCommentSignalBeforeConsoleLogMsg(document, newRange);
                     }
                 }
@@ -387,7 +614,12 @@ class WriterCoroutineUtils(
                 val matcher: Matcher = pattern.matcher(text);
 
                 if (matcher.find()) {
-                    updateStringSize += updateLineNumberBeforeConsoleLogMsg(document, newRange, matcher, updateEntityList);
+                    updateStringSize += updateLineNumberBeforeConsoleLogMsg(
+                        document,
+                        newRange,
+                        matcher,
+                        updateEntityList
+                    );
                 }
             }
 

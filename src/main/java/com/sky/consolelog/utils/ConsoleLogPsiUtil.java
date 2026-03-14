@@ -167,7 +167,7 @@ public class ConsoleLogPsiUtil {
         if (StringUtils.isNotEmpty(callExpressionText) &&
                 callExpressionText.matches(
                         SettingConstant.ALL_REGEX +
-                                SettingConstant.CONSOLE_LOG_BEGIN_REGEX +
+                                SettingConstant.CONSOLE_XXX_BEGIN_REGEX +
                                 SettingConstant.ALL_REGEX
                 )
         ) {
@@ -200,8 +200,9 @@ public class ConsoleLogPsiUtil {
         if (str == null || str.isEmpty()) {
             return false;
         }
-        return str.matches(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
-                + TextFormatContext.CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX);
+        return (str.matches(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX
+                    + TextFormatContext.CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX) ||
+                str.matches(SettingConstant.CONSOLE_TABLE_REGEX));
     }
 
     /**

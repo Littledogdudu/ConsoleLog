@@ -27,7 +27,7 @@ public enum TextFormatContext {
 
     public static String FORM_SIGNAL = "\"";
     public static String CONSOLE_LOG_COMMAND = "console.log(" + FORM_SIGNAL;
-    public static String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(\\s*" + FORM_SIGNAL);
+    public static String CONSOLE_LOG_BEGIN_REGEX = "\\s*console\\s*" + Pattern.quote(".") + "\\s*.*\\s*" + Pattern.quote("(\\s*" + FORM_SIGNAL);
     public static String CONSOLE_LOG_END_REGEX = FORM_SIGNAL + "\\s*" + Pattern.quote(",") + ".*" + Pattern.quote(")") + "\\s*" + ";?";
     public static String CONSOLE_LOG_END_NO_VARIABLE_REGEX = FORM_SIGNAL + "\\s*" + Pattern.quote(")") + "\\s*" + ";?";
     public static String CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX = FORM_SIGNAL + "\\s*" + "(?:,.*)?" + Pattern.quote(")") + "\\s*" + ";?";
@@ -72,5 +72,19 @@ public enum TextFormatContext {
             throw new RuntimeException("I am so sorry, 策略为空");
         }
         return textFormatStrategy.getDefaultHandleConsoleLogMsg(defaultConsoleLogMsg, consoleLogSettingVo);
+    }
+
+    public String getCustomTemplateHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        if (Objects.isNull(textFormatStrategy)) {
+            throw new RuntimeException("I am so sorry, 策略为空");
+        }
+        return textFormatStrategy.getCustomTemplateHandleConsoleLogMsg(consoleLogMsg, consoleLogSettingVo);
+    }
+
+    public String getDefaultTemplateHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        if (Objects.isNull(textFormatStrategy)) {
+            throw new RuntimeException("I am so sorry, 策略为空");
+        }
+        return textFormatStrategy.getDefaultTemplateHandleConsoleLogMsg(consoleLogMsg, consoleLogSettingVo);
     }
 }

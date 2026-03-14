@@ -109,7 +109,7 @@ public class InsertConsoleLogAction extends AnAction {
      * @param editor 编辑器对象
      * @param scopeOffset 偏移量信息
      */
-    private void buildDefaultCommonPlaceHolder(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo, Editor editor, ScopeOffset scopeOffset) {
+    public void buildDefaultCommonPlaceHolder(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo, Editor editor, ScopeOffset scopeOffset) {
         getMethodName(caret, psiFile, consoleLogSettingVo);
         getLineNumber(scopeOffset, editor, consoleLogSettingVo);
         getFileName(psiFile, settings, consoleLogSettingVo);
@@ -124,7 +124,7 @@ public class InsertConsoleLogAction extends AnAction {
      * @param editor 编辑器对象
      * @param scopeOffset 偏移量信息
      */
-    private void buildCommonPlaceHolder(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo, Editor editor, ScopeOffset scopeOffset) {
+    public void buildCommonPlaceHolder(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo, Editor editor, ScopeOffset scopeOffset) {
         getMethodName(caret, psiFile, consoleLogSettingVo);
         if (settings.variableLineNumber) {
             getLineNumber(caret, editor, consoleLogSettingVo);
@@ -140,7 +140,7 @@ public class InsertConsoleLogAction extends AnAction {
      *
      * @return 变量名称
      */
-    private static boolean getVariableName(Editor editor, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
+    public static boolean getVariableName(Editor editor, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
         Caret caret = editor.getCaretModel().getCurrentCaret();
         int elementAtCaretIndex = caret.getOffset();
 
@@ -162,7 +162,7 @@ public class InsertConsoleLogAction extends AnAction {
     /**
      * 获取光标处方法名称
      */
-    private static void getMethodName(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
+    public static void getMethodName(Caret caret, PsiFile psiFile, ConsoleLogSettingVo consoleLogSettingVo) {
         // 找到光标所在位置的 PSI 元素
         int caretOffset = caret.getOffset();
         PsiElement elementAtCaret = psiFile.findElementAt(caretOffset);
@@ -189,7 +189,7 @@ public class InsertConsoleLogAction extends AnAction {
      * @param caret 光标对象
      * @param consoleLogSettingVo 占位符值
      */
-    private static void getLineNumber(Caret caret, Editor editor, ConsoleLogSettingVo consoleLogSettingVo) {
+    public static void getLineNumber(Caret caret, Editor editor, ConsoleLogSettingVo consoleLogSettingVo) {
         int offset = caret.getOffset();
         Document document = editor.getDocument();
         consoleLogSettingVo.setLineNumber(document.getLineNumber(offset) + 1);
@@ -200,7 +200,7 @@ public class InsertConsoleLogAction extends AnAction {
      * @param scopeOffset 插入位置对象
      * @param consoleLogSettingVo 占位符值
      */
-    private static void getLineNumber(ScopeOffset scopeOffset, Editor editor, ConsoleLogSettingVo consoleLogSettingVo) {
+    public static void getLineNumber(ScopeOffset scopeOffset, Editor editor, ConsoleLogSettingVo consoleLogSettingVo) {
         int offset = scopeOffset.getInsertEndOffset();
         Document document = editor.getDocument();
         int lineNumber = document.getLineNumber(offset) + 1;
@@ -210,7 +210,7 @@ public class InsertConsoleLogAction extends AnAction {
         consoleLogSettingVo.setLineNumber(lineNumber);
     }
 
-    private static void getFileName(PsiFile psiFile, ConsoleLogSettingState settings, ConsoleLogSettingVo consoleLogSettingVo) {
+    public static void getFileName(PsiFile psiFile, ConsoleLogSettingState settings, ConsoleLogSettingVo consoleLogSettingVo) {
         String fileName = psiFile.getName();
         if (!settings.fileSuffix) {
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
@@ -218,7 +218,7 @@ public class InsertConsoleLogAction extends AnAction {
         consoleLogSettingVo.setFileName(fileName);
     }
 
-    private static void getFilePath(PsiFile psiFile, ConsoleLogSettingState settings, ConsoleLogSettingVo consoleLogSettingVo) {
+    public static void getFilePath(PsiFile psiFile, ConsoleLogSettingState settings, ConsoleLogSettingVo consoleLogSettingVo) {
         final List<String> customCutPathList = new ArrayList<>();
         final List<String> sysCutPathList = new ArrayList<>(2);
         sysCutPathList.add(SettingConstant.CUT_PATH);
@@ -276,7 +276,7 @@ public class InsertConsoleLogAction extends AnAction {
      * @param element 当前光标所在PSI元素
      * @return 对应语句块末尾偏移量
      */
-    private static ScopeOffset findScopeOffset(PsiElement element) {
+    public static ScopeOffset findScopeOffset(PsiElement element) {
         int count = 0;
         ScopeOffset offset = PsiPositionUtil.getScopeOffsetByType(element);
         PsiElement parent = element.getParent();

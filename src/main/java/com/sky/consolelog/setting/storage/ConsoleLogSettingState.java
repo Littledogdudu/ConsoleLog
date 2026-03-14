@@ -96,6 +96,11 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
     public String filePathPlaceholderSeparator = "/";
 
     /**
+     * 一键删除、注释或解注释时同样作用于console.table
+     */
+    public Boolean deleteTable = true;
+
+    /**
      * 是否启用侧边栏（重启生效）
      */
     public Boolean enableSideWindow = true;
@@ -167,6 +172,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         state.filePathBaseFolderName = this.filePathBaseFolderName;
         state.filePathIncludeBaseFolder = this.filePathIncludeBaseFolder;
         state.filePathPlaceholderSeparator = this.filePathPlaceholderSeparator;
+        state.deleteTable = this.deleteTable;
         state.enableSideWindow = this.enableSideWindow;
         state.fileTypeAllIn = this.fileTypeAllIn;
         state.vueSide = this.vueSide;
@@ -210,6 +216,7 @@ public final class ConsoleLogSettingState implements PersistentStateComponent<Co
         this.filePathBaseFolderName = state.filePathBaseFolderName;
         this.filePathIncludeBaseFolder = state.filePathIncludeBaseFolder;
         this.filePathPlaceholderSeparator = state.filePathPlaceholderSeparator;
+        this.deleteTable = state.deleteTable;
         this.enableSideWindow = state.enableSideWindow;
         this.fileTypeAllIn = state.fileTypeAllIn;
         this.vueSide = state.vueSide;

@@ -44,6 +44,7 @@ public class ConsoleLogComponent implements Disposable {
     private JTextField filePathBaseFolderName;
     private JCheckBox filePathIncludeBaseFolder;
     private JTextField filePathPlaceholderSeparator;
+    private JCheckBox deleteTable;
     private JPanel basic;
     private JPanel format;
     private JPanel component;
@@ -345,6 +346,14 @@ public class ConsoleLogComponent implements Disposable {
 
     public void setFilePathPlaceholderSeparator(String separator) {
         filePathPlaceholderSeparator.setText(separator);
+    }
+
+    public Boolean getDeleteTable() {
+        return deleteTable.isSelected();
+    }
+
+    public void setDeleteTable(Boolean checked) {
+        deleteTable.setSelected(checked);
     }
 
     public Boolean getEnableSideWindow() {

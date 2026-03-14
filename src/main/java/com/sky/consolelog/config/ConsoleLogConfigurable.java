@@ -55,6 +55,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getFilePathBaseFolderName().equals(this.settings.filePathBaseFolderName)
                 || !component.getFilePathIncludeBaseFolder().equals(this.settings.filePathIncludeBaseFolder)
                 || !component.getFilePathPlaceholderSeparator().equals(fileSeparatorUnEscapeHandle(this.settings.filePathPlaceholderSeparator))
+                || !component.getDeleteTable().equals(this.settings.deleteTable)
                 || !component.getFileSuffixCheckBox().equals(this.settings.fileSuffix)
                 || !component.getEnableSideWindow().equals(this.settings.enableSideWindow)
                 || !component.getFileTypeAllInCheckBox().equals(this.settings.fileTypeAllIn)
@@ -96,6 +97,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.filePathBaseFolderName = component.getFilePathBaseFolderName();
         this.settings.filePathIncludeBaseFolder = component.getFilePathIncludeBaseFolder();
         this.settings.filePathPlaceholderSeparator = fileSeparatorEscapeHandle(component.getFilePathPlaceholderSeparator());
+        this.settings.deleteTable = component.getDeleteTable();
         this.settings.enableSideWindow = component.getEnableSideWindow();
         // 是否启用侧边栏（重启生效）
         this.settings.fileTypeAllIn = component.getFileTypeAllInCheckBox();
@@ -139,6 +141,7 @@ public class ConsoleLogConfigurable implements Configurable {
         component.setFilePathBaseFolderName(this.settings.filePathBaseFolderName);
         component.getFilePathIncludeBaseFolder(this.settings.filePathIncludeBaseFolder);
         component.setFilePathPlaceholderSeparator(fileSeparatorUnEscapeHandle(this.settings.filePathPlaceholderSeparator));
+        component.setDeleteTable(this.settings.deleteTable);
         component.setEnableSideWindow(this.settings.enableSideWindow);
         component.setFileTypeAllInCheckBox(this.settings.fileTypeAllIn);
         component.setVueSideCheckBox(this.settings.vueSide);

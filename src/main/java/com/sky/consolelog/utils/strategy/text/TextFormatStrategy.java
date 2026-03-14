@@ -67,4 +67,20 @@ public interface TextFormatStrategy {
      * @return 需要插入到编辑器中的文本
      */
     @NotNull String getDefaultHandleConsoleLogMsg(String defaultConsoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo);
+
+    /**
+     * 获取自定义模板的console.xxx表达式的文本
+     * @param consoleLogMsg console.log表达式
+     * @param consoleLogSettingVo 打印参数
+     * @return 需要插入到编辑器中的文本
+     */
+    @NotNull String getCustomTemplateHandleConsoleLogMsg(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo);
+
+    /**
+     * 获取自定义模板的console.xxx表达式的文本（光标处位处于任何变量时的默认行为）
+     * @param defaultConsoleLogMsg console.log表达式
+     * @param consoleLogSettingVo 打印参数
+     * @return 需要插入到编辑器中的文本
+     */
+    @NotNull String getDefaultTemplateHandleConsoleLogMsg(String defaultConsoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo);
 }

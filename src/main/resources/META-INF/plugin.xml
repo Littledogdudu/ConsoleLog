@@ -32,6 +32,10 @@
     </extensions>
 
     <actions>
+        <action id="Insert Template Console Log Message" class="com.sky.consolelog.action.InsertTemplateConsoleLogAction"
+                text="Console Log Plugin: Insert Template Console Log Message" description="Quick Insert console.log() or other command in code">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt 1"/>
+        </action>
         <action id="Insert Console Log Message" class="com.sky.consolelog.action.InsertConsoleLogAction"
                 text="Console Log Plugin: Insert Console Log Message" description="Quick Insert console.log() in code">
             <keyboard-shortcut keymap="$default" first-keystroke="alt 1"/>
