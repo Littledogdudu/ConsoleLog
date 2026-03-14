@@ -25,10 +25,7 @@ import com.sky.consolelog.utils.WriterCoroutineUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 按下Alt+1快捷键生成console.log调用表达式
@@ -225,7 +222,7 @@ public class InsertConsoleLogAction extends AnAction {
         // 把当前项目名称加入到待截取路径列表中
         sysCutPathList.add(psiFile.getProject().getName());
         if (settings.enableFilePathCut && StringUtils.isNotEmpty(settings.filePathBaseFolderName)) {
-            customCutPathList.add(String.join(",", settings.filePathBaseFolderName).trim());
+            customCutPathList.addAll(Arrays.stream(settings.filePathBaseFolderName.split(",")).map(String::trim).toList());
         }
 
         String fileSeparator = Optional.ofNullable(settings.filePathPlaceholderSeparator).orElse("");
@@ -251,21 +248,15 @@ public class InsertConsoleLogAction extends AnAction {
 
             if (sysCutPathList.contains(dirName)) {
                 // 系统相关截断
-                BaseFolderName = dirName;
                 break;
             }
             directory = directory.getParent();
         }
 
-        // 如果相对路径为空，则不添加路径即可
-        if (StringUtils.isEmpty(pathBuilder)) {
-            consoleLogSettingVo.setFilePath("");
-            return;
-        }
-
         // 针对是否包含基准文件夹名称的处理
-        if (settings.filePathIncludeBaseFolder && settings.filePathBaseFolderName.equals(BaseFolderName)) {
-            pathBuilder.insert(0, settings.filePathBaseFolderName + fileSeparator);
+        if (settings.filePathIncludeBaseFolder && customCutPathList.contains(BaseFolderName)) {
+            String appendPath = pathBuilder.isEmpty() ? BaseFolderName : BaseFolderName + fileSeparator;
+            pathBuilder.insert(0, appendPath);
         }
         consoleLogSettingVo.setFilePath(pathBuilder.toString());
     }
