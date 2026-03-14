@@ -314,7 +314,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             commentButton.setEnabled(false);
             specButton.setEnabled(false);
             nonVarSpecButton.setEnabled(false);
-            tip.setText("当前类型文件不在查询范围内");
+            tip.setText(MessageUtils.message("sidebar.emptyTip"));
             return;
         }
         commentButton.setEnabled(true);
