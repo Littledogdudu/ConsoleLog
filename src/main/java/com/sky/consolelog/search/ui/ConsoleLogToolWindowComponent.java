@@ -357,6 +357,10 @@ public class ConsoleLogToolWindowComponent implements Disposable {
                 return;
             }
             regexList.add(consoleLogMsgRegex);
+            // console.table特殊情况
+            if (settings.deleteTable) {
+                regexList.add(SettingConstant.CONSOLE_TABLE_REGEX);
+            }
         }
         if (enableNonVarSpec) {
             // 启用只查找插件无变量选中时生成指定格式的表达式

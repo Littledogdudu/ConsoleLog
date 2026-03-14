@@ -25,7 +25,7 @@ public interface SettingConstant {
     String CONSOLE_LOG_END_COMPOSITE_NO_VARIABLE_REGEX ="\\s*" + "(?:,.*)?" + Pattern.quote(")") + "\\s*" + ";?";
 
     /** console.table(data)特殊处理 */
-    String CONSOLE_TABLE_REGEX = "\\s*console\\s*" + Pattern.quote(".table(") + ".*" + Pattern.quote(")") + "\\s*;?";
+    String CONSOLE_TABLE_REGEX = "console\\s*" + Pattern.quote(".table(") + ".*" + Pattern.quote(")") + "\\s*;?";
 
     String CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE = "console\\s*" + Pattern.quote(".") + "\\s*log\\s*" + Pattern.quote("(") + "\\s*";
     String TAGS_DELIMITER = ";";
