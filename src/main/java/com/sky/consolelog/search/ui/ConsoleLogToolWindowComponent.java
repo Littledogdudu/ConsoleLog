@@ -21,6 +21,7 @@ import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.entities.ConsoleLogSearchInfo;
 import com.sky.consolelog.icon.ConsoleLogIcons;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
+import com.sky.consolelog.setting.storage.SidebarSettingState;
 import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.MessageUtils;
@@ -47,23 +48,25 @@ import java.util.regex.Pattern;
  * @Date: 2025/3/21 20:51
  */
 public class ConsoleLogToolWindowComponent implements Disposable {
-    private final JPanel panel;
-    private final JLabel tip;
+    private final JPanel panel = new JPanel(new BorderLayout());
+    private final JLabel tip = new JLabel("");
     /** 显示注释项 */
-    private final JButton commentButton;
+    private final JButton commentButton = new JButton();
     /** 启用针对性查找 */
-    private final JButton specButton;
+    private final JButton specButton = new JButton();
     /** 启用无变量针对性查找 */
-    private final JButton nonVarSpecButton;
+    private final JButton nonVarSpecButton = new JButton();
     /** 开启标签查找 */
-    private final JButton levelButton;
+    private final JButton levelButton = new JButton();
     /** 单击查找项 跳转/删除 */
-    private final JButton jumpOrDeleteButton;
+    private final JButton jumpOrDeleteButton = new JButton();
 
     private static JBList<ConsoleLogSearchInfo> logList;
     private final DefaultListModel<ConsoleLogSearchInfo> model;
+
     private final Project project;
 
+    SidebarSettingState settings = null;
     private Document currentDocument = null;
     private DocumentListener currentDocumentListener = null;
 
@@ -71,29 +74,34 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         updateCommentButtonIcon();
         updateCommentTipToolText();
         updateLogListEntries();
+        this.settings.defaultCommentSearch = this.commentButton.isSelected();
     };
 
     private final ActionListener specActionListener = event -> {
         updateSpecButtonIcon();
         updateSpecTipToolText();
         updateLogListEntries();
+        this.settings.defaultSpecSearch = this.specButton.isSelected();
     };
 
     private final ActionListener nonVarSpecActionListener = event -> {
         updateNonVarSpecButtonIcon();
         updateNonVarSpecTipToolText();
         updateLogListEntries();
+        this.settings.defaultNonVarSpecSearch = this.nonVarSpecButton.isSelected();
     };
 
     private final ActionListener levelActionListener = event -> {
         updateLevelButtonIcon();
         updateLevelTipToolText();
         updateLogListEntries();
+        this.settings.defaultTagSearch = this.levelButton.isSelected();
     };
 
     private final ActionListener jumpOrDeleteActionListener = event -> {
         updateJumpOrDeleteButtonIcon();
         updateJumpOrDeleteTipToolText();
+        this.settings.defaultJumpOrDelete = this.jumpOrDeleteButton.isSelected();
     };
 
     private final MouseAdapter buttonHoverAdapter = new MouseAdapter() {
@@ -131,13 +139,8 @@ public class ConsoleLogToolWindowComponent implements Disposable {
 
     public ConsoleLogToolWindowComponent(Project project) {
         this.project = project;
-        panel = new JPanel(new BorderLayout());
-        tip = new JLabel("");
-        commentButton = new JButton();
-        specButton = new JButton();
-        nonVarSpecButton = new JButton();
-        levelButton = new JButton();
-        jumpOrDeleteButton = new JButton();
+        this.settings = project.getService(SidebarSettingState.class);
+
         model = new DefaultListModel<>();
         logList = new JBList<>(model);
 
@@ -145,7 +148,6 @@ public class ConsoleLogToolWindowComponent implements Disposable {
         tip.setFont(UIUtil.getLabelFont(UIUtil.FontSize.SMALL));
         tip.setForeground(JBColor.GRAY);
 
-        ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
         commentButton.setSelected(settings.defaultCommentSearch);
         specButton.setSelected(settings.defaultSpecSearch);
         nonVarSpecButton.setSelected(settings.defaultNonVarSpecSearch);
