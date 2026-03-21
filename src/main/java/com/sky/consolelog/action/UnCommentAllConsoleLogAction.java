@@ -15,6 +15,7 @@ import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.TextRangeHandle;
 import com.sky.consolelog.utils.WriterCoroutineUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public class UnCommentAllConsoleLogAction extends AnAction {
 
         // 插件生成的命令的长度
         String regexConsoleLogMsg = ConsoleLogMsgUtil.buildRegexConsoleLogMsg(settings);
-        if (regexConsoleLogMsg == null || regexConsoleLogMsg.isEmpty()) {
+        if (regexConsoleLogMsg == null || StringUtils.isEmpty(regexConsoleLogMsg)) {
             return;
         }
         Pattern pattern = Pattern.compile(regexConsoleLogMsg);

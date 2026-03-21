@@ -11,6 +11,7 @@ import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.xml.XmlToken;
 import com.sky.consolelog.constant.SettingConstant;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -146,7 +147,7 @@ public class ConsoleLogPsiUtil {
                 if (element instanceof PsiComment comment) {
                     if (isConsoleLog(comment)) {
                         TextRange textRange = getCommentSignalTextRange(comment);
-                        if (textRange != null && !textRange.isEmpty()) {
+                        if (textRange != null && !ObjectUtils.isEmpty(textRange)) {
                             consoleLogRangeList.add(textRange);
                         }
                     }
@@ -197,7 +198,7 @@ public class ConsoleLogPsiUtil {
     }
 
     private static boolean isMatchCommonConsoleLog(String str) {
-        if (str == null || str.isEmpty()) {
+        if (str == null || StringUtils.isEmpty(str)) {
             return false;
         }
         return (str.matches(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX + SettingConstant.ALL_REGEX

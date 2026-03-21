@@ -16,6 +16,8 @@ import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.TextRangeHandle;
 import com.sky.consolelog.utils.WriterCoroutineUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,7 @@ public class CommentAllConsoleLogAction extends AnAction {
 
         // 插件生成的命令的长度
         String regexConsoleLogMsg = ConsoleLogMsgUtil.buildRegexConsoleLogMsg(settings);
-        if (regexConsoleLogMsg == null || regexConsoleLogMsg.isEmpty()) {
+        if (regexConsoleLogMsg == null || StringUtils.isEmpty(regexConsoleLogMsg)) {
             return;
         }
         Pattern pattern = Pattern.compile(regexConsoleLogMsg);
@@ -72,7 +74,7 @@ public class CommentAllConsoleLogAction extends AnAction {
         // 处理选中区域和console.log表达式
         Map<TextRange, List<Integer>> consoleLogNewLineNumberMap = TextRangeHandle.handleSelectedAndConsoleLogTextRange(editor, consoleLogLineNumberMap, settings.commentInSelection);
 
-        if (!consoleLogNewLineNumberMap.isEmpty()) {
+        if (!ObjectUtils.isEmpty(consoleLogNewLineNumberMap)) {
             writerCoroutineUtils.commentWriter(project, editor, consoleLogNewLineNumberMap, pattern, patternDefaultRegex, patternTableRegex);
         }
     }

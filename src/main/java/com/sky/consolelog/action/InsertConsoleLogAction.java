@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 按下Alt+1快捷键生成console.log调用表达式
@@ -40,7 +41,7 @@ public class InsertConsoleLogAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        if (settings.consoleLogMsg == null || settings.consoleLogMsg.isEmpty()) {
+        if (settings.consoleLogMsg == null || StringUtils.isEmpty(settings.consoleLogMsg)) {
             return;
         }
 
@@ -142,7 +143,7 @@ public class InsertConsoleLogAction extends AnAction {
         int elementAtCaretIndex = caret.getOffset();
 
         String selectedText = editor.getSelectionModel().getSelectedText();
-        if (selectedText != null && !selectedText.isEmpty()) {
+        if (selectedText != null && !StringUtils.isEmpty(selectedText)) {
             consoleLogSettingVo.setVariableName(selectedText);
         } else {
             // 如果没有选中的文本，则获取光标所在位置的单词
@@ -222,7 +223,7 @@ public class InsertConsoleLogAction extends AnAction {
         // 把当前项目名称加入到待截取路径列表中
         sysCutPathList.add(psiFile.getProject().getName());
         if (settings.enableFilePathCut && StringUtils.isNotEmpty(settings.filePathBaseFolderName)) {
-            customCutPathList.addAll(Arrays.stream(settings.filePathBaseFolderName.split(",")).map(String::trim).toList());
+            customCutPathList.addAll(Arrays.stream(settings.filePathBaseFolderName.split(",")).map(String::trim).collect(Collectors.toList()));
         }
 
         String fileSeparator = Optional.ofNullable(settings.filePathPlaceholderSeparator).orElse("");
@@ -255,7 +256,7 @@ public class InsertConsoleLogAction extends AnAction {
 
         // 针对是否包含基准文件夹名称的处理
         if (settings.filePathIncludeBaseFolder && customCutPathList.contains(BaseFolderName)) {
-            String appendPath = pathBuilder.isEmpty() ? BaseFolderName : BaseFolderName + fileSeparator;
+            String appendPath = StringUtils.isEmpty(pathBuilder) ? BaseFolderName : BaseFolderName + fileSeparator;
             pathBuilder.insert(0, appendPath);
         }
         consoleLogSettingVo.setFilePath(pathBuilder.toString());

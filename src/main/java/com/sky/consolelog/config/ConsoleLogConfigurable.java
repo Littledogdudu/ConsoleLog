@@ -6,13 +6,14 @@ import com.intellij.openapi.util.NlsContexts;
 import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.setting.ui.ConsoleLogComponent;
-import com.sky.consolelog.utils.TextFormatContext;
 import com.sky.consolelog.utils.FileTypeUtil;
+import com.sky.consolelog.utils.TextFormatContext;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 插件配置
@@ -64,7 +65,7 @@ public class ConsoleLogConfigurable implements Configurable {
                 || !component.getTypeScriptSideCheckBox().equals(this.settings.typeScriptSide)
                 || !component.getTextSideCheckBox().equals(this.settings.textSide)
                 || !component.getSideFontSize().equals(this.settings.sideFontSize)
-                || !Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).toList().equals(this.settings.tags)
+                || !(Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).collect(Collectors.toList())).equals(this.settings.tags)
                 || !component.getDefaultEnableTagSearchButtonCheckBox().equals(this.settings.defaultTagSearch)
                 || !component.getDefaultEnableJumpOrDeleteButtonCheckBox().equals(this.settings.defaultJumpOrDelete)
                 || !component.getSidebarDeleteTagCheckBox().equals(this.settings.deleteTag)
@@ -107,7 +108,7 @@ public class ConsoleLogConfigurable implements Configurable {
         this.settings.typeScriptSide = component.getTypeScriptSideCheckBox();
         this.settings.textSide = component.getTextSideCheckBox();
         this.settings.sideFontSize = component.getSideFontSize();
-        this.settings.tags = Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).toList();
+        this.settings.tags = Arrays.stream(component.getTextTags().split(SettingConstant.TAGS_DELIMITER)).collect(Collectors.toList());
         this.settings.defaultTagSearch = component.getDefaultEnableTagSearchButtonCheckBox();
         this.settings.defaultJumpOrDelete = component.getDefaultEnableJumpOrDeleteButtonCheckBox();
         this.settings.deleteTag = component.getSidebarDeleteTagCheckBox();

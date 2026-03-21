@@ -2,6 +2,7 @@ package com.sky.consolelog.utils;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.TextRange;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -23,7 +24,7 @@ public class TextRangeHandle {
      */
     public static List<TextRange> handleSelectedAndConsoleLogTextRange(Editor editor, List<TextRange> consoleLogRangeList, boolean isOperationInSelectionSetting) {
         List<TextRange> consoleLogNewRangeList = consoleLogRangeList;
-        if (editor.getSelectionModel().getSelectedText() == null || editor.getSelectionModel().getSelectedText().isEmpty()) {
+        if (editor.getSelectionModel().getSelectedText() == null || StringUtils.isEmpty(editor.getSelectionModel().getSelectedText())) {
             return consoleLogNewRangeList;
         }
         if (isOperationInSelectionSetting) {
@@ -64,7 +65,7 @@ public class TextRangeHandle {
      */
     public static Map<TextRange, List<Integer>> handleSelectedAndConsoleLogTextRange(Editor editor, Map<TextRange, List<Integer>> consoleLogRangeMap, boolean isOperationInSelectionSetting) {
         Map<TextRange, List<Integer>> consoleLogNewRangeMap = consoleLogRangeMap;
-        if (editor.getSelectionModel().getSelectedText() == null || editor.getSelectionModel().getSelectedText().isEmpty()) {
+        if (editor.getSelectionModel().getSelectedText() == null || StringUtils.isEmpty(editor.getSelectionModel().getSelectedText())) {
             return consoleLogNewRangeMap;
         }
         if (isOperationInSelectionSetting) {

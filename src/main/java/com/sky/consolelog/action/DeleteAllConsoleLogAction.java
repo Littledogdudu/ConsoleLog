@@ -48,7 +48,7 @@ public class DeleteAllConsoleLogAction extends AnAction {
 
         // 插件生成的命令的长度
         String regexConsoleLogMsg = ConsoleLogMsgUtil.buildRegexConsoleLogMsg(settings);
-        if (regexConsoleLogMsg == null || regexConsoleLogMsg.isEmpty()) {
+        if (regexConsoleLogMsg == null || StringUtils.isEmpty(regexConsoleLogMsg)) {
             return;
         }
 
