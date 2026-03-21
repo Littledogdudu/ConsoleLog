@@ -12,6 +12,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
@@ -69,6 +70,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     SidebarSettingState settings = null;
     private Document currentDocument = null;
     private DocumentListener currentDocumentListener = null;
+    private final Disposable currentDocumentChangeDisposable = Disposer.newDisposable("currentDocumentChangeDisposable");
 
     private final ActionListener commentActionListener = event -> {
         updateCommentButtonIcon();
@@ -260,7 +262,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
                 updateLogListEntries();
             }
         };
-        document.addDocumentListener(currentDocumentListener);
+        document.addDocumentListener(currentDocumentListener, currentDocumentChangeDisposable);
         currentDocument = document;
     }
 
@@ -547,6 +549,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
     @Override
     public void dispose() {
         removeCurrentDocumentListener();
+        Disposer.dispose(currentDocumentChangeDisposable);
         specButton.removeActionListener(specActionListener);
         specButton.removeMouseListener(buttonHoverAdapter);
         nonVarSpecButton.removeActionListener(nonVarSpecActionListener);

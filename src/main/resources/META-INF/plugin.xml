@@ -29,10 +29,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Console Log" icon="/META-INF/toolWindowIcon.png" anchor="right" factoryClass="com.sky.consolelog.search.ConsoleLogToolWindowFactory"/>
-
-        <postStartupActivity implementation="com.sky.consolelog.start.UpdateNotificationActivity"/>
-        <notificationGroup id="ConsoleLogPluginNotificationGroup" displayType="BALLOON"
-                           bundle="messages.MyBundle" key="notification.group.ConsoleLogNotificationGroup"/>
     </extensions>
 
     <actions>
