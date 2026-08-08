@@ -59,6 +59,18 @@
 
 抱歉，暂时**不完全**支持jsp项目（注释和解注释无法使用），该插件插入时可能只能插入在下一行，在没有语法错误的情况下，删除理论可以使用
 
+发布插件生成 PRIVATE_KEY
+
+```shell
+openssl genrsa -out private.pem 2048
+```
+
+发布插件生成 CERTIFICATE_CHAIN
+
+```shell
+openssl req -new -x509 -key private.pem -out chain.pem -days 365
+```
+
 ### 鸣谢
 - 由igor.pavlenko提出PSI JS类型强制转换问题的bug
 - 由yan.wt提出新的功能：支持在格式化字符串中添加文件名和行号
