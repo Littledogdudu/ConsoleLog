@@ -36,6 +36,9 @@ import java.util.stream.Collectors;
  */
 public class InsertConsoleLogAction extends AnAction {
 
+    /** PSI 树向上遍历的最大深度，JSX 嵌套较深需要更大的上限 */
+    private static final int MAX_PSI_TRAVERSAL_DEPTH = 20;
+
     private final ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
     private final WriterCoroutineUtils writerCoroutineUtils = ApplicationManager.getApplication().getService(WriterCoroutineUtils.class);
 
@@ -272,7 +275,7 @@ public class InsertConsoleLogAction extends AnAction {
         int count = 0;
         ScopeOffset offset = PsiPositionUtil.getScopeOffsetByType(element);
         PsiElement parent = element.getParent();
-        while (parent != null && offset == null && count++ < 10) {
+        while (parent != null && offset == null && count++ < MAX_PSI_TRAVERSAL_DEPTH) {
             offset = PsiPositionUtil.getScopeOffsetByType(parent);
             if (offset != null) {
                 return offset;

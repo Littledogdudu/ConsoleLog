@@ -4,10 +4,9 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java") // Java support
-    alias(libs.plugins.kotlin) // Kotlin support
-    alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
-    alias(libs.plugins.changelog) // Gradle Changelog Plugin
-    alias(libs.plugins.qodana) // Gradle Qodana Plugin
+    id("org.jetbrains.kotlin.jvm") // Kotlin support
+    id("org.jetbrains.intellij.platform") // IntelliJ Platform Gradle Plugin
+    id("org.jetbrains.changelog") // Gradle Changelog Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
 }
 
@@ -16,7 +15,7 @@ version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(25)
 }
 
 // Configure project's dependencies
@@ -40,7 +39,7 @@ dependencies {
     intellijPlatform {
 //        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
         // 设置本地调试IDE
-        local("D:\\JetBrains\\WebStorm 2024.3.5")
+        local("D:\\JetBrains\\WebStorm 2026.1.4")
 
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
@@ -131,6 +130,11 @@ kover {
 }
 
 tasks {
+    // Java 源文件为 UTF-8 编码，指定编译编码避免中文注释在 GBK 系统上无法映射
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
+
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
     }
@@ -160,3 +164,4 @@ intellijPlatformTesting {
         }
     }
 }
+

@@ -4,7 +4,6 @@ import com.intellij.openapi.Disposable;
 import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.search.ui.BeautifulListCellRender;
 import com.sky.consolelog.search.ui.ConsoleLogToolWindowComponent;
-import org.apache.commons.collections.CollectionUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -417,7 +416,7 @@ public class ConsoleLogComponent implements Disposable {
     }
 
     public void setTextTags(List<String> tags) {
-        if (CollectionUtils.isEmpty(tags)) {
+        if (tags == null || tags.isEmpty()) {
             tagTextField.setText("");
         }
         tagTextField.setText(String.join(SettingConstant.TAGS_DELIMITER, tags));

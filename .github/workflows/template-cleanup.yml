@@ -4,7 +4,7 @@
 name: Template Cleanup
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
 
@@ -19,7 +19,7 @@ jobs:
 
       # Check out the current repository
       - name: Fetch Sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Cleanup project
       - name: Cleanup
@@ -74,7 +74,7 @@ jobs:
 
       # Push changes
       - name: Push changes
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@v0.8.0
         with:
           branch: main
           github_token: ${{ secrets.GITHUB_TOKEN }}

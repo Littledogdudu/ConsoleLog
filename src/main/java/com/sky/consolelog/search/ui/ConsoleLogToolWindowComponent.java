@@ -27,7 +27,6 @@ import com.sky.consolelog.utils.ConsoleLogMsgUtil;
 import com.sky.consolelog.utils.ConsoleLogPsiUtil;
 import com.sky.consolelog.utils.MessageUtils;
 import com.sky.consolelog.utils.WriterCoroutineUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -375,7 +374,7 @@ public class ConsoleLogToolWindowComponent implements Disposable {
             regexList.add(consoleLogMsgRegex);
         }
 
-        if (CollectionUtils.isNotEmpty(regexList)) {
+        if (regexList != null && !regexList.isEmpty()) {
             regexBuilder.append(String.join("|", regexList));
         } else {
             regexBuilder.append(SettingConstant.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE);

@@ -591,14 +591,14 @@ class WriterCoroutineUtils(
      */
     fun updateLineNumber(settings: ConsoleLogSettingState, project: Project, editor: Editor, psiFile: PsiFile) {
         cs.launch {
-            val compositeConsoleLogMsgRegex: String = ConsoleLogMsgUtil.buildFindLineNumberConsoleLogMsgRegex(settings);
-            val pattern: Pattern = Pattern.compile(compositeConsoleLogMsgRegex);
-
             insertJob?.join();
             defaultInsertJob?.join();
             deleteJob?.join();
             commentJob?.join();
             uncommentJob?.join();
+
+            val compositeConsoleLogMsgRegex: String = ConsoleLogMsgUtil.buildFindLineNumberConsoleLogMsgRegex(settings);
+            val pattern: Pattern = Pattern.compile(compositeConsoleLogMsgRegex);
 
             val document = editor.document;
 
