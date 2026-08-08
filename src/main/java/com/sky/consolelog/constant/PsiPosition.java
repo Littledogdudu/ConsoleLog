@@ -54,6 +54,16 @@ public interface PsiPosition {
         String JS_EXPRESSION_STATEMENT = "JSExpressionStatement";
         String JS_FUNCTION = "JSFunction";
         String TYPE_SCRIPT_FUNCTION = "TypeScriptFunction";
+        /** 箭头函数 () => {} */
+        String JS_ARROW_FUNCTION = "JSArrowFunction";
+        /** class Foo {} */
+        String JS_CLASS = "JSClass";
+        /** 对象字面量 { key: val } */
+        String JS_OBJECT_LITERAL_EXPRESSION = "JSObjectLiteralExpression";
+        /** return ... */
+        String JS_RETURN_STATEMENT = "JSReturnStatement";
+        /** JSX 元素 <div>...</div> */
+        String JSX_ELEMENT = "JSXElement";
     }
 
     /**
@@ -69,6 +79,10 @@ public interface PsiPosition {
         String JS_IF_STATEMENT = "JSIfStatement";
         String JS_SWITCH_STATEMENT = "JSSwitchStatement";
         String JS_CASE_CLAUSE = "JSCaseClause";
+        /** try {} catch {} */
+        String JS_TRY_STATEMENT = "JSTryStatement";
+        /** else {} */
+        String JS_ELSE_CLAUSE = "JSElseClause";
     }
 
     /**
@@ -94,6 +108,16 @@ public interface PsiPosition {
      */
     interface Exception {
         String JS_CATCH_BLOCK = "JSCatchBlock";
+    }
+
+    /**
+     * Vue 模板相关
+     */
+    interface Template {
+        /** Vue/HTML 模板标签 */
+        String XML_TAG = "XmlTag";
+        /** HTML 标签（部分 IDE 版本） */
+        String HTML_TAG = "HtmlTag";
     }
 
 
