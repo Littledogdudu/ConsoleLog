@@ -1,11 +1,10 @@
-import org.gradle.kotlin.dsl.mavenCentral
 import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
 
-rootProject.name = "Console Log"
+rootProject.name = "ConsoleLog"
 
 pluginManagement {
     plugins {
-        id("org.jetbrains.kotlin.jvm") version "2.3.20"
+        id("org.jetbrains.kotlin.jvm") version "2.4.10"
         id("org.jetbrains.changelog") version "2.5.0"
     }
 }

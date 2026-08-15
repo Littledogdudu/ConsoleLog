@@ -46,7 +46,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: zulu
-          java-version: 25
+          java-version: 17
 
       # Setup Gradle
       - name: Setup Gradle
@@ -86,7 +86,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: zulu
-          java-version: 25
+          java-version: 17
 
       # Setup Gradle
       - name: Setup Gradle
@@ -129,7 +129,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: zulu
-          java-version: 25
+          java-version: 17
 
       # Setup Gradle
       - name: Setup Gradle
@@ -169,7 +169,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: zulu
-          java-version: 25
+          java-version: 17
 
       # Setup Gradle
       - name: Setup Gradle
