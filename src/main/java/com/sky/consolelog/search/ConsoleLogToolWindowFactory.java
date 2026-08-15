@@ -18,9 +18,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ConsoleLogToolWindowFactory implements ToolWindowFactory {
 
+    private final ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
+
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
         if (settings.enableSideWindow) {
             ConsoleLogToolWindowComponent consoleLogToolWindow = new ConsoleLogToolWindowComponent(project);
             ContentFactory contentFactory = ApplicationManager.getApplication().getService(ContentFactory.class);

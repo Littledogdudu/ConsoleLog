@@ -21,6 +21,7 @@ public class BeautifulListCellRender extends JPanel implements ListCellRenderer<
     private static JLabel textLabel;
     private static JLabel lineLabel;
     private static JLabel arrowLabel;
+    private final ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
 
     public BeautifulListCellRender() {
         setLayout(new BorderLayout());
@@ -28,7 +29,6 @@ public class BeautifulListCellRender extends JPanel implements ListCellRenderer<
         setBackground(JBColor.WHITE);
         setBorder(JBUI.Borders.empty(10));
 
-        ConsoleLogSettingState settings = ApplicationManager.getApplication().getService(ConsoleLogSettingState.class);
         setSideListItemFontSize(settings.sideFontSize);
         // 表达式文本标签
         textLabel.setOpaque(false);
