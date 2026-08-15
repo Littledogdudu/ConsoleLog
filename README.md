@@ -48,13 +48,44 @@
 ### 开发者
 环境配置：JDK17和Gradle8.10；master-Java11分支（尚未加入侧边栏功能）可支持使用JDK11或JDK8开发，使用Gradle7.2
 
-| 分支            | JDK版本   | Gradle版本 | 兼容的IDE版本  |
-|---------------|---------|----------|-----------|
-| master        | 17      | 8.10     | 2022.3及以上 |
-| master-Java11 | 8或11或17 | 7.2      | 2020.3及以上 |
+| 分支            | JDK版本                            | Gradle版本 | 兼容的IDE版本  |
+|---------------|------------------------------------|------------|-----------|
+| master        | 17或25（25版本存在构建兼容性问题） | 9.5.0      | 2022.3及以上 |
+| master-Java11 | 8或11或17                          | 7.2        | 2020.3及以上 |
 
-运行这个插件需要把这个local方法的参数修改为你的WebStorm文件路径哦  
-![modifyLocal](https://gitee.com/yang_skysource/console-log/blob/master/.github/readme/buildModifyLocal.png)  
+（这个配置似乎有点bug，配置之后导入gradle project总是失败）运行这个插件需要把这个local方法的参数修改为你的WebStorm文件路径哦  
+
+![buildCreate.png](https://gitee.com/yang_skysource/console-log/blob/master/.github/readme/buildCreate.png)
+
+现在推荐直接使用`create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))`  
+你可以直接修改`gradle.properties`文件中的配置修改启动的版本
+
+```properties
+platformType = WS
+platformVersion = 2024.2
+```
+
+> 注意⚠️
+> 如果使用2026.1.x版本及以上的Webstorm启动则需要使用Java25，Java25构建的包在2025.3.x及以下版本无法使用  
+> 如果使用2025.3.x版本及以下的Webstorm启动则需要使用Java17，Java17构建的包在2026.1.x及以上版本存在部分兼容性问题   
+> 项目JDK确认步骤：
+> 1. 在`project structure`中设置`JDK 25`
+> 2. 修改`build.gradle.kts`中的`jvmTools`配置：
+
+```kts
+kotlin {
+    jvmToolchain(17)
+}
+```
+
+➡️
+
+```kts
+kotlin {
+    jvmToolchain(25)
+}
+```
+
 在一些网络下，gradle下载依赖可能出现失败的情况，
 
 抱歉，暂时**不完全**支持jsp项目（注释和解注释无法使用），该插件插入时可能只能插入在下一行，在没有语法错误的情况下，删除理论可以使用

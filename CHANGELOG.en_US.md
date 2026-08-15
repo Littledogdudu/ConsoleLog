@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+## [1.2.5] - 2026-08-15
+
+- Fixed compatibility issues between version 2026.x.x and versions 2025.3.x and earlier
+
 ## [1.2.4] - 2026-08-08
 
 - 修复了部分场景下插入位置错误的问题
@@ -13,6 +17,15 @@
   - 箭头函数参数插入问题：const getDirFileListByDirId = async (selectNode) => {【理论插入点】}
   - else if插入问题: else if (row) {【插入点】}
   - JSX/TSX插入问题
+
+## [1.2.4] - 2026-08-08
+
+- Fixed the issue where insertion position was incorrect in certain scenarios.
+  - Chain call insertion issue: knowledgeList.value.push(...rows.map(row => {【theoretical insertion point】}))
+  - Callback function parameter insertion issue: this.chat.addEventListener("afterTagCheck", (tag, prefix) => {【theoretical insertion point】})
+  - Arrow function parameter insertion issue: const getDirFileListByDirId = async (selectNode) => {【theoretical insertion point】}
+  - else if insertion issue: else if (row) {【insertion point】}
+  - JSX/TSX insertion issue
 
 ## [1.2.3] - 2026-03-14
 

@@ -3,9 +3,22 @@
 
 ## [Unreleased]
 
+## [1.2.5] - 2026-08-15
+
+- 修复了2026.x.x版本与2025.3.x及之前的版本兼容性问题
+
 ## [1.2.4] - 2026-08-08
 
 - 修复了部分场景下插入位置错误的问题
+
+## [1.2.4] - 2026-08-08
+
+- 修复了部分场景下插入位置错误的问题
+  - 链式调用插入问题：knowledgeList.value.push(...rows.map(row => {【理论插入点】}))
+  - 回调函数参数插入问题：this.chat.addEventListener("afterTagCheck", (tag, prefix) => {【理论插入点】})
+  - 箭头函数参数插入问题：const getDirFileListByDirId = async (selectNode) => {【理论插入点】}
+  - else if插入问题: else if (row) {【插入点】}
+  - JSX/TSX插入问题
 
 ## [1.2.3] - 2026-03-14
 
