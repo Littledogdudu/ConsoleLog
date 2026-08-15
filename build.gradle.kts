@@ -15,7 +15,7 @@ version = providers.gradleProperty("pluginVersion").get()
 // Set the JVM language level used to build the project. Java 17 for 2022.3+ (JBR 17) compatibility.
 kotlin {
 //    jvmToolchain(17)
-    jvmToolchain(25)
+    jvmToolchain(17)
 }
 
 // Configure project's dependencies
@@ -87,7 +87,7 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = provider { null }
+            untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
     }
 
