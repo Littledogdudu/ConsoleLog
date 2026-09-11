@@ -167,8 +167,17 @@ public class PsiPositionUtil {
 
     /**
      * 对象字面量：在花括号后、第一个属性前插入
+     *
+     * <p>若该对象字面量是函数调用的实参（如 {@code getRagCategoryId({ id: this.selectNode.id })}），
+     * 在对象内部插入语句会破坏对象语法，此时返回 {@code null}，
+     * 由 {@code com.sky.consolelog.action.InsertConsoleLogAction#findScopeOffset(PsiElement)} 继续向上查找，
+     * 最终插入到整条调用语句之后。
      */
     private static ScopeOffset getObjectLiteralExpression(PsiElement element) {
+        PsiElement parent = element.getParent();
+        if (parent != null && PsiPosition.Expression.JS_ARGUMENT_LIST.equals(parent.toString())) {
+            return null;
+        }
         ScopeOffset offset = new ScopeOffset();
         offset.setInsertEndOffset(element.getFirstChild().getTextRange().getEndOffset());
         offset.setNeedTab(true);

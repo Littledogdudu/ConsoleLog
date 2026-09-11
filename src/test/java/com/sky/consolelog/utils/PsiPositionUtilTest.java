@@ -1211,6 +1211,24 @@ public class PsiPositionUtilTest {
         assertScope(innerObj, innerLBrace.getTextRange().getEndOffset(), true, false, true, true);
     }
 
+    @Test
+    public void testObjectLiteralExpressionAsCallArgumentReturnsNull() {
+        // await getRagCategoryId({ id: this.selectNode.id })
+        // 作为调用实参的对象字面量：内部插入会破坏对象语法 -> 返回 null，交由上层继续查找语句位置
+        FakePsiElement obj = fake("JSObjectLiteralExpression", "{ id: this.selectNode.id }")
+                .child(fake("PsiElement(JS:LBRACE)", "{"))
+                .child(fake("JSProperty", "id: this.selectNode.id")
+                        .child(fake("JSReferenceExpression", "id"))
+                        .child(fake("PsiElement(JS:COLON)", ":"))
+                        .child(fake("JSReferenceExpression", "this.selectNode.id")))
+                .child(fake("PsiElement(JS:RBRACE)", "}"));
+        FakePsiElement argList = fake("JSArgumentList", "({ id: this.selectNode.id })")
+                .child(fake("PsiElement(JS:LPAR)", "("))
+                .child(obj)
+                .child(fake("PsiElement(JS:RPAR)", ")"));
+        assertNull(PsiPositionUtil.getScopeOffsetByType(obj));
+    }
+
     // =====================================================================
     // 十三、Vue/HTML 模板标签（getXmlTag）
     // =====================================================================
@@ -1387,6 +1405,65 @@ public class PsiPositionUtilTest {
         ScopeOffset off = InsertConsoleLogAction.findScopeOffset(caretElement);
         // JSCallExpression 父级为 JSExpressionStatement -> 默认插入到语句末尾（分号后）
         assertScopeFields(off, caretElement, exprStmt.getTextRange().getEndOffset(), false, true, true, false);
+    }
+
+    @Test
+    public void testFindScopeOffsetFromObjectLiteralInCallArgument() {
+        // await getRagCategoryId({ id: this.selectNode.id, baseId: this.selectNode.baseId })
+        // 光标在 this.selectNode.id 上：跳过作为调用实参的对象字面量，
+        // 向上找到 JSCallExpression（父级为 JSAwaitExpression）-> 在整条调用语句之后插入
+        FakePsiElement idRef = fake("JSReferenceExpression", "this.selectNode.id");
+        FakePsiElement obj = fake("JSObjectLiteralExpression", "{ id: this.selectNode.id }")
+                .child(fake("PsiElement(JS:LBRACE)", "{"))
+                .child(fake("JSProperty", "id: this.selectNode.id")
+                        .child(fake("JSReferenceExpression", "id"))
+                        .child(fake("PsiElement(JS:COLON)", ":"))
+                        .child(idRef))
+                .child(fake("PsiElement(JS:RBRACE)", "}"));
+        FakePsiElement argList = fake("JSArgumentList", "({ id: this.selectNode.id })")
+                .child(fake("PsiElement(JS:LPAR)", "("))
+                .child(obj)
+                .child(fake("PsiElement(JS:RPAR)", ")"));
+        FakePsiElement call = fake("JSCallExpression", "getRagCategoryId({ id: this.selectNode.id })")
+                .child(fake("JSReferenceExpression", "getRagCategoryId"))
+                .child(argList);
+        FakePsiElement awaitExpr = fake("JSAwaitExpression", "await getRagCategoryId({ id: this.selectNode.id })")
+                .child(fake("PsiElement(JS:AWAIT_KEYWORD)", "await"))
+                .child(call);
+        FakePsiElement stmt = fake("JSExpressionStatement", "await getRagCategoryId({ id: this.selectNode.id })")
+                .child(awaitExpr);
+
+        ScopeOffset off = InsertConsoleLogAction.findScopeOffset(idRef);
+        // JSCallExpression 父级不是表达式语句/if 语句 -> getDefault(call)，即插入到调用末尾之后
+        assertScopeFields(off, idRef, call.getTextRange().getEndOffset(), false, true, true, false);
+    }
+
+    @Test
+    public void testFindScopeOffsetFromElMessageObjectProperty() {
+        // ElMessage({ message: TARGET });
+        // 光标在 TARGET 上：同样跳过作为调用实参的对象字面量，改为在整条语句之后插入
+        FakePsiElement targetRef = fake("JSReferenceExpression", "TARGET");
+        FakePsiElement obj = fake("JSObjectLiteralExpression", "{ message: TARGET }")
+                .child(fake("PsiElement(JS:LBRACE)", "{"))
+                .child(fake("JSProperty", "message: TARGET")
+                        .child(fake("JSReferenceExpression", "message"))
+                        .child(fake("PsiElement(JS:COLON)", ":"))
+                        .child(targetRef))
+                .child(fake("PsiElement(JS:RBRACE)", "}"));
+        FakePsiElement argList = fake("JSArgumentList", "({ message: TARGET })")
+                .child(fake("PsiElement(JS:LPAR)", "("))
+                .child(obj)
+                .child(fake("PsiElement(JS:RPAR)", ")"));
+        FakePsiElement call = fake("JSCallExpression", "ElMessage({ message: TARGET })")
+                .child(fake("JSReferenceExpression", "ElMessage"))
+                .child(argList);
+        FakePsiElement stmt = fake("JSExpressionStatement", "ElMessage({ message: TARGET });")
+                .child(call)
+                .child(fake("PsiElement(JS:SEMICOLON)", ";"));
+
+        ScopeOffset off = InsertConsoleLogAction.findScopeOffset(targetRef);
+        // JSCallExpression 父级为 JSExpressionStatement -> 无块体 -> 语句末尾（分号后）
+        assertScopeFields(off, targetRef, stmt.getTextRange().getEndOffset(), false, true, true, false);
     }
 
     @Test
