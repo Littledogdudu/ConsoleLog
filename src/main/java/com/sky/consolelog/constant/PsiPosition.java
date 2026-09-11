@@ -34,6 +34,8 @@ public interface PsiPosition {
          * update(s: string)
          */
         String JS_CALL_EXPRESSION = "JSCallExpression";
+        /** 调用实参列表 foo(...) */
+        String JS_ARGUMENT_LIST = "JSArgumentList";
         /**
          * update(s: string).then(() => {})
          * 包含then的调用表达式
