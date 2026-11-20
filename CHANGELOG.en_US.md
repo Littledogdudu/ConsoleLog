@@ -6,6 +6,14 @@
 
 ## [Unreleased]
 
+## [1.2.7] - 2026-11-21
+
+- Added three optional placeholders under **Basic Setting → Insert Sentence**. The default 🚀 template is unchanged:
+  - `${randomEmoji}`: picks an emoji at random from the built-in list for each insertion.
+  - `${smartEmoji}`: matches an emoji to a keyword in the variable name (for example, `rowValue` → 🚣). If no keyword matches, the same variable name gets the same fallback emoji.
+  - `${className}`: shows the name of the nearest enclosing JavaScript or TypeScript class, or an empty string if there is no class name.
+- Moved `${lineNumber}` and its description directly below `${filePath}` and its description in the settings.
+
 ## [1.2.6] - 2026-09-11
 
 - Fixed an incorrect insertion position for object literals used as function call arguments:

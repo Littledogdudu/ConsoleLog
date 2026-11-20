@@ -109,6 +109,7 @@ openssl req -new -x509 -key private.pem -out chain.pem -days 365
 - 由1327947094提出新的功能：文件相对路径占位
 - 由cscsyiku123提出新功能：添加 console.log, dir, table和其他选项（快捷键：Ctrl+Alt+1，使用模板选择）
 - 由IFnGSiYu提出新的功能：单击侧边栏项跳转/删除的侧边栏按钮
+- 由RashiqAzhan提出新的功能：灵活图标以代替固定的🚀
 
 > 灵感来源于vscode插件 [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)  
 > 有新的主意可以在[github](https://github.com/Littledogdudu/ConsoleLog)上fork或提出[issue](https://github.com/Littledogdudu/ConsoleLog/issues)或者发送到我的邮箱2378459785@qq.com哦  
@@ -123,9 +124,26 @@ openssl req -new -x509 -key private.pem -out chain.pem -days 365
 
 #### 插入语句
 
-你可以通过输入下面【符号】列对应的占位符来实时获取文本中对应的变量名/方法名/行号/文件名  
-例如默认为：🚀 ~ \${methodName} ~ \${variableName}:&nbsp;  
-你可以修改为：🚀 ~ \${filePath}/${fileName} ~ L(\${lineNumber}) ~ \${methodName} ~ \${variableName}:&nbsp;
+在「插入语句」中输入下表中的占位符，插件会在插入日志时替换它们。默认模板仍是 `🚀 ~ ${methodName} ~ ${variableName}: `。
+
+| 占位符 | 说明 |
+| --- | --- |
+| `${variableName}` | 要打印的变量名或选中的表达式。 |
+| `${methodName}` | 所在方法或函数的名称。 |
+| `${className}` | 光标所在的最近一层 JavaScript 或 TypeScript 类的名称；没有类名时留空。 |
+| `${fileName}` | 当前文件名。 |
+| `${filePath}` | 当前文件所在目录的路径。 |
+| `${lineNumber}` | 默认是日志插入位置的行号，可在「占位符设置」中改为变量所在行。 |
+| `${randomEmoji}` | 每次插入时从内置列表随机选择一个表情。 |
+| `${smartEmoji}` | 按变量名的关键词匹配，例如 `rowValue` → 🚣。未匹配时，同一个变量名使用同一个备选表情。 |
+
+也可以组合文件路径和行号，例如 `🚀 ~ ${filePath}/${fileName} ~ L(${lineNumber}) ~ ${methodName} ~ ${variableName}: `。
+
+使用 `${smartEmoji} ~ ${className}.${methodName} ~ ${variableName}: `，在 `Grid.render` 中打印 `rowValue` 时会生成：
+
+```js
+console.log("🚣 ~ Grid.render ~ rowValue: ", rowValue);
+```
 
 ### 未选中变量时的默认行为（默认关闭行为：什么也不做）
 
@@ -363,6 +381,7 @@ You can use the plugin on html code, but be careful: the statement is not remove
 - New feature proposed by 1327947094: placeholder for file relative path
 - New feature proposed by cscsyiku123：Added console.log, dir, table and other options
 - New feature proposed by IFnGSiYu：sidebar button to jump/delete by clicking sidebar item
+- New feature proposed by RashiqAzhan：Flexible icons to replace the fixed 🚀
 
 > The idea from vscode plugin [turbo console log](https://github.com/Chakroun-Anas/turbo-console-log)
 
@@ -374,9 +393,27 @@ You can use the plugin on html code, but be careful: the statement is not remove
 ### Customize the print sentence
 
 #### Insert Sentence
-You can obtain the corresponding variable name/method name/line number/file name in real-time in the text by entering the placeholder corresponding to the symbol column below  
-For example, the default is: 🚀 ~ \$ {methodName} ~ \${variableName}:&nbsp;  
-You can modify it to: 🚀 ~ \${filePath}/${fileName} ~ L(\${lineNumber}) ~ \${methodName} ~ \${variableName}:&nbsp;
+
+Add any of these placeholders to **Insert Sentence**. The plugin replaces them when it inserts a log. The default template is still `🚀 ~ ${methodName} ~ ${variableName}: `.
+
+| Placeholder | Description |
+| --- | --- |
+| `${variableName}` | The variable name or selected expression to log. |
+| `${methodName}` | The name of the enclosing method or function. |
+| `${className}` | The name of the nearest enclosing JavaScript or TypeScript class, or empty if there is no class name. |
+| `${fileName}` | The current file name. |
+| `${filePath}` | The path to the directory containing the current file. |
+| `${lineNumber}` | The log's insertion line by default. You can switch to the variable's line under **Placeholder Setting**. |
+| `${randomEmoji}` | Picks an emoji at random from the built-in list for each insertion. |
+| `${smartEmoji}` | Matches a keyword in the variable name, e.g. `rowValue` → 🚣. If no keyword matches, the same variable name gets the same fallback emoji. |
+
+You can also include the file path and line number: `🚀 ~ ${filePath}/${fileName} ~ L(${lineNumber}) ~ ${methodName} ~ ${variableName}: `.
+
+For example, `${smartEmoji} ~ ${className}.${methodName} ~ ${variableName}: ` generates this log for `rowValue` in `Grid.render`:
+
+```js
+console.log("🚣 ~ Grid.render ~ rowValue: ", rowValue);
+```
 
 ### Default behavior when no variable is selected (default disabled behavior: do nothing)
 
