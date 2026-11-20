@@ -9,6 +9,7 @@ package com.sky.consolelog.setting;
 public class ConsoleLogSettingVo {
     private String variableName;
     private String methodName;
+    private String className = "";
     private Integer lineNumber;
     private String fileName;
     private String filePath;
@@ -32,6 +33,14 @@ public class ConsoleLogSettingVo {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public Integer getLineNumber() {

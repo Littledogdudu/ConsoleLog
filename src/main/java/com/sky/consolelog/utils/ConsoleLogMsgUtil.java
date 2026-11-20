@@ -54,7 +54,7 @@ public class ConsoleLogMsgUtil {
         StringBuilder regexConsoleLogMsg = new StringBuilder();
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX);
         // 插件设置console.log内的文字提示指针
-        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg);
+        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg, false);
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_END_REGEX);
 
         currentFormSignal = TextFormatContext.FORM_SIGNAL;
@@ -80,7 +80,7 @@ public class ConsoleLogMsgUtil {
         StringBuilder regexConsoleLogMsg = new StringBuilder();
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE);
         // 插件设置console.log内的文字提示指针
-        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg);
+        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg, false);
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_END_REGEX);
 
         currentWithoutStartSpaceFormSignal = TextFormatContext.FORM_SIGNAL;
@@ -106,7 +106,7 @@ public class ConsoleLogMsgUtil {
         StringBuilder regexConsoleLogMsg = new StringBuilder();
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX);
         // 插件设置console.log内的文字提示指针
-        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg);
+        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg, false);
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_END_NO_VARIABLE_REGEX);
 
         currentDefaultFormSignal = TextFormatContext.FORM_SIGNAL;
@@ -132,7 +132,7 @@ public class ConsoleLogMsgUtil {
         StringBuilder regexConsoleLogMsg = new StringBuilder();
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX_WITHOUT_START_SPACE);
         // 插件设置console.log内的文字提示指针
-        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg);
+        replacePlaceHolderToRegex(consoleLogMsg, regexConsoleLogMsg, false);
         regexConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_END_NO_VARIABLE_REGEX);
 
         currentWithoutStartSpaceDefaultFormSignal = TextFormatContext.FORM_SIGNAL;
@@ -163,16 +163,14 @@ public class ConsoleLogMsgUtil {
         if (StringUtils.isNotEmpty(consoleLogMsg)) {
             StringBuilder tmpConsoleLogMsg = new StringBuilder();
             tmpConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX);
-            replacePlaceHolderToRegexExceptLineNumber(consoleLogMsg, tmpConsoleLogMsg);
-            String newConsoleLogMsg = tmpConsoleLogMsg.toString().replaceAll(SettingConstant.AliasRegex.LINE_NUMBER_REGEX.getKey(), "(" + SettingConstant.ALL_REGEX + ")");
-            regex.add(newConsoleLogMsg + TextFormatContext.CONSOLE_LOG_END_REGEX);
+            replacePlaceHolderToRegex(consoleLogMsg, tmpConsoleLogMsg, true);
+            regex.add(tmpConsoleLogMsg + TextFormatContext.CONSOLE_LOG_END_REGEX);
         }
         if (StringUtils.isNotEmpty(defaultConsoleLogMsg)) {
             StringBuilder tmpConsoleLogMsg = new StringBuilder();
             tmpConsoleLogMsg.append(TextFormatContext.CONSOLE_LOG_BEGIN_REGEX);
-            replacePlaceHolderToRegexExceptLineNumber(defaultConsoleLogMsg, tmpConsoleLogMsg);
-            String newDefaultConsoleLogMsg = tmpConsoleLogMsg.toString().replaceAll(SettingConstant.AliasRegex.LINE_NUMBER_REGEX.getKey(), "(" + SettingConstant.ALL_REGEX + ")") ;
-            regex.add(newDefaultConsoleLogMsg + TextFormatContext.CONSOLE_LOG_END_NO_VARIABLE_REGEX);
+            replacePlaceHolderToRegex(defaultConsoleLogMsg, tmpConsoleLogMsg, true);
+            regex.add(tmpConsoleLogMsg + TextFormatContext.CONSOLE_LOG_END_NO_VARIABLE_REGEX);
         }
         regexConsoleLogMsg.append(String.join("|", regex))
                 .append(")");
@@ -184,89 +182,30 @@ public class ConsoleLogMsgUtil {
         return lineNumberConsoleLogMsgRegex;
     }
 
-    private static void replacePlaceHolderToRegex(String consoleLogMsg, StringBuilder regexConsoleLogMsg) {
-        // 插件设置console.log内的文字提示指针
-        int commandPointerIndex = 0;
-
-        int consoleLogMsgLength = consoleLogMsg.length();
-        SettingConstant.VariableAlias[] variableAliasList = SettingConstant.VariableAlias.values();
-        while (true) {
-            // 是否存在匹配的子字符串标识
-            int hasKeys = 0;
-            String subMsg = consoleLogMsg.substring(commandPointerIndex, consoleLogMsgLength);
-            // 指定子字符串的开始和结束索引
-            int commandBegIndex = Integer.MAX_VALUE;
-            int commandEndIndex = commandPointerIndex;
-            for (int settingIndex = 0; settingIndex < SettingConstant.VariableAlias.values().length; settingIndex++) {
-                int index = subMsg.indexOf(variableAliasList[settingIndex].getKey());
-                if (index != -1) {
-                    if (commandBegIndex > index) {
-                        // 选取匹配子字符串的最小索引
-                        commandBegIndex = commandPointerIndex + index;
-                        commandEndIndex = commandPointerIndex + index + variableAliasList[settingIndex].getKey().length();
-                        ++hasKeys;
-                    }
+    private static void replacePlaceHolderToRegex(String consoleLogMsg, StringBuilder regexConsoleLogMsg, boolean captureLineNumber) {
+        int pointer = 0;
+        SettingConstant.VariableAlias[] aliases = SettingConstant.VariableAlias.values();
+        while (pointer < consoleLogMsg.length()) {
+            int nextIndex = consoleLogMsg.length();
+            SettingConstant.VariableAlias nextAlias = null;
+            for (SettingConstant.VariableAlias alias : aliases) {
+                int index = consoleLogMsg.indexOf(alias.getKey(), pointer);
+                if (index >= 0 && index < nextIndex) {
+                    nextIndex = index;
+                    nextAlias = alias;
                 }
             }
 
-            if (hasKeys == 0) {
-                // 如果指定的子字符串已经没有一个可以匹配上的则退出循环
+            regexConsoleLogMsg.append(Pattern.quote(consoleLogMsg.substring(pointer, nextIndex)));
+            if (nextAlias == null) {
                 break;
             }
-
-            // 字面化普通字符串，指定的子字符串使用.*替代
-            regexConsoleLogMsg.append(Pattern.quote(consoleLogMsg.substring(commandPointerIndex, commandBegIndex)))
-                    .append(SettingConstant.ALL_REGEX);
-            commandPointerIndex = commandEndIndex;
-        }
-        if (commandPointerIndex < consoleLogMsg.length()) {
-            regexConsoleLogMsg.append(Pattern.quote(consoleLogMsg.substring(commandPointerIndex)));
-        }
-    }
-
-    private static void replacePlaceHolderToRegexExceptLineNumber(String consoleLogMsg, StringBuilder regexConsoleLogMsg) {
-        // 插件设置console.log内的文字提示指针
-        int commandPointerIndex = 0;
-
-        int consoleLogMsgLength = consoleLogMsg.length();
-        SettingConstant.VariableAlias[] variableAliasList = SettingConstant.VariableAlias.values();
-        while (true) {
-            // 是否存在匹配的子字符串标识
-            int hasKeys = 0;
-            String subMsg = consoleLogMsg.substring(commandPointerIndex, consoleLogMsgLength);
-            // 指定子字符串的开始和结束索引
-            int commandBegIndex = Integer.MAX_VALUE;
-            int commandEndIndex = commandPointerIndex;
-            SettingConstant.VariableAlias variableAlias = null;
-            for (int settingIndex = 0; settingIndex < SettingConstant.VariableAlias.values().length; settingIndex++) {
-                int index = subMsg.indexOf(variableAliasList[settingIndex].getKey());
-                if (index != -1) {
-                    if (commandBegIndex > index) {
-                        // 选取匹配子字符串的最小索引
-                        commandBegIndex = commandPointerIndex + index;
-                        commandEndIndex = commandPointerIndex + index + variableAliasList[settingIndex].getKey().length();
-                        variableAlias = variableAliasList[settingIndex];
-                        ++hasKeys;
-                    }
-                }
+            switch (nextAlias) {
+                case RANDOM_EMOJI_COMMAND, SMART_EMOJI_COMMAND -> regexConsoleLogMsg.append(EmojiUtil.REGEX);
+                case LINE_NUMBER_COMMAND -> regexConsoleLogMsg.append(captureLineNumber ? "(" + SettingConstant.ALL_REGEX + ")" : SettingConstant.ALL_REGEX);
+                default -> regexConsoleLogMsg.append(SettingConstant.ALL_REGEX);
             }
-
-            if (hasKeys == 0) {
-                // 如果指定的子字符串已经没有一个可以匹配上的则退出循环
-                break;
-            }
-
-            // 字面化普通字符串，指定的子字符串使用.*替代
-            regexConsoleLogMsg.append(Pattern.quote(consoleLogMsg.substring(commandPointerIndex, commandBegIndex)));
-            if (SettingConstant.VariableAlias.LINE_NUMBER_COMMAND.equals(variableAlias)) {
-                regexConsoleLogMsg.append(SettingConstant.VariableAlias.LINE_NUMBER_COMMAND.getKey());
-            } else {
-                regexConsoleLogMsg.append(SettingConstant.ALL_REGEX);
-            }
-            commandPointerIndex = commandEndIndex;
-        }
-        if (commandPointerIndex < consoleLogMsg.length()) {
-            regexConsoleLogMsg.append(Pattern.quote(consoleLogMsg.substring(commandPointerIndex)));
+            pointer = nextIndex + nextAlias.getKey().length();
         }
     }
 }

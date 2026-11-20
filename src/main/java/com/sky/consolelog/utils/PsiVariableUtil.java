@@ -2,11 +2,13 @@ package com.sky.consolelog.utils;
 
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression;
 import com.intellij.lang.javascript.psi.JSReferenceExpression;
+import com.intellij.lang.javascript.psi.ecmal4.JSClass;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
 
 /**
  * 专门用来检查并获取完整变量名的工具类
@@ -15,6 +17,18 @@ import com.intellij.psi.PsiFile;
  * @Date: 2025/2/19 12:09
  */
 public class PsiVariableUtil {
+
+    /**
+     * 获取光标所在的最近一层类的名称。
+     */
+    public static String getEnclosingClassName(PsiElement element) {
+        JSClass enclosingClass = PsiTreeUtil.getParentOfType(element, JSClass.class, false);
+        while (enclosingClass != null && enclosingClass.isInterface()) {
+            enclosingClass = PsiTreeUtil.getParentOfType(enclosingClass, JSClass.class);
+        }
+        String className = enclosingClass == null ? null : enclosingClass.getName();
+        return className == null ? "" : className;
+    }
 
     /**
      * 获取光标处变量名称

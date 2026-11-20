@@ -62,7 +62,13 @@ public interface SettingConstant {
         /** 设置别名：文件名 */
         FILE_NAME_COMMAND("${fileName}"),
         /** 设置别名：所在文件相对路径 */
-        FILE_PATH_COMMAND("${filePath}");
+        FILE_PATH_COMMAND("${filePath}"),
+        /** 设置别名：类名 */
+        CLASS_COMMAND("${className}"),
+        /** 设置别名：随机表情 */
+        RANDOM_EMOJI_COMMAND("${randomEmoji}"),
+        /** 设置别名：智能表情 */
+        SMART_EMOJI_COMMAND("${smartEmoji}");
 
         final String key;
 
@@ -89,7 +95,13 @@ public interface SettingConstant {
         /** 设置别名：用于正则匹配的文件名 */
         FILE_NAME_REGEX(Pattern.quote("${fileName}")),
         /** 设置别名：用于正则匹配的所在文件相对路径 */
-        FILE_PATH_REGEX(Pattern.quote("${filePath}"));
+        FILE_PATH_REGEX(Pattern.quote("${filePath}")),
+        /** 设置别名：用于正则匹配的类名 */
+        CLASS_REGEX(Pattern.quote("${className}")),
+        /** 设置别名：用于正则匹配的随机表情 */
+        RANDOM_EMOJI_REGEX(Pattern.quote("${randomEmoji}")),
+        /** 设置别名：用于正则匹配的智能表情 */
+        SMART_EMOJI_REGEX(Pattern.quote("${smartEmoji}"));
 
         final String key;
 

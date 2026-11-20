@@ -2,6 +2,7 @@ package com.sky.consolelog.utils.strategy.text;
 
 import com.sky.consolelog.constant.SettingConstant;
 import com.sky.consolelog.setting.ConsoleLogSettingVo;
+import com.sky.consolelog.utils.EmojiUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
@@ -82,6 +83,14 @@ public abstract class BaseTextFormatStrategy implements TextFormatStrategy {
     }
 
     private String replaceConsoleLog(String consoleLogMsg, ConsoleLogSettingVo consoleLogSettingVo) {
+        if (consoleLogMsg.contains(SettingConstant.VariableAlias.RANDOM_EMOJI_COMMAND.getKey())) {
+            consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.RANDOM_EMOJI_REGEX, EmojiUtil.randomEmoji());
+        }
+        if (consoleLogMsg.contains(SettingConstant.VariableAlias.SMART_EMOJI_COMMAND.getKey())) {
+            consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.SMART_EMOJI_REGEX,
+                    EmojiUtil.smartEmoji(consoleLogSettingVo.getVariableName()));
+        }
+        consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.CLASS_REGEX, consoleLogSettingVo.getClassName());
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.VARIABLE_REGEX, consoleLogSettingVo.getVariableName());
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.METHOD_REGEX, consoleLogSettingVo.getMethodName());
         consoleLogMsg = replaceConsoleLog(consoleLogMsg, SettingConstant.AliasRegex.LINE_NUMBER_REGEX, consoleLogSettingVo.getLineNumber().toString());

@@ -64,6 +64,7 @@ public class InsertConsoleLogAction extends AnAction {
         }
 
         ConsoleLogSettingVo consoleLogSettingVo = new ConsoleLogSettingVo();
+        consoleLogSettingVo.setClassName(PsiVariableUtil.getEnclosingClassName(elementAtCaret));
         // 检查是否有选中的文本
         boolean hasSelectedText = getVariableName(editor, psiFile, consoleLogSettingVo);
         if (!hasSelectedText) {

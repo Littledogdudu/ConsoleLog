@@ -15,6 +15,7 @@ import com.sky.consolelog.entities.ScopeOffset;
 import com.sky.consolelog.setting.ConsoleLogSettingVo;
 import com.sky.consolelog.setting.storage.ConsoleLogSettingState;
 import com.sky.consolelog.utils.PsiPositionUtil;
+import com.sky.consolelog.utils.PsiVariableUtil;
 import com.sky.consolelog.utils.TextFormatContext;
 import com.sky.consolelog.utils.WriterCoroutineUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +53,7 @@ public class InsertTemplateConsoleLogAction extends AnAction {
         }
 
         ConsoleLogSettingVo consoleLogSettingVo = new ConsoleLogSettingVo();
+        consoleLogSettingVo.setClassName(PsiVariableUtil.getEnclosingClassName(elementAtCaret));
         // 检查是否有选中的文本
         boolean hasSelectedText = getVariableName(editor, psiFile, consoleLogSettingVo);
         if (!hasSelectedText) {
